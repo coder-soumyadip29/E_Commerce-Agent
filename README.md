@@ -5,26 +5,26 @@ CartWise is a Next.js-based e-commerce platform integrated with a multi-agent AI
 
 Currently, the application runs a fully featured mock agent (`AGENT_MODE=mock`) that simulates the intended AI functionality using hardcoded heuristics mapped to actual SQLite data. The shopping cart, checkout, order history, database, and responsive UI components are completely built and functional.
 
-## 2. STATUS
+## 2. STATUS & FEATURES
 
-### Done
-- Responsive UI screens mapping to all Desktop and Mobile designs.
-- SQLite database integration (`better-sqlite3`) with products, reviews, and orders tables.
-- Robust cart state management (stored server-side in SQLite `cart_items`).
-- 3-step checkout flow handling atomic transactions and zero-stock validation.
-- Agent trace panel to inspect parsed intents, active filters, and SQL queries.
-- Mock agent engine returning structured JSON messages based on deterministic triggers.
-- Image demo cases simulating visual recognition for honey, oats, and non-product (elephant) images.
-- Comprehensive Vitest test suite for the backend API logic.
-
-### Remaining
-- Real LLM agents with Groq (for fast text reasoning) and Gemini (for multimodal/vision tasks).
-- Real image embeddings for open-ended visual product recognition.
-- A bigger product catalog beyond the 32 seeded items.
-- Vector-based semantic search and smarter product ranking algorithms.
-- Review summaries from real review text utilizing actual NLP.
-- Strict prompt guardrails and LLM output evaluation to prevent hallucinations.
-- Proper user authentication and dynamic address mapping for the checkout process.
+### Core Features (Completed)
+- **Real Gemini LLM with Tool Calling (`AGENT_MODE=real`)**:
+  - Multi-turn autonomous tool execution using Google Gemini (`gemini-3-flash-preview`).
+  - Active Tools: `search_catalog`, `get_product_details`, `get_user_orders`, `add_to_cart`, `calculate_discount`.
+  - Zero hallucination grounded directly to the local SQLite database catalog.
+  - Transparent Agent Trace modal displaying internal reasoning, function arguments, and execution results.
+- **Multimodal Vision (Search by Image)**:
+  - Real-time image recognition using Gemini Vision API.
+  - Extracts dietary attributes (organic, gluten-free, vegan), tags, allergens, and matches inventory.
+  - Non-product detection (e.g. animals, objects) returning clean helpful guidance with zero false matches.
+- **Multilingual Voice Search (STT & TTS)**:
+  - **Speech-to-Text (STT)**: Web Speech Recognition API supporting **English (`en-IN`)**, **Hindi (`hi-IN`)**, and **Bengali (`bn-IN`)** with live animated recording waveforms.
+  - **Text-to-Speech (TTS)**: Web Speech Synthesis API with auto-speak toggle and bubble listen buttons in English, Hindi, and Bengali.
+- **Full 10-Category & 26-Subcategory Grocery Catalog**:
+  - Fruits & Vegetables, Staples, Spices & Masalas, Oils & Ghee, Dry Fruits & Nuts, Dairy & Eggs, Meat & Fish, Beverages, Snacks & Packaged Foods, Bakery & Breads.
+  - 105+ seeded products with realistic ratings, reviews, organic tags, and historic orders.
+- **Responsive E-Commerce UI**:
+  - Desktop & Mobile optimized layouts, 3-step checkout with atomic transactions, cart drawer, and order tracking.
 
 ## 3. QUICK START
 ```bash
