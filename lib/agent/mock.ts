@@ -14,6 +14,50 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
 
   const query = lastUserMessage.content.toLowerCase().trim();
 
+  // 0. Check for dual intent: Product search + Order tracking (Screenshot match)
+  if (
+    query.includes("track") ||
+    query.includes("1040") ||
+    query.includes("9421") ||
+    query.includes("package")
+  ) {
+    const honey = getProductById(99) || getProductById(1);
+    const trackingInfo = {
+      orderId: query.includes("9421") ? "#AU-9421" : "#1040",
+      productName: "Organic Japanese Sencha Green Tea",
+      carrier: "CartWise FastFleet",
+      status: "OUT FOR DELIVERY" as const,
+      estimatedArrival: "Today by 3:45 PM",
+      step: "out_for_delivery" as const,
+    };
+    const promoInfo = {
+      code: "SAVE10",
+      savings: 1.5,
+      finalTotal: 13.49,
+    };
+
+    return {
+      type: "products",
+      text: "Found top organic honey under $20 and synced your live shipment dispatch:",
+      products: honey ? [honey] : [],
+      orderTracking: trackingInfo,
+      promoArbitrage: promoInfo,
+      trace: {
+        query: lastUserMessage.content,
+        parsed_intent: "Find organic honey under $20 and track live order",
+        filters: { keyword: "honey", max_price: 20, is_organic: true },
+        sql_query: "SELECT * FROM products WHERE (name LIKE '%honey%' OR category = 'spreads-sauces-pickles') AND price <= 20",
+        results_count: 1,
+        steps: [
+          { title: "Query Parsing", detail: "Parsed dual intent: Product search + Live order dispatch lookup", status: "complete" },
+          { title: "Database Query", detail: "Selected Organic Raw Forest Honey (ID: 99) in SQLite catalog", status: "complete" },
+          { title: "Fleet Telemetry", detail: "Connected to FastFleet Satellite GPS for Order #1040", status: "complete" },
+          { title: "Price Arbitrage", detail: "Calculated SAVE10 voucher arbitrage with net price $13.49", status: "complete" },
+        ]
+      }
+    };
+  }
+
   // 1a. Mock Chips Logic
   if (query === "compare these") {
     const p1 = getProductById(1);

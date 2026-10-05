@@ -20,6 +20,7 @@ declare module "lucide-react" {
   export const Check: Icon;
   export const ChevronDown: Icon;
   export const ChevronUp: Icon;
+  export const ChevronRight: Icon;
   export const Plus: Icon;
   export const Minus: Icon;
   export const User: Icon;
@@ -29,6 +30,7 @@ declare module "lucide-react" {
   export const ArrowRight: Icon;
   export const ArrowLeft: Icon;
   export const CheckCircle: Icon;
+  export const CheckCircle2: Icon;
   export const Clock: Icon;
   export const Package: Icon;
   export const Truck: Icon;
@@ -48,4 +50,34 @@ declare module "lucide-react" {
   export const ShoppingBag: Icon;
   export const RotateCcw: Icon;
   export const CreditCard: Icon;
+  export const Bot: Icon;
+  export const Heart: Icon;
+  export const Store: Icon;
+  export const Sliders: Icon;
+  export const MessageSquare: Icon;
+  export const Radio: Icon;
+  export const Satellite: Icon;
+  export const Navigation: Icon;
+  export const Apple: Icon;
+  export const Wheat: Icon;
+  export const Flame: Icon;
+  export const Droplets: Icon;
+  export const Nut: Icon;
+  export const Milk: Icon;
+  export const Cookie: Icon;
+  export const Activity: Icon;
+  export const Lock: Icon;
+  export const Mail: Icon;
+  export const LogIn: Icon;
+  export const LogOut: Icon;
+  export const UserPlus: Icon;
+  export const Home: Icon;
+  export const Briefcase: Icon;
+  export const DollarSign: Icon;
+  export const Layers: Icon;
+  export const Settings: Icon;
+  export const Edit: Icon;
+  export const Eye: Icon;
+  export const EyeOff: Icon;
 }
+

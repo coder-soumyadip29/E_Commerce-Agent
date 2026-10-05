@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Product } from "@/lib/types";
 import { useCart } from "@/context/CartContext";
-import { Leaf, Star, ShoppingCart, Check, Scale } from "lucide-react";
+import { ShoppingCart, Check, Scale } from "lucide-react";
 
 interface CompareMessageProps {
   products: Product[];
@@ -25,41 +25,39 @@ export function CompareMessage({ products, comparisonPoints }: CompareMessagePro
   const pointKeys = Object.keys(comparisonPoints);
 
   return (
-    <div className="flex items-start gap-3 w-full max-w-5xl">
-      <div className="w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
-        <Scale className="w-4 h-4" />
+    <div className="flex items-start gap-2.5 w-full animate-fade-in">
+      <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+        <Scale className="w-4 h-4 text-white" />
       </div>
 
-      <div className="flex-1 bg-surface-container-lowest border border-outline-variant/40 rounded-2xl rounded-tl-xs p-4 sm:p-6 shadow-xs overflow-hidden">
+      <div className="flex-1 bg-[#121827] border border-white/10 rounded-2xl rounded-tl-xs p-3.5 sm:p-5 shadow-md overflow-hidden text-slate-100">
         {/* Header */}
-        <div className="pb-4 mb-4 border-b border-outline-variant/30 flex items-center justify-between">
+        <div className="pb-3 mb-3 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Scale className="w-5 h-5 text-primary" />
-            <h2 className="text-lg sm:text-xl font-bold text-primary tracking-tight">
+            <Scale className="w-4 h-4 text-cyan-400" />
+            <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
               Product Comparison Matrix
-            </h2>
+            </h3>
           </div>
-          <span className="text-xs font-semibold text-secondary px-2.5 py-1 rounded-full bg-secondary-container">
-            {products.length} Products Evaluated
+          <span className="text-[10px] font-bold text-cyan-300 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-400/20">
+            {products.length} Products
           </span>
         </div>
 
         {/* Responsive Table */}
         <div className="w-full overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[600px]">
+          <table className="w-full text-left border-collapse min-w-[500px]">
             <thead>
-              {/* Product Header Cards Row */}
               <tr>
-                <th className="p-3 w-1/4 text-xs font-bold uppercase tracking-wider text-on-surface-variant bg-surface-container-low rounded-tl-xl">
+                <th className="p-2.5 w-1/4 text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-[#0d1320] rounded-tl-xl">
                   Attributes
                 </th>
                 {products.map((product) => {
                   const isAdded = Boolean(addedIds[product.id]);
                   return (
-                    <th key={product.id} className="p-3 align-top bg-surface-container-low/50">
-                      <div className="space-y-2">
-                        {/* Image */}
-                        <div className="w-full h-32 rounded-lg bg-surface-container-lowest overflow-hidden flex items-center justify-center p-2 border border-outline-variant/30">
+                    <th key={product.id} className="p-2.5 align-top bg-[#151c2e]/60">
+                      <div className="space-y-1.5">
+                        <div className="w-full h-24 rounded-lg bg-[#0a0e17] overflow-hidden flex items-center justify-center p-1 border border-white/5">
                           <img
                             src={product.image_url || "/images/honey.png"}
                             alt={product.name}
@@ -70,39 +68,32 @@ export function CompareMessage({ products, comparisonPoints }: CompareMessagePro
                           />
                         </div>
 
-                        {/* Title */}
-                        <span className="font-bold text-sm sm:text-base text-on-surface block leading-snug break-words">
+                        <span className="font-bold text-xs text-white block truncate">
                           {product.name}
                         </span>
 
-                        {/* Price & Rating */}
                         <div className="flex items-center justify-between">
-                          <span className="text-base font-bold text-primary">
+                          <span className="text-xs font-bold text-emerald-400">
                             ${product.price.toFixed(2)}
                           </span>
-                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600">
-                            <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                            {product.average_rating ? product.average_rating.toFixed(1) : "4.5"}
+                          <span className="text-[10px] text-amber-300">
+                            ★ {product.average_rating || 4.5}
                           </span>
                         </div>
 
-                        {/* Add to Cart button */}
                         <button
                           onClick={() => handleAdd(product)}
-                          disabled={isAdded}
-                          className={`w-full py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                            isAdded
-                              ? "bg-secondary text-white"
-                              : "border border-primary-container text-primary hover:bg-surface-container-low"
-                          }`}
+                          className="w-full py-1 px-2 rounded-lg text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors flex items-center justify-center gap-1 cursor-pointer"
                         >
                           {isAdded ? (
                             <>
-                              <Check className="w-3.5 h-3.5" /> Added
+                              <Check className="w-3 h-3 text-emerald-300" />
+                              <span>Added</span>
                             </>
                           ) : (
                             <>
-                              <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
+                              <ShoppingCart className="w-3 h-3" />
+                              <span>Add</span>
                             </>
                           )}
                         </button>
@@ -112,29 +103,22 @@ export function CompareMessage({ products, comparisonPoints }: CompareMessagePro
                 })}
               </tr>
             </thead>
-            <tbody>
-              {/* Dynamic comparison points */}
-              {pointKeys.map((key, rowIdx) => {
-                const values = comparisonPoints[key] || [];
-                const isEven = rowIdx % 2 === 0;
-                return (
-                  <tr
-                    key={key}
-                    className={`border-t border-outline-variant/20 ${
-                      isEven ? "bg-surface-container-lowest" : "bg-surface-container-low/40"
-                    }`}
-                  >
-                    <td className="p-3 text-xs sm:text-sm font-semibold text-primary align-top">
-                      {key}
-                    </td>
-                    {products.map((product, colIdx) => (
-                      <td key={product.id} className="p-3 text-xs sm:text-sm text-on-surface align-top">
-                        {values[colIdx] || "—"}
+            <tbody className="divide-y divide-white/5 text-xs text-slate-300">
+              {pointKeys.map((key) => (
+                <tr key={key} className="hover:bg-white/5 transition-colors">
+                  <td className="p-2.5 font-bold text-slate-400 bg-[#0d1320] text-[11px]">
+                    {key}
+                  </td>
+                  {products.map((_, pIdx) => {
+                    const value = comparisonPoints[key]?.[pIdx] || "—";
+                    return (
+                      <td key={pIdx} className="p-2.5 text-slate-200">
+                        {value}
                       </td>
-                    ))}
-                  </tr>
-                );
-              })}
+                    );
+                  })}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

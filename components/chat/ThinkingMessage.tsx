@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Leaf, Sparkles } from "lucide-react";
+import { Bot, Sparkles } from "lucide-react";
 
 interface ThinkingMessageProps {
   label?: string;
@@ -9,32 +9,32 @@ interface ThinkingMessageProps {
 
 export function ThinkingMessage({ label = "Searching organic catalog…" }: ThinkingMessageProps) {
   return (
-    <div className="flex items-start gap-3 w-full max-w-xl animate-fade-in">
-      <div className="w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
-        <Leaf className="w-4 h-4 animate-spin-slow" />
+    <div className="flex items-start gap-2.5 w-full max-w-xl animate-fade-in">
+      <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+        <Bot className="w-4 h-4 text-cyan-300 animate-pulse" />
       </div>
 
-      <div className="bg-surface-container-lowest border border-outline-variant/40 rounded-2xl rounded-tl-xs p-4 sm:p-5 shadow-xs flex-1">
-        <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-4 h-4 text-secondary animate-pulse" />
-          <span className="text-xs font-bold uppercase tracking-wider text-secondary">
-            CartWise Agent Thinking
+      <div className="bg-[#121827] border border-white/10 rounded-2xl rounded-tl-xs p-3.5 sm:p-4 shadow-md flex-1">
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+          <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
+            Aura Copilot Processing
           </span>
         </div>
 
-        <p className="text-sm sm:text-base font-semibold text-on-surface mb-3">
+        <p className="text-xs sm:text-sm font-semibold text-slate-100 mb-2.5">
           {label}
         </p>
 
-        {/* Pulsing indicator dots & bar */}
+        {/* Pulsing indicator dots */}
         <div className="flex items-center gap-2">
-          <div className="flex gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-secondary animate-bounce" style={{ animationDelay: "0ms" }} />
-            <span className="w-2 h-2 rounded-full bg-secondary animate-bounce" style={{ animationDelay: "150ms" }} />
-            <span className="w-2 h-2 rounded-full bg-secondary animate-bounce" style={{ animationDelay: "300ms" }} />
+          <div className="flex gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: "300ms" }} />
           </div>
-          <span className="text-xs text-on-surface-variant font-medium">
-            Filtering database by price, ratings & certifications
+          <span className="text-[10px] text-slate-400 font-mono">
+            Syncing with SQLite store catalog
           </span>
         </div>
       </div>

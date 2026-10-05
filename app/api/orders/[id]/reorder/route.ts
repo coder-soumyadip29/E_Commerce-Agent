@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getDb, getProductById } from "@/lib/db";
+import { reorderDb } from "@/lib/db";
 
 async function getSessionId() {
   const cookieStore = await cookies();
@@ -25,34 +25,10 @@ export async function POST(
       return NextResponse.json({ error: "Invalid order ID" }, { status: 400 });
     }
 
-    const db = getDb();
-
-    const getItemsStmt = db.prepare("SELECT product_id, quantity FROM order_items WHERE order_id = ?");
-    const items = getItemsStmt.all(orderId) as { product_id: number, quantity: number }[];
-
-    if (items.length === 0) {
-      return NextResponse.json({ error: "Order not found or has no items" }, { status: 404 });
+    const res = reorderDb(sessionId, orderId);
+    if (!res.success) {
+      return NextResponse.json({ error: res.error }, { status: 404 });
     }
-
-    const transaction = db.transaction(() => {
-      const getExisting = db.prepare("SELECT quantity FROM cart_items WHERE session_id = ? AND product_id = ?");
-      const insertCart = db.prepare("INSERT INTO cart_items (session_id, product_id, quantity) VALUES (?, ?, ?)");
-      const updateCart = db.prepare("UPDATE cart_items SET quantity = ? WHERE session_id = ? AND product_id = ?");
-
-      for (const item of items) {
-        // Option to check stock here? Requirements do not mention checking stock during reorder,
-        // it just says "Add all items to the current session cart". Stock validation happens on checkout anyway.
-        // We'll just add them.
-        const existing = getExisting.get(sessionId, item.product_id) as { quantity: number } | undefined;
-        if (existing) {
-          updateCart.run(existing.quantity + item.quantity, sessionId, item.product_id);
-        } else {
-          insertCart.run(sessionId, item.product_id, item.quantity);
-        }
-      }
-    });
-
-    transaction();
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

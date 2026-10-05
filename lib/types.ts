@@ -12,7 +12,6 @@ export interface Product {
   stock: number;
 }
 
-
 export interface Review {
   id: number;
   product_id: number;
@@ -43,6 +42,38 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface UserAddress {
+  id: number;
+  user_id: number;
+  label: string; // "Home", "Office", "Beach House"
+  recipient_name: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  country: string;
+  is_default: boolean;
+}
+
+export interface UserPreferences {
+  dietary_tags: string[]; // ["100% Organic", "Gluten-Free", "Vegan", "High-Protein", "Sugar-Free"]
+  health_goals: string[]; // ["Immunity & Vitality", "Cardio Health", "Clean Eating", "Digestive Balance"]
+  copilot_tone: "concise" | "detailed" | "wholesale-deal-finder";
+  max_spend_budget?: number;
+}
+
+export interface UserProfile {
+  id: number;
+  name: string;
+  email: string;
+  avatar_url?: string;
+  vip_level: string; // "Verified VIP Buyer"
+  preferences: UserPreferences;
+  addresses: UserAddress[];
+  default_address_id?: number;
+}
+
 export interface AgentTraceStep {
   title: string;
   detail: string;
@@ -60,15 +91,36 @@ export interface AgentTrace {
     is_organic?: boolean;
     min_rating?: number;
   };
-
   sql_query?: string;
   results_count?: number;
   steps: AgentTraceStep[];
 }
 
+export interface OrderTrackingInfo {
+  orderId: string | number;
+  productName: string;
+  carrier: string;
+  status: "OUT FOR DELIVERY" | "IN TRANSIT" | "DELIVERED";
+  estimatedArrival: string;
+  step: "packed" | "transit" | "out_for_delivery";
+}
+
+export interface PromoArbitrageInfo {
+  code: string;
+  savings: number;
+  finalTotal: number;
+}
+
 export type AssistantMessage =
   | { type: "text"; text: string }
-  | { type: "products"; products: Product[]; text?: string; trace?: AgentTrace }
+  | {
+      type: "products";
+      products: Product[];
+      text?: string;
+      trace?: AgentTrace;
+      orderTracking?: OrderTrackingInfo;
+      promoArbitrage?: PromoArbitrageInfo;
+    }
   | { type: "image_analysis"; tags: string[]; description: string; matchedProducts?: Product[]; uploadedImage?: string }
   | { type: "clarify"; question: string; options: string[] }
   | { type: "compare"; products: Product[]; comparisonPoints: Record<string, string[]> }

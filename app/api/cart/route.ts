@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getDb, getProductById } from "@/lib/db";
+import { getCartDb, addToCartDb, updateCartQuantityDb, deleteCartDb } from "@/lib/db";
 
 async function getOrCreateSessionId(): Promise<{ sessionId: string; isNew: boolean }> {
   const cookieStore = await cookies();
@@ -14,22 +14,7 @@ async function getOrCreateSessionId(): Promise<{ sessionId: string; isNew: boole
 export async function GET() {
   try {
     const { sessionId, isNew } = await getOrCreateSessionId();
-    const db = getDb();
-    const stmt = db.prepare(`
-      SELECT c.id as cart_item_id, c.quantity, p.*
-      FROM cart_items c
-      JOIN products p ON c.product_id = p.id
-      WHERE c.session_id = ?
-    `);
-    const rows = stmt.all(sessionId) as any[];
-
-    const enrichedCart = rows.map((r) => {
-      const product = getProductById(r.id);
-      return {
-        product: product,
-        quantity: r.quantity
-      };
-    });
+    const enrichedCart = getCartDb(sessionId);
 
     const response = NextResponse.json({ success: true, cart: enrichedCart });
     if (isNew) {
@@ -53,29 +38,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Valid productId required" }, { status: 400 });
     }
 
-    const db = getDb();
-    
-    // Check stock
-    const product = getProductById(productId);
-    if (!product) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
-    }
-    
-    // Get existing quantity in cart
-    const existingStmt = db.prepare("SELECT quantity FROM cart_items WHERE session_id = ? AND product_id = ?");
-    const existing = existingStmt.get(sessionId, productId) as { quantity: number } | undefined;
-    const newTotalQuantity = (existing?.quantity || 0) + quantity;
-
-    if (newTotalQuantity > product.stock) {
-      return NextResponse.json({ error: `Item '${product.name}' is currently out of stock.` }, { status: 400 });
-    }
-
-    if (existing) {
-      db.prepare("UPDATE cart_items SET quantity = ? WHERE session_id = ? AND product_id = ?")
-        .run(newTotalQuantity, sessionId, productId);
-    } else {
-      db.prepare("INSERT INTO cart_items (session_id, product_id, quantity) VALUES (?, ?, ?)")
-        .run(sessionId, productId, quantity);
+    const res = addToCartDb(sessionId, productId, quantity);
+    if (!res.success) {
+      return NextResponse.json({ error: res.message }, { status: 400 });
     }
 
     const response = NextResponse.json({ success: true });
@@ -100,22 +65,9 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Valid productId and quantity required" }, { status: 400 });
     }
 
-    const db = getDb();
-    const product = getProductById(productId);
-    if (!product) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
-    }
-
-    if (quantity > product.stock) {
-      return NextResponse.json({ error: `Item '${product.name}' is currently out of stock.` }, { status: 400 });
-    }
-
-    if (quantity <= 0) {
-      db.prepare("DELETE FROM cart_items WHERE session_id = ? AND product_id = ?")
-        .run(sessionId, productId);
-    } else {
-      db.prepare("UPDATE cart_items SET quantity = ? WHERE session_id = ? AND product_id = ?")
-        .run(quantity, sessionId, productId);
+    const res = updateCartQuantityDb(sessionId, productId, quantity);
+    if (!res.success) {
+      return NextResponse.json({ error: res.error }, { status: 400 });
     }
 
     const response = NextResponse.json({ success: true });
@@ -134,16 +86,8 @@ export async function DELETE(req: NextRequest) {
     const { sessionId, isNew } = await getOrCreateSessionId();
     const url = new URL(req.url);
     const productIdStr = url.searchParams.get("productId");
-    const db = getDb();
 
-    if (productIdStr) {
-      const productId = Number(productIdStr);
-      db.prepare("DELETE FROM cart_items WHERE session_id = ? AND product_id = ?")
-        .run(sessionId, productId);
-    } else {
-      // Clear entire cart
-      db.prepare("DELETE FROM cart_items WHERE session_id = ?").run(sessionId);
-    }
+    deleteCartDb(sessionId, productIdStr ? Number(productIdStr) : undefined);
 
     const response = NextResponse.json({ success: true });
     if (isNew) {
@@ -155,4 +99,3 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: error?.message || "Failed to delete cart items" }, { status: 500 });
   }
 }
-
