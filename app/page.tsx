@@ -487,6 +487,82 @@ function MainApp() {
                 </div>
               </div>
 
+              {/* 2.5 Section: AI Personalised Choices & Recommendations (MongoDB Stored Preferences) */}
+              {user && personalizedProducts && personalizedProducts.length > 0 && (
+                <div className="rounded-3xl bg-[#0f1524] border border-cyan-500/20 p-4 sm:p-5 shadow-xl relative overflow-hidden space-y-3">
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-cyan-500/5 rounded-full blur-2xl pointer-events-none" />
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border border-emerald-500/30">
+                          AI Personalised For You
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          Based on {user.preferences?.dietary_tags?.join(", ") || "Certified Organic"}
+                        </span>
+                      </div>
+                      <h3 className="font-extrabold text-sm sm:text-base text-white mt-1">
+                        Tailored Recommendations for {user.name.split(" ")[0]}
+                      </h3>
+                    </div>
+
+                    <button
+                      onClick={() => setIsPersonalisationModalOpen(true)}
+                      className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition-all cursor-pointer"
+                    >
+                      <Sliders className="w-3.5 h-3.5" />
+                      <span>Adjust Diet & Budget</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-1">
+                    {personalizedProducts.slice(0, 3).map((prod) => (
+                      <div
+                        key={`pers-${prod.id}`}
+                        className="bg-[#141b2a] border border-white/5 hover:border-emerald-500/30 rounded-2xl p-2.5 flex flex-col justify-between transition-all group"
+                      >
+                        <div>
+                          <div className="relative w-full h-24 rounded-xl bg-[#0a0e17] flex items-center justify-center p-2 mb-2 overflow-hidden">
+                            <img
+                              src={prod.image_url || "/images/honey.png"}
+                              alt={prod.name}
+                              className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = "/images/honey.png";
+                              }}
+                            />
+                            <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-emerald-500/90 text-white">
+                              {prod.is_organic ? "100% Organic" : "Recommended"}
+                            </div>
+                          </div>
+
+                          <h4 className="font-bold text-xs text-white line-clamp-1 mb-0.5">
+                            {prod.name}
+                          </h4>
+                          <p className="text-[10px] text-slate-400 line-clamp-1 mb-1.5">
+                            {prod.description}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-1 border-t border-white/5">
+                          <span className="text-xs font-black text-emerald-400">
+                            ${prod.price.toFixed(2)}
+                          </span>
+                          <button
+                            onClick={() => addToCart(prod, 1)}
+                            className="px-2.5 py-1 rounded-lg text-[10px] font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition-colors cursor-pointer flex items-center gap-1 shadow-sm"
+                          >
+                            <ShoppingCart className="w-2.5 h-2.5" />
+                            <span>Add</span>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* 3. Section: "Best Deals on Organic Harvest & Pantry Essentials" */}
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">

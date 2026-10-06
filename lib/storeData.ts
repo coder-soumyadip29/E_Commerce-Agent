@@ -1,4 +1,4 @@
-import { Product, Review, Order, UserProfile, UserAddress } from "./types";
+import { Product, Review, Order, UserProfile, UserAddress, UserAddressRecord } from "./types";
 
 export function getProductImageUrl(name: string, category: string, subCategory?: string): string {
   const lower = (name + " " + category + " " + (subCategory || "")).toLowerCase();
@@ -328,4 +328,33 @@ export const INITIAL_REVIEWS: Review[] = [
   { id: 6, product_id: 51, rating: 5.0, reviewer_name: "Elena M.", review_text: "Best cold-pressed extra virgin olive oil for salad dressings." },
   { id: 7, product_id: 56, rating: 5.0, reviewer_name: "Rajesh P.", review_text: "Pure A2 Vedic desi cow ghee, amazing aroma and granular texture!" },
   { id: 8, product_id: 85, rating: 5.0, reviewer_name: "Taro K.", review_text: "Very authentic Japanese sencha green tea flavor." }
+];
+
+export const INITIAL_USER_ADDRESSES: UserAddressRecord[] = [
+  {
+    id: 1,
+    user_id: 1,
+    name: "Maya Sterling",
+    phone: "+91 98765 43210",
+    street_address: "Penthouse 4B, 742 Evergreen Terrace",
+    landmark: "Near Pine Valley Tech Park",
+    city: "Bangalore",
+    pincode: "560103",
+    type: "Home",
+    is_default: true,
+    created_at: "2026-03-01 10:00:00",
+  },
+  {
+    id: 2,
+    user_id: 1,
+    name: "Maya Sterling (Work)",
+    phone: "+91 98765 43210",
+    street_address: "BioTech Innovation Hub, Tower C, Level 8",
+    landmark: "Opposite Metro Pillar 184",
+    city: "Bangalore",
+    pincode: "560001",
+    type: "Work",
+    is_default: false,
+    created_at: "2026-03-02 14:30:00",
+  },
 ];

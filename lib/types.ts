@@ -29,12 +29,31 @@ export interface OrderItem {
   quantity: number;
 }
 
+export type OrderStatus = "placed" | "packing" | "transit" | "in_transit" | "delivered" | "cancelled";
+export type OrderTrackingStatus = "placed" | "packing" | "out_for_delivery" | "delivered" | "cancelled";
+
+export interface DeliveryPartnerInfo {
+  name: string;
+  phone: string;
+  vehicle: string;
+  badge: string;
+  rating: number;
+}
+
 export interface Order {
   id: number;
   total: number;
-  status: "delivered" | "transit";
+  status: OrderStatus;
   created_at: string;
   items?: OrderItem[];
+  payment_id?: string;
+  payment_method?: string;
+  delivery_address_json?: string;
+  delivery_slot?: string;
+  tracking_status?: OrderTrackingStatus;
+  estimated_delivery_time?: string;
+  cancellation_reason?: string;
+  delivery_partner?: DeliveryPartnerInfo;
 }
 
 export interface CartItem {
@@ -42,17 +61,94 @@ export interface CartItem {
   quantity: number;
 }
 
+export type AddressType = "Home" | "Work" | "Other";
+
+export interface UserAddressRecord {
+  id: number;
+  user_id: number;
+  name: string;
+  phone: string;
+  street_address: string;
+  landmark?: string;
+  city: string;
+  pincode: string;
+  type: AddressType;
+  is_default: boolean;
+  created_at?: string;
+}
+
+export type DeliverySlotId = "express_30min" | "morning_slot" | "evening_slot";
+
+export interface DeliverySlot {
+  id: DeliverySlotId;
+  title: string;
+  subtitle: string;
+  timeWindow: string;
+  badge?: string;
+  price: number;
+  estimatedTime: string;
+}
+
+export interface InvoiceItem {
+  id: number;
+  product_name: string;
+  hsn_code: string;
+  quantity: number;
+  unit_price: number;
+  taxable_amount: number;
+  gst_rate: number;
+  gst_amount: number;
+  line_total: number;
+}
+
+export interface GstBreakdown {
+  taxableSubtotal: number;
+  cgstRate: number;
+  cgstAmount: number;
+  sgstRate: number;
+  sgstAmount: number;
+  igstAmount: number;
+  totalGst: number;
+}
+
+export interface InvoiceData {
+  invoiceNumber: string;
+  orderId: number;
+  paymentId: string;
+  date: string;
+  storeName: string;
+  storeGstin: string;
+  storeFssai: string;
+  storeAddress: string;
+  customerName: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  deliveryAddress: UserAddressRecord;
+  deliverySlot?: DeliverySlot;
+  paymentMethod: string;
+  items: InvoiceItem[];
+  subtotal: number;
+  discountAmount: number;
+  discountCode?: string;
+  gst: GstBreakdown;
+  deliveryFee: number;
+  finalTotal: number;
+}
+
 export interface UserAddress {
   id: number;
   user_id: number;
-  label: string; // "Home", "Office", "Beach House"
+  label: string; // "Home", "Work", "Other"
   recipient_name: string;
   phone: string;
   street: string;
+  landmark?: string;
   city: string;
-  state: string;
+  state?: string;
   zip_code: string;
-  country: string;
+  pincode?: string;
+  country?: string;
+  type?: AddressType;
   is_default: boolean;
 }
 
@@ -61,6 +157,7 @@ export interface UserPreferences {
   health_goals: string[]; // ["Immunity & Vitality", "Cardio Health", "Clean Eating", "Digestive Balance"]
   copilot_tone: "concise" | "detailed" | "wholesale-deal-finder";
   max_spend_budget?: number;
+  preferred_categories?: string[];
 }
 
 export interface UserProfile {
@@ -72,6 +169,7 @@ export interface UserProfile {
   preferences: UserPreferences;
   addresses: UserAddress[];
   default_address_id?: number;
+  isVerified?: boolean;
 }
 
 export interface AgentTraceStep {

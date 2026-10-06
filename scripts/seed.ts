@@ -56,7 +56,14 @@ db.exec(`
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       total REAL NOT NULL,
       status TEXT NOT NULL DEFAULT 'delivered',
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      payment_id TEXT,
+      payment_method TEXT,
+      delivery_address_json TEXT,
+      delivery_slot TEXT,
+      tracking_status TEXT DEFAULT 'placed',
+      estimated_delivery_time TEXT,
+      cancellation_reason TEXT
   );
 
   CREATE TABLE IF NOT EXISTS order_items (
@@ -76,7 +83,30 @@ db.exec(`
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       UNIQUE(session_id, product_id)
   );
+
+  CREATE TABLE IF NOT EXISTS user_addresses (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL DEFAULT 1,
+      name TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      street_address TEXT NOT NULL,
+      landmark TEXT,
+      city TEXT NOT NULL,
+      pincode TEXT NOT NULL,
+      type TEXT CHECK(type IN ('Home', 'Work', 'Other')) DEFAULT 'Home',
+      is_default INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
 `);
+
+// Seed default addresses
+const insertAddr = db.prepare(`
+  INSERT INTO user_addresses (user_id, name, phone, street_address, landmark, city, pincode, type, is_default, created_at)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`);
+insertAddr.run(1, "Maya Sterling", "+91 98765 43210", "Penthouse 4B, 742 Evergreen Terrace", "Near Pine Valley Tech Park", "Bangalore", "560103", "Home", 1, "2026-03-01 10:00:00");
+insertAddr.run(1, "Maya Sterling (Work)", "+91 98765 43210", "BioTech Innovation Hub, Tower C, Level 8", "Opposite Metro Pillar 184", "Bangalore", "560001", "Work", 0, "2026-03-02 14:30:00");
+
 
 // Setup Views
 db.exec(`
@@ -324,26 +354,61 @@ db.transaction(() => {
 db.exec("UPDATE sqlite_sequence SET seq = 1038 WHERE name = 'orders'");
 db.exec("INSERT OR IGNORE INTO sqlite_sequence (name, seq) VALUES ('orders', 1038)");
 
-const insertOrder = db.prepare(
-  "INSERT INTO orders (id, total, status, created_at) VALUES (?, ?, ?, ?)"
-);
+const insertOrder = db.prepare(`
+  INSERT INTO orders (
+    id, total, status, created_at, payment_id, payment_method, delivery_address_json, delivery_slot, tracking_status, estimated_delivery_time
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`);
 const insertOrderItem = db.prepare(
   "INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity) VALUES (?, ?, ?, ?, ?)"
 );
 
 db.transaction(() => {
-  // Order #1039
-  insertOrder.run(1039, 25.97, "delivered", "2024-09-20 14:30:00");
+  // Order #1039: Completed / Delivered
+  insertOrder.run(
+    1039,
+    25.97,
+    "delivered",
+    "2024-09-20 14:30:00",
+    "pay_upi_seed_1039",
+    "upi",
+    JSON.stringify({ name: "Maya Sterling", street_address: "Penthouse 4B, 742 Evergreen Terrace", city: "Bangalore", pincode: "560103" }),
+    "⚡ Instant 30-Min Fast Delivery",
+    "delivered",
+    "Delivered"
+  );
   insertOrderItem.run(1039, 99, "Organic Raw Forest Honey (500g)", 14.99, 1);
   insertOrderItem.run(1039, 33, "Organic Whole Grain Rolled Oats (1kg)", 5.49, 2);
 
-  // Order #1040
-  insertOrder.run(1040, 21.98, "transit", "2024-09-25 10:15:00");
+  // Order #1040: Out for Delivery (Rider assigned, live countdown)
+  insertOrder.run(
+    1040,
+    21.98,
+    "transit",
+    "2024-09-25 10:15:00",
+    "pay_card_seed_1040",
+    "card",
+    JSON.stringify({ name: "Maya Sterling", street_address: "Penthouse 4B, 742 Evergreen Terrace", city: "Bangalore", pincode: "560103" }),
+    "⚡ Instant 30-Min Fast Delivery",
+    "out_for_delivery",
+    "14 mins"
+  );
   insertOrderItem.run(1040, 85, "Organic Japanese Sencha Green Tea (50 Bags)", 12.99, 1);
   insertOrderItem.run(1040, 87, "Organic Chamomile Herbal Tea (30 Bags)", 8.99, 1);
 
-  // Order #1041
-  insertOrder.run(1041, 20.48, "delivered", "2024-09-28 09:45:00");
+  // Order #1041: Order Packed & Quality Checked
+  insertOrder.run(
+    1041,
+    20.48,
+    "packing",
+    "2024-09-28 09:45:00",
+    "pay_upi_seed_1041",
+    "upi",
+    JSON.stringify({ name: "Maya Sterling", street_address: "BioTech Innovation Hub, Tower 3", city: "Bangalore", pincode: "560103" }),
+    "🌅 Morning Slot (7:00 AM – 10:00 AM)",
+    "packing",
+    "35 mins"
+  );
   insertOrderItem.run(1041, 58, "Organic California Almonds (500g)", 11.99, 1);
   insertOrderItem.run(1041, 66, "Organic Black Chia Seeds (250g)", 8.49, 1);
 })();

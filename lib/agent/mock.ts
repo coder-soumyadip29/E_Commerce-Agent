@@ -1,4 +1,5 @@
-import { searchProducts, getProductById, getProductReviews, SearchProductsOptions } from "../db";
+import { searchProducts, getProductById, getProductReviews, getOrderById, cancelOrderDb, getOrders, SearchProductsOptions } from "../db";
+import { generateInvoiceData } from "../invoice";
 import { AssistantMessage, ChatMessage, Product, AgentTrace } from "../types";
 
 export async function handleMockChat(messages: ChatMessage[]): Promise<AssistantMessage> {
@@ -13,6 +14,42 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
   }
 
   const query = lastUserMessage.content.toLowerCase().trim();
+
+  // Check for Order Cancellation intent
+  if (query.includes("cancel")) {
+    const idMatch = query.match(/\b(\d+)\b/);
+    const orderId = idMatch ? Number(idMatch[1]) : (getOrders()[0]?.id || 1042);
+    const cancelRes = cancelOrderDb(orderId, "Customer requested cancellation via chat");
+    return {
+      type: "text",
+      text: cancelRes.message,
+    };
+  }
+
+  // Check for Invoice / Receipt generation intent
+  if (query.includes("invoice") || query.includes("receipt") || query.includes("bill")) {
+    const idMatch = query.match(/\b(\d+)\b/);
+    const orderId = idMatch ? Number(idMatch[1]) : (getOrders()[0]?.id || 1042);
+    const order = getOrderById(orderId);
+    if (!order) {
+      return {
+        type: "text",
+        text: `Order #${orderId} was not found in database records.`,
+      };
+    }
+    const inv = generateInvoiceData({
+      order,
+      items: order.items || [],
+      paymentMethod: "upi",
+      transactionId: `tx_${order.id}`,
+      finalTotal: order.total,
+      subtotal: order.total,
+    });
+    return {
+      type: "text",
+      text: `🧾 **Tax Invoice ${inv.invoiceNumber} (Order #${inv.orderId})**\n- **GSTIN:** ${inv.storeGstin}\n- **Subtotal:** $${inv.subtotal.toFixed(2)}\n- **GST (CGST 2.5% + SGST 2.5%):** $${inv.gst.totalGst.toFixed(2)}\n- **Total Amount:** $${inv.finalTotal.toFixed(2)}\n- **Delivery Address:** ${inv.deliveryAddress?.street_address}, ${inv.deliveryAddress?.city} - ${inv.deliveryAddress?.pincode}\n[Download PDF Receipt](/api/orders/${order.id}/invoice)`,
+    };
+  }
 
   // 0. Check for dual intent: Product search + Order tracking (Screenshot match)
   if (

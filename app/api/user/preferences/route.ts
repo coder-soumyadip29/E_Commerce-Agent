@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserProfile, updateUserPreferences, getPersonalizedProducts } from "@/lib/db";
+import {
+  getUserProfile,
+  updateUserPreferences,
+  getPersonalizedProducts,
+} from "@/lib/userDb";
 
 export async function GET(req: NextRequest) {
   try {
@@ -7,12 +11,12 @@ export async function GET(req: NextRequest) {
     const userIdParam = searchParams.get("userId");
     const userId = userIdParam ? Number(userIdParam) : 1;
 
-    const user = getUserProfile(userId);
+    const user = await getUserProfile(userId);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const personalizedProducts = getPersonalizedProducts(userId);
+    const personalizedProducts = await getPersonalizedProducts(userId);
     return NextResponse.json({
       success: true,
       preferences: user.preferences,
@@ -33,12 +37,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Preferences object required" }, { status: 400 });
     }
 
-    const result = updateUserPreferences(userId, preferences);
+    const result = await updateUserPreferences(Number(userId), preferences);
     if (!result.success) {
       return NextResponse.json({ error: result.error || "Failed to update preferences" }, { status: 400 });
     }
 
-    const personalizedProducts = getPersonalizedProducts(userId);
+    const personalizedProducts = await getPersonalizedProducts(Number(userId));
     return NextResponse.json({
       success: true,
       user: result.user,

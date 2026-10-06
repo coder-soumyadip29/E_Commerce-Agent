@@ -9,15 +9,21 @@ interface UserContextType {
   activeAddress: UserAddress | null;
   isAuthModalOpen: boolean;
   setIsAuthModalOpen: (open: boolean) => void;
-  authModalTab: "signin" | "signup";
-  setAuthModalTab: (tab: "signin" | "signup") => void;
+  authModalTab: "signin" | "signup" | "verify";
+  setAuthModalTab: (tab: "signin" | "signup" | "verify") => void;
+  pendingVerificationEmail: string;
+  setPendingVerificationEmail: (email: string) => void;
+  lastGeneratedCode: string | null;
+  setLastGeneratedCode: (code: string | null) => void;
   isAddressModalOpen: boolean;
   setIsAddressModalOpen: (open: boolean) => void;
   isPersonalisationModalOpen: boolean;
   setIsPersonalisationModalOpen: (open: boolean) => void;
   personalizedProducts: Product[];
-  login: (email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
-  register: (name: string, email: string, password?: string, dietaryTags?: string[]) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password?: string) => Promise<{ success: boolean; needsVerification?: boolean; error?: string }>;
+  register: (name: string, email: string, password?: string, dietaryTags?: string[]) => Promise<{ success: boolean; verificationCode?: string; error?: string }>;
+  verifyEmail: (email: string, code: string) => Promise<{ success: boolean; error?: string }>;
+  resendCode: (email: string) => Promise<{ success: boolean; code?: string; error?: string }>;
   logout: () => void;
   addAddress: (address: Omit<UserAddress, "id" | "user_id">) => Promise<{ success: boolean; error?: string }>;
   setDefaultAddress: (addressId: number) => Promise<{ success: boolean; error?: string }>;
@@ -28,19 +34,31 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+const LOCAL_STORAGE_USER_KEY = "cartwise_current_user_id";
+
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState<"signin" | "signup">("signin");
+  const [authModalTab, setAuthModalTab] = useState<"signin" | "signup" | "verify">("signin");
+  const [pendingVerificationEmail, setPendingVerificationEmail] = useState("");
+  const [lastGeneratedCode, setLastGeneratedCode] = useState<string | null>(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isPersonalisationModalOpen, setIsPersonalisationModalOpen] = useState(false);
   const [personalizedProducts, setPersonalizedProducts] = useState<Product[]>([]);
 
-  // Load initial default VIP user (Maya Sterling) on mount
+  // Load saved session or default VIP user (Maya Sterling) on mount
   useEffect(() => {
     async function loadUser() {
       try {
-        const res = await fetch("/api/auth?userId=1");
+        let storedId = 1;
+        if (typeof window !== "undefined") {
+          const saved = localStorage.getItem(LOCAL_STORAGE_USER_KEY);
+          if (saved) {
+            storedId = Number(saved) || 1;
+          }
+        }
+
+        const res = await fetch(`/api/auth?userId=${storedId}`);
         const data = await res.json();
         if (data.success && data.user) {
           setUser(data.user);
@@ -51,6 +69,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
     loadUser();
   }, []);
+
+  // Save session when user changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (user?.id) {
+        localStorage.setItem(LOCAL_STORAGE_USER_KEY, String(user.id));
+      } else {
+        localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
+      }
+    }
+  }, [user]);
 
   // Load personalized products whenever user changes or updates preferences
   const refreshPersonalized = async () => {
@@ -83,6 +112,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ action: "login", email, password }),
       });
       const data = await res.json();
+
+      if (data.needsVerification) {
+        setPendingVerificationEmail(email);
+        setAuthModalTab("verify");
+        return {
+          success: false,
+          needsVerification: true,
+          error: "Please enter your 6-digit email verification code.",
+        };
+      }
+
       if (data.success && data.user) {
         setUser(data.user);
         setIsAuthModalOpen(false);
@@ -102,10 +142,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ action: "register", name, email, password, dietaryTags }),
       });
       const data = await res.json();
-      if (data.success && data.user) {
-        setUser(data.user);
-        setIsAuthModalOpen(false);
-        return { success: true };
+
+      if (data.success) {
+        setPendingVerificationEmail(email);
+        if (data.verificationCode) {
+          setLastGeneratedCode(data.verificationCode);
+        }
+        // Switch to verification tab so user enters OTP
+        setAuthModalTab("verify");
+        return { success: true, verificationCode: data.verificationCode };
       }
       return { success: false, error: data.error || "Registration failed." };
     } catch (e: any) {
@@ -113,8 +158,54 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const verifyEmail = async (email: string, code: string) => {
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "verify", email, code }),
+      });
+      const data = await res.json();
+
+      if (data.success && data.user) {
+        setUser(data.user);
+        setIsAuthModalOpen(false);
+        setLastGeneratedCode(null);
+        setPendingVerificationEmail("");
+        return { success: true };
+      }
+      return { success: false, error: data.error || "Verification failed." };
+    } catch (e: any) {
+      return { success: false, error: e.message || "Network error" };
+    }
+  };
+
+  const resendCode = async (email: string) => {
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "resend", email }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        if (data.code) {
+          setLastGeneratedCode(data.code);
+        }
+        return { success: true, code: data.code };
+      }
+      return { success: false, error: data.error || "Failed to resend code." };
+    } catch (e: any) {
+      return { success: false, error: e.message || "Network error" };
+    }
+  };
+
   const logout = () => {
     setUser(null);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
+    }
   };
 
   const addAddress = async (addressData: Omit<UserAddress, "id" | "user_id">) => {
@@ -212,6 +303,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setIsAuthModalOpen,
         authModalTab,
         setAuthModalTab,
+        pendingVerificationEmail,
+        setPendingVerificationEmail,
+        lastGeneratedCode,
+        setLastGeneratedCode,
         isAddressModalOpen,
         setIsAddressModalOpen,
         isPersonalisationModalOpen,
@@ -219,6 +314,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         personalizedProducts,
         login,
         register,
+        verifyEmail,
+        resendCode,
         logout,
         addAddress,
         setDefaultAddress,

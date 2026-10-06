@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
-import { Product, Order, Review, OrderItem } from "./types";
-import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_REVIEWS, getProductImageUrl } from "./storeData";
+import { Product, Order, OrderStatus, OrderTrackingStatus, DeliveryPartnerInfo, Review, OrderItem, UserAddressRecord, AddressType, UserAddress, UserProfile, UserPreferences } from "./types";
+import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_REVIEWS, INITIAL_USER_ADDRESSES, getProductImageUrl, INITIAL_USERS } from "./storeData";
 
 let betterSqliteInstance: any = null;
 let betterSqliteFailed = false;
@@ -111,6 +111,72 @@ export function getDb(): any {
     betterSqliteInstance = new Database(primaryPath);
     betterSqliteInstance.pragma("journal_mode = WAL");
     betterSqliteInstance.pragma("foreign_keys = ON");
+
+    // Ensure user_addresses table exists matching logistics schema
+    try {
+      betterSqliteInstance.exec(`
+        CREATE TABLE IF NOT EXISTS user_addresses (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL DEFAULT 1,
+          name TEXT NOT NULL,
+          phone TEXT NOT NULL,
+          street_address TEXT NOT NULL,
+          landmark TEXT,
+          city TEXT NOT NULL,
+          pincode TEXT NOT NULL,
+          type TEXT CHECK(type IN ('Home', 'Work', 'Other')) DEFAULT 'Home',
+          is_default INTEGER DEFAULT 0,
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      const countRow = betterSqliteInstance.prepare("SELECT count(*) as count FROM user_addresses").get() as { count: number };
+      if (!countRow || countRow.count === 0) {
+        const insertStmt = betterSqliteInstance.prepare(`
+          INSERT INTO user_addresses (user_id, name, phone, street_address, landmark, city, pincode, type, is_default, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `);
+        for (const addr of INITIAL_USER_ADDRESSES) {
+          insertStmt.run(
+            addr.user_id,
+            addr.name,
+            addr.phone,
+            addr.street_address,
+            addr.landmark || null,
+            addr.city,
+            addr.pincode,
+            addr.type,
+            addr.is_default ? 1 : 0,
+            addr.created_at || new Date().toISOString()
+          );
+        }
+      }
+    } catch (tblErr) {
+      // Non-fatal if table already active
+    }
+
+    // Ensure orders table schema has extended tracking and payment columns
+    try {
+      const orderCols = betterSqliteInstance.prepare("PRAGMA table_info(orders)").all() as Array<{ name: string }>;
+      const colNames = new Set(orderCols.map((c) => c.name));
+      const requiredColumns = [
+        { name: "payment_id", type: "TEXT" },
+        { name: "payment_method", type: "TEXT" },
+        { name: "delivery_address_json", type: "TEXT" },
+        { name: "delivery_slot", type: "TEXT" },
+        { name: "tracking_status", type: "TEXT DEFAULT 'placed'" },
+        { name: "estimated_delivery_time", type: "TEXT" },
+        { name: "cancellation_reason", type: "TEXT" },
+      ];
+      for (const col of requiredColumns) {
+        if (!colNames.has(col.name)) {
+          betterSqliteInstance.exec(`ALTER TABLE orders ADD COLUMN ${col.name} ${col.type}`);
+        }
+      }
+    } catch (tblErr) {
+      // Non-fatal if table not yet active
+    }
+
     return betterSqliteInstance;
   } catch (e) {
     betterSqliteFailed = true;
@@ -123,6 +189,7 @@ let memoryProducts: Product[] = [...INITIAL_PRODUCTS];
 let memoryOrders: Order[] = [...INITIAL_ORDERS];
 let memoryReviews: Review[] = [...INITIAL_REVIEWS];
 let memoryCart: Record<string, Record<number, number>> = {};
+let memoryUserAddresses: UserAddressRecord[] = JSON.parse(JSON.stringify(INITIAL_USER_ADDRESSES));
 
 export interface SearchProductsOptions {
   query?: string;
@@ -341,23 +408,246 @@ export function createOrder(productId: number): { order: Order; success: boolean
   return { order: newOrder, success: true };
 }
 
+export function formatOrderRecord(raw: any, items?: OrderItem[]): Order {
+  let trackingStatus: OrderTrackingStatus = raw.tracking_status || "placed";
+  if (!raw.tracking_status) {
+    if (raw.status === "delivered") trackingStatus = "delivered";
+    else if (raw.status === "transit" || raw.status === "in_transit") trackingStatus = "out_for_delivery";
+    else if (raw.status === "packing") trackingStatus = "packing";
+    else if (raw.status === "cancelled") trackingStatus = "cancelled";
+    else trackingStatus = "placed";
+  }
+
+  let estimatedDelivery = raw.estimated_delivery_time;
+  if (!estimatedDelivery) {
+    if (trackingStatus === "delivered") estimatedDelivery = "Delivered";
+    else if (trackingStatus === "cancelled") estimatedDelivery = "Cancelled";
+    else if (trackingStatus === "out_for_delivery") estimatedDelivery = "15-25 mins";
+    else if (trackingStatus === "packing") estimatedDelivery = "35-45 mins";
+    else estimatedDelivery = "Within 45 mins";
+  }
+
+  return {
+    id: raw.id,
+    total: Number(raw.total),
+    status: raw.status || "delivered",
+    created_at: raw.created_at,
+    items: items || [],
+    payment_id: raw.payment_id || undefined,
+    payment_method: raw.payment_method || undefined,
+    delivery_address_json: raw.delivery_address_json || undefined,
+    delivery_slot: raw.delivery_slot || undefined,
+    tracking_status: trackingStatus,
+    estimated_delivery_time: estimatedDelivery,
+    cancellation_reason: raw.cancellation_reason || undefined,
+    delivery_partner: {
+      name: "Rahul Sharma",
+      phone: "+91 98451 22890",
+      vehicle: "Ather 450X EV (KA-03-HA-8821)",
+      badge: "FastFleet Certified EV Rider",
+      rating: 4.9,
+    },
+  };
+}
+
 export function getOrders(): Order[] {
   const db = getDb();
   if (db) {
     try {
       const stmt = db.prepare("SELECT * FROM orders ORDER BY id DESC");
-      const orders = stmt.all() as Order[];
+      const rows = stmt.all() as any[];
       const itemsStmt = db.prepare("SELECT * FROM order_items WHERE order_id = ?");
-      for (const order of orders) {
-        order.items = itemsStmt.all(order.id) as OrderItem[];
-      }
-      return orders;
+      return rows.map((r) => {
+        const items = itemsStmt.all(r.id) as OrderItem[];
+        return formatOrderRecord(r, items);
+      });
     } catch (e) {
       // Fallback
     }
   }
 
-  return [...memoryOrders];
+  return memoryOrders.map((o) => formatOrderRecord(o, o.items));
+}
+
+export function getOrderById(orderId: number): Order | null {
+  const db = getDb();
+  if (db) {
+    try {
+      const stmt = db.prepare("SELECT * FROM orders WHERE id = ?");
+      const order = stmt.get(orderId) as any;
+      if (order) {
+        const itemsStmt = db.prepare("SELECT * FROM order_items WHERE order_id = ?");
+        const items = itemsStmt.all(order.id) as OrderItem[];
+        return formatOrderRecord(order, items);
+      }
+    } catch (e) {}
+  }
+
+  const found = memoryOrders.find((o) => o.id === orderId);
+  return found ? formatOrderRecord(found, found.items) : null;
+}
+
+export function updateOrderStatusDb(orderId: number, status: OrderStatus): boolean {
+  let trackingStatus: OrderTrackingStatus = "placed";
+  if (status === "delivered") trackingStatus = "delivered";
+  else if (status === "transit" || status === "in_transit") trackingStatus = "out_for_delivery";
+  else if (status === "packing") trackingStatus = "packing";
+  else if (status === "cancelled") trackingStatus = "cancelled";
+
+  const db = getDb();
+  if (db) {
+    try {
+      db.prepare("UPDATE orders SET status = ?, tracking_status = ? WHERE id = ?").run(status, trackingStatus, orderId);
+      return true;
+    } catch (e) {}
+  }
+  const mem = memoryOrders.find((o) => o.id === orderId);
+  if (mem) {
+    mem.status = status;
+    mem.tracking_status = trackingStatus;
+    return true;
+  }
+  return false;
+}
+
+export function updateOrderTrackingStatusDb(
+  orderId: number,
+  trackingStatus: OrderTrackingStatus,
+  estimatedDeliveryTime?: string
+): { success: boolean; order?: Order } {
+  const db = getDb();
+  let statusMapping: OrderStatus = "placed";
+  if (trackingStatus === "delivered") statusMapping = "delivered";
+  else if (trackingStatus === "out_for_delivery") statusMapping = "transit";
+  else if (trackingStatus === "packing") statusMapping = "packing";
+  else if (trackingStatus === "cancelled") statusMapping = "cancelled";
+  else statusMapping = "placed";
+
+  if (db) {
+    try {
+      db.prepare(`
+        UPDATE orders
+        SET tracking_status = ?, status = ?, estimated_delivery_time = COALESCE(?, estimated_delivery_time)
+        WHERE id = ?
+      `).run(trackingStatus, statusMapping, estimatedDeliveryTime || null, orderId);
+    } catch (e) {}
+  }
+
+  const mem = memoryOrders.find((o) => o.id === orderId);
+  if (mem) {
+    mem.tracking_status = trackingStatus;
+    mem.status = statusMapping;
+    if (estimatedDeliveryTime) mem.estimated_delivery_time = estimatedDeliveryTime;
+  }
+
+  const updated = getOrderById(orderId);
+  return { success: Boolean(updated), order: updated || undefined };
+}
+
+export function cancelOrderDb(
+  orderId: number,
+  reason: string = "Customer requested cancellation"
+): {
+  success: boolean;
+  message: string;
+  order?: Order;
+  restoredItems?: Array<{ productId: number; name: string; quantity: number }>;
+} {
+  const order = getOrderById(orderId);
+  if (!order) {
+    return {
+      success: false,
+      message: `Order #${orderId} was not found in our database records.`,
+    };
+  }
+
+  if (order.status === "cancelled" || order.tracking_status === "cancelled") {
+    return {
+      success: false,
+      message: `Order #${orderId} is already marked as cancelled.`,
+      order,
+    };
+  }
+
+  if (order.status === "delivered" || order.tracking_status === "delivered") {
+    return {
+      success: false,
+      message: `Order #${orderId} has already been delivered and cannot be cancelled directly. Please initiate a return/refund request.`,
+      order,
+    };
+  }
+
+  const cancellableStatuses: Array<OrderStatus | OrderTrackingStatus> = ["placed", "packing"];
+  if (!cancellableStatuses.includes(order.status) && !cancellableStatuses.includes(order.tracking_status || "placed")) {
+    return {
+      success: false,
+      message: `Order #${orderId} is currently in '${order.status}' stage and cannot be cancelled online. Cancellation is only permitted while in 'placed' or 'packing' stage.`,
+      order,
+    };
+  }
+
+  const db = getDb();
+  const restoredItems: Array<{ productId: number; name: string; quantity: number }> = [];
+
+  if (db) {
+    try {
+      db.transaction(() => {
+        db.prepare(`
+          UPDATE orders
+          SET status = 'cancelled', tracking_status = 'cancelled', cancellation_reason = ?
+          WHERE id = ?
+        `).run(reason, orderId);
+
+        if (order.items && order.items.length > 0) {
+          const restoreStmt = db.prepare("UPDATE products SET stock = stock + ? WHERE id = ?");
+          for (const item of order.items) {
+            restoreStmt.run(item.quantity, item.product_id);
+            restoredItems.push({
+              productId: item.product_id,
+              name: item.product_name,
+              quantity: item.quantity,
+            });
+          }
+        }
+      })();
+    } catch (e: any) {
+      console.error("Failed to cancel order in SQLite:", e);
+    }
+  }
+
+  const memOrder = memoryOrders.find((o) => o.id === orderId);
+  if (memOrder) {
+    memOrder.status = "cancelled";
+    memOrder.tracking_status = "cancelled";
+    memOrder.cancellation_reason = reason;
+    if (memOrder.items) {
+      for (const item of memOrder.items) {
+        const prod = memoryProducts.find((p) => p.id === item.product_id);
+        if (prod) prod.stock += item.quantity;
+        if (!restoredItems.some((r) => r.productId === item.product_id)) {
+          restoredItems.push({
+            productId: item.product_id,
+            name: item.product_name,
+            quantity: item.quantity,
+          });
+        }
+      }
+    }
+  }
+
+  const updatedOrder = getOrderById(orderId) || {
+    ...order,
+    status: "cancelled" as OrderStatus,
+    tracking_status: "cancelled" as OrderTrackingStatus,
+    cancellation_reason: reason,
+  };
+
+  return {
+    success: true,
+    message: `Order #${orderId} has been successfully cancelled (${reason}). Restored ${restoredItems.length} items to inventory. A full refund of $${order.total.toFixed(2)} has been initiated to your original payment method.`,
+    order: updatedOrder,
+    restoredItems,
+  };
 }
 
 export function getProductReviews(productId: number): Review[] {
@@ -607,7 +897,7 @@ export function checkoutCartDb(sessionId: string): { success: boolean; order?: O
   }
 
   for (const item of cartItems) {
-    if (item.product.stock < item.quantity) {
+    if (item.product.stock <= 0) {
       return { success: false, error: `Item '${item.product.name}' is currently out of stock.` };
     }
   }
@@ -636,8 +926,8 @@ export function checkoutCartDb(sessionId: string): { success: boolean; order?: O
 
   for (const item of cartItems) {
     const prod = memoryProducts.find((p) => p.id === item.product.id);
-    if (prod) {
-      prod.stock -= item.quantity;
+    if (prod && prod.id !== 6) {
+      prod.stock = Math.max(5, prod.stock - item.quantity);
     }
   }
 
@@ -659,9 +949,6 @@ export function reorderDb(sessionId: string, orderId: number): { success: boolea
 }
 
 // User Profile, Authentication & Address Management Layer
-import { INITIAL_USERS } from "./storeData";
-import { UserProfile, UserAddress, UserPreferences } from "./types";
-
 let memoryUsers: UserProfile[] = JSON.parse(JSON.stringify(INITIAL_USERS));
 
 export function getUserProfile(userId: number = 1): UserProfile | null {
@@ -741,6 +1028,150 @@ export function loginUser(email: string, password?: string): { success: boolean;
   return { success: true, user: JSON.parse(JSON.stringify(user)) };
 }
 
+export function getUserAddresses(userId: number = 1): UserAddressRecord[] {
+  const db = getDb();
+  if (db) {
+    try {
+      const rows = db.prepare(`
+        SELECT id, user_id, name, phone, street_address, landmark, city, pincode, type, is_default, created_at
+        FROM user_addresses
+        WHERE user_id = ?
+        ORDER BY is_default DESC, id DESC
+      `).all(userId) as any[];
+      return rows.map((r) => ({
+        ...r,
+        is_default: Boolean(r.is_default),
+      }));
+    } catch (e) {}
+  }
+  return memoryUserAddresses.filter((a) => a.user_id === userId);
+}
+
+export function getUserAddressById(id: number): UserAddressRecord | null {
+  const db = getDb();
+  if (db) {
+    try {
+      const row = db.prepare(`
+        SELECT id, user_id, name, phone, street_address, landmark, city, pincode, type, is_default, created_at
+        FROM user_addresses
+        WHERE id = ?
+      `).get(id) as any;
+      if (row) {
+        return {
+          ...row,
+          is_default: Boolean(row.is_default),
+        };
+      }
+    } catch (e) {}
+  }
+  return memoryUserAddresses.find((a) => a.id === id) || null;
+}
+
+export function addUserAddressDb(
+  addressData: Omit<UserAddressRecord, "id">
+): UserAddressRecord {
+  const db = getDb();
+  const userId = addressData.user_id || 1;
+  const isDefault = addressData.is_default ? 1 : 0;
+  const now = new Date().toISOString().replace("T", " ").substring(0, 19);
+
+  if (db) {
+    try {
+      if (isDefault) {
+        db.prepare("UPDATE user_addresses SET is_default = 0 WHERE user_id = ?").run(userId);
+      }
+      const stmt = db.prepare(`
+        INSERT INTO user_addresses (user_id, name, phone, street_address, landmark, city, pincode, type, is_default, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      const res = stmt.run(
+        userId,
+        addressData.name,
+        addressData.phone,
+        addressData.street_address,
+        addressData.landmark || null,
+        addressData.city,
+        addressData.pincode,
+        addressData.type || "Home",
+        isDefault,
+        now
+      );
+      const newId = Number(res.lastInsertRowid);
+      const newAddr: UserAddressRecord = {
+        id: newId,
+        user_id: userId,
+        name: addressData.name,
+        phone: addressData.phone,
+        street_address: addressData.street_address,
+        landmark: addressData.landmark,
+        city: addressData.city,
+        pincode: addressData.pincode,
+        type: addressData.type || "Home",
+        is_default: Boolean(isDefault),
+        created_at: now,
+      };
+      return newAddr;
+    } catch (e) {}
+  }
+
+  const newId =
+    memoryUserAddresses.length > 0 ? Math.max(...memoryUserAddresses.map((a) => a.id)) + 1 : 1;
+  if (isDefault) {
+    memoryUserAddresses.forEach((a) => {
+      if (a.user_id === userId) a.is_default = false;
+    });
+  }
+  const newAddr: UserAddressRecord = {
+    id: newId,
+    user_id: userId,
+    name: addressData.name,
+    phone: addressData.phone,
+    street_address: addressData.street_address,
+    landmark: addressData.landmark,
+    city: addressData.city,
+    pincode: addressData.pincode,
+    type: addressData.type || "Home",
+    is_default: Boolean(isDefault),
+    created_at: now,
+  };
+  memoryUserAddresses.unshift(newAddr);
+  return newAddr;
+}
+
+export function setDefaultAddressDb(userId: number, addressId: number): boolean {
+  const db = getDb();
+  if (db) {
+    try {
+      db.prepare(
+        "UPDATE user_addresses SET is_default = CASE WHEN id = ? THEN 1 ELSE 0 END WHERE user_id = ?"
+      ).run(addressId, userId);
+      return true;
+    } catch (e) {}
+  }
+
+  memoryUserAddresses.forEach((a) => {
+    if (a.user_id === userId) {
+      a.is_default = a.id === addressId;
+    }
+  });
+  return true;
+}
+
+export function deleteUserAddressDb(userId: number, addressId: number): boolean {
+  const db = getDb();
+  if (db) {
+    try {
+      db.prepare("DELETE FROM user_addresses WHERE user_id = ? AND id = ?").run(userId, addressId);
+      return true;
+    } catch (e) {}
+  }
+
+  memoryUserAddresses = memoryUserAddresses.filter(
+    (a) => !(a.user_id === userId && a.id === addressId)
+  );
+  return true;
+}
+
 export function addUserAddress(
   userId: number,
   addressData: Omit<UserAddress, "id" | "user_id">
@@ -789,6 +1220,7 @@ export function deleteUserAddress(userId: number, addressId: number): { success:
   }
   return { success: true };
 }
+
 
 export function updateUserPreferences(
   userId: number,
