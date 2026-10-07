@@ -11,10 +11,11 @@ import {
 } from "../db";
 import { generateInvoiceData } from "../invoice";
 import { AssistantMessage, ChatMessage, Product, AgentTrace } from "../types";
+import { handleMockChat, handleMockImage } from "./mock";
 import fs from "fs";
 import path from "path";
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash";
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta";
 
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
@@ -226,16 +227,32 @@ async function executeTool(name: string, args: any, sessionId: string = "default
   try {
     switch (name) {
       case "search_catalog": {
+        let cleanQuery = args.query ? String(args.query).trim() : undefined;
+        let maxPrice = args.maxPrice !== undefined ? Number(args.maxPrice) : undefined;
+        let minRating = args.minRating !== undefined ? Number(args.minRating) : undefined;
+
+        // Auto-extract price from query if LLM didn't split it into maxPrice
+        if (cleanQuery) {
+          const pMatch = cleanQuery.match(/(?:under|below|less than|within|budget)\s*(?:rs\.?|inr|₹)?\s*(\d+[\d,]*)/i);
+          if (pMatch && maxPrice === undefined) {
+            maxPrice = Number(pMatch[1].replace(/,/g, ""));
+          }
+          cleanQuery = cleanQuery
+            .replace(/(?:under|below|less than|within|budget)\s*(?:rs\.?|inr|₹)?\s*\d+[\d,]*/gi, "")
+            .replace(/(?:rs\.?|inr|₹|rupees|bucks)\b/gi, "")
+            .trim();
+          if (cleanQuery.length === 0) cleanQuery = undefined;
+        }
+
         const queryRes = searchProducts({
-          query: args.query,
+          query: cleanQuery,
           category: args.category,
           subCategory: args.subCategory,
-          maxPrice: args.maxPrice !== undefined ? Number(args.maxPrice) : undefined,
+          maxPrice,
           isOrganic: args.isOrganic !== undefined ? Boolean(args.isOrganic) : undefined,
-          minRating: args.minRating !== undefined ? Number(args.minRating) : undefined,
+          minRating,
           limit: args.limit !== undefined ? Number(args.limit) : 8,
         });
-
 
         return {
           toolName: name,
@@ -658,12 +675,12 @@ function formatAssistantPayloadFromToolResult(params: {
       type: "empty_state",
       reason:
         finalNarrative ||
-        `We couldn't find any products matching "${userText}". Try adjusting price, category, or organic filters.`,
+        `We couldn't find any products matching "${userText}". Try adjusting price, category, or search filters.`,
       suggestions: [
-        "Organic Raw Honey",
-        "Rolled Oats",
-        "Extra Virgin Olive Oil",
-        "Organic Almonds",
+        "Motorola edge 70 Fusion",
+        "Apple iPhone 15",
+        "ASUS Vivobook 15 OLED",
+        "Amul Pure Cow Ghee",
       ],
     };
   }
@@ -1080,108 +1097,7 @@ async function callGeminiChat(messages: ChatMessage[], apiKey: string): Promise<
 // Resilient Deterministic Engine (Zero-Downtime Offline / Quota Fallback)
 // ---------------------------------------------------------------------------
 async function executeDeterministicAgent(messages: ChatMessage[]): Promise<AssistantMessage> {
-  const latestUserMsg = [...messages].reverse().find((m) => m.role === "user");
-  const userText = (latestUserMsg?.content || "").trim();
-  const lower = userText.toLowerCase();
-
-  // 1. Order Tracking intent: "#1040", "order 1040", "track order"
-  const orderTrackMatch = userText.match(/(?:track|order|where is).*?#?(\d+)/i) || userText.match(/#?(\d{4})/);
-  if (orderTrackMatch && (lower.includes("track") || lower.includes("where") || lower.includes("status") || lower.includes("order"))) {
-    const orderId = Number(orderTrackMatch[1]);
-    const execRes = await executeTool("track_specific_order", { order_id: orderId });
-    return formatAssistantPayloadFromToolResult({
-      userText,
-      toolName: "track_specific_order",
-      toolExec: execRes,
-      collectedProducts: [],
-      executedSql: "",
-      lastFilter: { order_id: orderId },
-      traceSteps: [execRes.traceStep],
-    });
-  }
-
-  // 2. Cancellation intent: "cancel order 1041"
-  const cancelMatch = userText.match(/cancel.*?#?(\d+)/i);
-  if (cancelMatch) {
-    const orderId = Number(cancelMatch[1]);
-    const execRes = await executeTool("cancel_order", { order_id: orderId, reason: "Cancelled via CartWise Assistant" });
-    return formatAssistantPayloadFromToolResult({
-      userText,
-      toolName: "cancel_order",
-      toolExec: execRes,
-      collectedProducts: [],
-      executedSql: "",
-      lastFilter: { order_id: orderId },
-      traceSteps: [execRes.traceStep],
-    });
-  }
-
-  // 3. Invoice intent: "invoice", "receipt", "bill for 1039"
-  const invoiceMatch = userText.match(/(?:invoice|receipt|bill).*?#?(\d+)/i);
-  if (invoiceMatch) {
-    const orderId = Number(invoiceMatch[1]);
-    const execRes = await executeTool("generate_invoice", { order_id: orderId });
-    return formatAssistantPayloadFromToolResult({
-      userText,
-      toolName: "generate_invoice",
-      toolExec: execRes,
-      collectedProducts: [],
-      executedSql: "",
-      lastFilter: { order_id: orderId },
-      traceSteps: [execRes.traceStep],
-    });
-  }
-
-  // 4. Comparison intent: "compare honey", "compare oats"
-  if (lower.includes("compare")) {
-    const cleanQuery = lower.replace(/compare|between|vs|please/g, "").trim();
-    const res = searchProducts({ query: cleanQuery || "organic", limit: 3 });
-    if (res.products.length >= 2) {
-      const compProducts = res.products.slice(0, 3);
-      const compPoints: Record<string, string[]> = {
-        Price: compProducts.map((p) => `₹${p.price.toFixed(2)}`),
-        "Organic Certified": compProducts.map((p) => (p.is_organic ? "100% Organic" : "Standard Natural")),
-        "Customer Rating": compProducts.map((p) => `★ ${p.average_rating?.toFixed(1) || "5.0"} (${p.review_count || 0} reviews)`),
-        Availability: compProducts.map((p) => (p.stock > 0 ? `In Stock (${p.stock} units)` : "Out of Stock")),
-      };
-      return {
-        type: "compare",
-        products: compProducts,
-        comparisonPoints: compPoints,
-      };
-    }
-  }
-
-  // 5. Product catalog search
-  let maxPrice: number | undefined;
-  const priceMatch =
-    userText.match(/(?:under|below|less than)\s*(?:₹|rs\.?|inr|\$)?\s*(\d+)/i) ||
-    userText.match(/(?:₹|rs\.?|inr|\$)\s*(\d+)/i);
-  if (priceMatch) maxPrice = Number(priceMatch[1]);
-
-  const isOrganic = lower.includes("organic") ? true : undefined;
-  const cleanSearch = lower
-    .replace(/(?:under|below|less than)\s*(?:₹|rs\.?|inr|\$)?\s*\d+/gi, "")
-    .replace(/(?:₹|rs\.?|inr|\$)\s*\d+/gi, "")
-    .replace(/show\s*me|i\s*want|looking\s*for|find|give\s*me|buy/gi, "")
-    .trim();
-
-  const searchExec = await executeTool("search_catalog", {
-    query: cleanSearch || undefined,
-    maxPrice,
-    isOrganic,
-    limit: 6,
-  });
-
-  return formatAssistantPayloadFromToolResult({
-    userText,
-    toolName: "search_catalog",
-    toolExec: searchExec,
-    collectedProducts: searchExec.result.products || [],
-    executedSql: searchExec.result.sql || "",
-    lastFilter: { query: cleanSearch, maxPrice, isOrganic },
-    traceSteps: [searchExec.traceStep],
-  });
+  return handleMockChat(messages);
 }
 
 // ---------------------------------------------------------------------------
