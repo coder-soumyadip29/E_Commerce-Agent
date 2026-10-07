@@ -1,166 +1,222 @@
-# CartWise
+# Cartwise Plus — Next-Gen AI-Powered E-Commerce Storefront
 
-## 1. PROJECT OVERVIEW
-CartWise is a Next.js-based e-commerce platform integrated with a multi-agent AI shopping assistant powered by Groq and Gemini. The goal is to provide users with a conversational interface capable of semantic product searches, image recognition, and product comparison, all backed by a deterministic SQLite catalog.
+[![Next.js](https://img.shields.io/badge/Next.js-16.0-black?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.0-61dafb?logo=react)](https://react.dev/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
+[![SQLite](https://img.shields.io/badge/SQLite-WAL_Mode-003B57?logo=sqlite)](https://www.sqlite.org/)
+[![Google Gemini](https://img.shields.io/badge/Gemini_LLM-Tool_Calling-4285F4?logo=google)](https://ai.google.dev/)
 
-Currently, the application runs a fully featured mock agent (`AGENT_MODE=mock`) that simulates the intended AI functionality using hardcoded heuristics mapped to actual SQLite data. The shopping cart, checkout, order history, database, and responsive UI components are completely built and functional.
+**Cartwise Plus** is a luxury, enterprise-grade e-commerce storefront integrated with an autonomous multi-agent AI Shopping Assistant. Built with Next.js 16, React 19, and Tailwind CSS, it blends a sleek **Onyx Black & Amber Gold** visual identity with real-time catalog search, visual product recognition, multilingual voice synthesis, atomic cart checkout, and 15-minute express delivery tracking.
 
-## 2. STATUS & FEATURES
+---
 
-### Core Features (Completed)
-- **Real Gemini LLM with Tool Calling (`AGENT_MODE=real`)**:
-  - Multi-turn autonomous tool execution using Google Gemini (`gemini-3-flash-preview`).
-  - Active Tools: `search_catalog`, `get_product_details`, `get_user_orders`, `add_to_cart`, `calculate_discount`.
-  - Zero hallucination grounded directly to the local SQLite database catalog.
-  - Transparent Agent Trace modal displaying internal reasoning, function arguments, and execution results.
-- **Multimodal Vision (Search by Image)**:
-  - Real-time image recognition using Gemini Vision API.
-  - Extracts dietary attributes (organic, gluten-free, vegan), tags, allergens, and matches inventory.
-  - Non-product detection (e.g. animals, objects) returning clean helpful guidance with zero false matches.
-- **Multilingual Voice Search (STT & TTS)**:
-  - **Speech-to-Text (STT)**: Web Speech Recognition API supporting **English (`en-IN`)**, **Hindi (`hi-IN`)**, and **Bengali (`bn-IN`)** with live animated recording waveforms.
-  - **Text-to-Speech (TTS)**: Web Speech Synthesis API with auto-speak toggle and bubble listen buttons in English, Hindi, and Bengali.
-- **Full 10-Category & 26-Subcategory Grocery Catalog**:
-  - Fruits & Vegetables, Staples, Spices & Masalas, Oils & Ghee, Dry Fruits & Nuts, Dairy & Eggs, Meat & Fish, Beverages, Snacks & Packaged Foods, Bakery & Breads.
-  - 105+ seeded products with realistic ratings, reviews, organic tags, and historic orders.
-- **Responsive E-Commerce UI**:
-  - Desktop & Mobile optimized layouts, 3-step checkout with atomic transactions, cart drawer, and order tracking.
+## ✨ 1. Key Features & Capabilities
 
-## 3. QUICK START
-```bash
-# 1. Install dependencies
-npm install
+### 🛒 Luxury Storefront & Real-World Product Catalog
+- **Luxury Black & Gold Theme**: Premium obsidian surfaces (`#0b0f17`), warm amber/gold accents (`#f59e0b` / `text-amber-400`), and crisp high-contrast cards.
+- **11 Broad Categories & Real-World Products**:
+  - ⚡ **For You** (Personalized Deals & Recommendations)
+  - 👕 **Fashion** (Designer Silk Sarees, Cotton Kurtas, Polo T-Shirts)
+  - 📱 **Mobiles** (Motorola edge 70 Fusion, Apple iPhone 15, Samsung Galaxy S24 Ultra)
+  - 💻 **Electronics** (ASUS Vivobook 15 OLED, TCL 43" 4K QLED TV, ANC Wireless Neckbands)
+  - 🔥 **Beauty** (Vitamin C Serum, 100% Pure Moroccan Argan Oil)
+  - 🏠 **Home & Living** (Handcrafted Teakwood Spoons, Ceramic Pots)
+  - 📺 **Appliances** (Air Fryers, Microwaves, Electric Kettles)
+  - 👶 **Toys, Baby & Kids** (Educational Wooden Blocks, Soft Toys)
+  - 💖 **Food & Health** (Cold-Extracted Raw Forest Honey, A2 Desi Cow Ghee)
+  - 🚗 **Auto Accessories** (High-Pressure Car Washers, Dash Cams)
+  - 🏆 **Sports & Fitness** (Neoprene Dumbbell Sets, Yoga Mats)
+- **Top Tech Deals Revealed**: Smooth horizontal carousel displaying flagship tech products and instant deal prices.
+- **Indian Rupee (`₹` / INR)**: All items, vouchers, cart calculations, and GST invoices formatted cleanly in Indian Rupees.
+- **Quick View Modal (`ProductDetailModal`)**: High-res image galleries, stock counters, verified review breakdowns, Cartwise Plus Assured badges, and instant "Ask AI about this item" actions.
 
-# 2. Setup Environment Variables
-cp .env.example .env
+---
 
-# 3. Seed the Database
-npm run db:seed
+### 🤖 Multi-Agent AI Shopping Copilot
+- **Deterministic Grounding**: Backed directly by SQLite store records—zero hallucinations or phantom products.
+- **Multi-Turn Chat & Tool Calling**: Search by natural language specifications (*"Find me a curved screen 5G smartphone under ₹30,000 with 12GB RAM"*).
+- **Instant Price Arbitrage & Promos**: Auto-applies voucher codes (e.g. `SAVE10` for flat 10% instant bank discounts).
+- **Multimodal Vision Search (Photo Lookup)**: Upload or snap product photos; the vision agent extracts attributes, checks inventory, and returns exact matches.
+- **Multilingual Voice Assistant (STT & TTS)**:
+  - **Speech-to-Text**: Real-time microphone listening supporting **English (`en-IN`)**, **Hindi (`hi-IN`)**, and **Bengali (`bn-IN`)**.
+  - **Text-to-Speech**: Instant natural voice reading with auto-speak toggles.
+- **Transparent Agent Trace Inspector**: View step-by-step SQL queries, parsed intents, and execution timings.
 
-# 4. Run the development server
-npm run dev
+---
 
-# 5. Run tests (optional)
-npm run test
-```
-To reset the database to a clean state at any time, just re-run:
-```bash
-npm run db:seed
-```
+### 📦 15-Minute Express Delivery & Live Order Tracking
+- **4-Stage Order Lifecycle**: Order Placed ➔ Packed & Inspected ➔ Out for Delivery ➔ Delivered.
+- **Live Countdown Timer**: Real-time minute & second arrival countdown.
+- **Delivery Partner Card**: Rider contact, vehicle registration, and OTP verification code.
+- **Satellite GPS Modal**: Simulated interactive real-time map with live delivery coordinates.
+- **GST Tax Invoices**: Downloadable and printable GST-compliant invoices with itemized taxes (CGST 9% + SGST 9%).
 
-## 4. ARCHITECTURE
+---
+
+### 📱 Full-Screen & Mobile Responsiveness
+- **Desktop & Ultra-Wide Monitors (≥1024px, 1440p, 4K)**: Fluid `max-w-[1600px]` width with dual-column grid (`8 cols` Storefront + `4 cols` Sticky Copilot).
+- **Adaptive 4-Column Card Grid**: Smoothly scales from 1 card on mobile to 4 cards on ultra-wide screens.
+- **Mobile Screens (<640px)**:
+  - Two-tier header: Monogram logo + cart/profile on row 1, full-width search on row 2.
+  - Mobile hamburger drawer with saved addresses and preferences.
+  - Segmented switcher pill (*Explore Products* ↔ *AI Assistant*).
+  - Touch-scrollable category ribbon with momentum scrolling.
+  - Safe bottom insets (`pb-24 sm:pb-8`) preventing obstruction by navigation bars.
+
+---
+
+## 🏗️ 2. Architecture & Tech Stack
 
 ```mermaid
 graph TD
-    UI[Next.js React UI] -->|REST JSON| API[Next.js API Routes]
-    API --> AgentLayer[Agent Layer /lib/agent]
-    AgentLayer -- AGENT_MODE=mock --> MockAgent[Mock Implementation]
-    AgentLayer -- AGENT_MODE=real --> RealAgent[Real LLM / Python Service]
-    MockAgent --> DB[(SQLite Database)]
+    UI[Next.js 16 + React 19 Client UI] -->|REST / JSON| API[Next.js API Routes /app/api]
+    API --> AgentLayer[AI Agent Layer /lib/agent]
+    AgentLayer -- AGENT_MODE=mock --> MockAgent[Deterministic Mock Engine]
+    AgentLayer -- AGENT_MODE=real --> RealAgent[Google Gemini 2.0 / Groq LLM]
+    MockAgent --> DB[(SQLite 3 Database WAL Mode)]
     RealAgent --> DB
-    API -->|Direct DB Access| DB
-```
-The `AGENT_MODE` environment variable dictates whether the application uses the deterministic mock engine (`mock`) or attempts to call real LLM APIs (`real`). If `AGENT_MODE=real` but no API keys are present, the system gracefully falls back to the mock engine to prevent crashes.
-
-## 5. FOLDER STRUCTURE
-```text
-cartwise/
-├── app/                  # Next.js App Router (Layout, Page, Global CSS, and API endpoints)
-├── components/           # Modular React UI components (Cart, Chat UI, Navigation)
-├── context/              # Client-side React context (CartContext)
-├── data/                 # Live runtime database storage (store.db)
-├── design/               # Reference HTML mockups and design assets
-├── docs/                 # Project documentation and audit reports
-├── lib/                  # Backend logic, DB clients, and Agent contracts
-│   └── agent/            # AI Agent orchestration layer (mock vs real)
-├── public/               # Static assets & public images
-├── reference/            # Mentor source files and pristine database seed scripts
-├── scripts/              # Setup and seeding utility scripts
-└── tests/                # Vitest automated API and database tests
+    API -->|Direct Transactions| DB
 ```
 
-## 6. DATABASE
-CartWise uses SQLite 3 (`better-sqlite3`) in WAL journal mode.
-
-**Tables:**
-- `products`: `id`, `name`, `category`, `price`, `description`, `is_organic`, `stock`
-- `reviews`: `id`, `product_id`, `rating`, `reviewer_name`, `review_text`
-- `orders`: `id`, `total`, `status`, `created_at`
-- `order_items`: `id`, `order_id`, `product_id`, `product_name`, `unit_price`, `quantity`
-- `cart_items`: `id`, `session_id`, `product_id`, `quantity`, `added_at`
-
-**Views:**
-- `ratings_summary`: Aggregates average rating and review counts per product.
-
-**Seed & Reset:**
-Database seeding and reset is handled via `npm run db:seed`, which executes `scripts/seed.ts` to wipe the existing tables and insert the clean reference data.
-
-## 7. API REFERENCE
-- **GET `/api/products`**
-  - Params: `q`, `category`, `is_organic`, `max_price`, `min_rating`, `id`
-  - Response: `{ "success": true, "products": [...] }`
-- **GET/POST/PATCH/DELETE `/api/cart`**
-  - POST body: `{ "productId": 1, "quantity": 1 }`
-  - Response: `{ "success": true, "cart": [...] }`
-- **GET `/api/orders`**
-  - Response: `{ "success": true, "orders": [...] }`
-- **POST `/api/checkout`**
-  - Response: `{ "success": true, "order": { "id": 1, "total": 14.99, ... } }`
-- **POST `/api/orders/[id]/reorder`**
-  - Response: `{ "success": true }`
-- **POST `/api/chat`**
-  - Body: `{ "messages": [{ "role": "user", "content": "organic honey" }] }`
-  - Response: `{ "success": true, "message": { "type": "products", ... } }`
-- **POST `/api/image-search`**
-  - Body: `{ "imageName": "honey.png" }`
-  - Response: `{ "success": true, "message": { "type": "image_analysis", ... } }`
-
-## 8. MESSAGE CONTRACT
-The UI relies on strict JSON structured messages from the Agent Layer.
-- **text**: `{ "type": "text", "text": "..." }`
-- **products**: `{ "type": "products", "products": [...], "text": "..." }`
-- **image_analysis**: `{ "type": "image_analysis", "tags": [...], "description": "...", "matchedProducts": [...] }`
-- **clarify**: `{ "type": "clarify", "question": "...", "options": [...] }`
-- **compare**: `{ "type": "compare", "products": [...], "comparisonPoints": { "Price": [...], ... } }`
-- **empty_state**: `{ "type": "empty_state", "reason": "...", "suggestions": [...] }`
-
-## 9. THE AGENT LAYER
-The Agent Layer is encapsulated in `lib/agent/`. It exposes two primary functions in `index.ts`:
-- `handleChat(messages: ChatMessage[]): Promise<AssistantMessage>`
-- `handleImage(imageInput: string | Buffer | File): Promise<AssistantMessage>`
-
-These functions must return one of the predefined structured message types from the contract above. To implement a real external Python service or LLM logic, you can modify `real.ts` to forward the payload and parse the structured output back into the required `AssistantMessage` interfaces.
-
-## 10. DESIGN
-The UI is strictly based on the mockups in the `/design` folder. 
-
-**Screen to Component Mapping:**
-| Design Folder | Implemented Component |
+| Layer | Technology |
 | :--- | :--- |
-| `cartwise_empty_chat_4a` / `cartwise_mobile_empty_chat_1` | `components/chat/EmptyChatPrompt.tsx` |
-| `cartwise_thinking_state_4b` / `cartwise_mobile_thinking_state_2` | `components/chat/ThinkingMessage.tsx` |
-| `cartwise_no_results_4c` / `cartwise_mobile_no_results_3` | `components/chat/EmptyStateMessage.tsx` |
-| `cartwise_image_search_*` / `cartwise_mobile_vision_*` | `components/chat/ImageAnalysisMessage.tsx` |
-| `cartwise_compare_products_1d` / `cartwise_mobile_compare_honeys` | `components/chat/CompareMessage.tsx` |
-| `cartwise_cart_*` / `cartwise_review_order_*` / `cartwise_order_confirmed_*` | `components/cart/CartDrawer.tsx` |
-| `cartwise_your_orders` / `cartwise_mobile_your_orders` | `components/orders/OrdersView.tsx` |
-| `cartwise_ai_product_search_agent_trace` | `components/chat/AgentTraceModal.tsx` |
+| **Framework** | [Next.js 16 (App Router)](https://nextjs.org/) |
+| **UI Library** | [React 19](https://react.dev/) + [Lucide React Icons](https://lucide.dev/) |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) with Black & Gold custom palette |
+| **Database** | [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) (WAL journal mode) |
+| **AI LLM / Vision** | [Google Gemini Flash / Groq SDK](https://ai.google.dev/) |
+| **Voice Engine** | Web Speech API (SpeechRecognition + SpeechSynthesis) |
 
-**Design Rules:** 
-- No invented data is permitted in the UI (e.g., no hallucinatory badges or tax sums).
-- Product names are **never** CSS truncated (`text-ellipsis` is explicitly avoided).
-- Action buttons **never** wrap awkwardly (`whitespace-nowrap`).
-- The chat input must dynamically resize and **never** cover scrollable content.
+---
 
-## 11. KNOWN ISSUES
-- **Mock Mode Image Recognition is Keyword/Filename-Based:** In `lib/agent/mock.ts`, `handleMockImage` uses filename checks (`honey`, `oats`, `elephant`, `oil`). If a user uploads an image named `photo_123.jpg`, it falls back to the generic product match rather than performing true visual embeddings (which requires `AGENT_MODE=real` with an active vision LLM key). (File: `lib/agent/mock.ts:220`)
+## 📂 3. Folder Structure
 
-## 12. TESTING
-Run the backend and API test suite using:
-```bash
-npm run test
+```text
+CartWise-main/
+├── app/
+│   ├── api/
+│   │   ├── addresses/route.ts        # Saved delivery addresses endpoint
+│   │   ├── cart/route.ts             # Atomic cart add/update/delete
+│   │   ├── chat/route.ts             # Multi-agent chat router & tool executor
+│   │   ├── checkout/route.ts         # Order creation & stock deduction
+│   │   ├── image-search/route.ts     # Visual product recognition
+│   │   ├── orders/route.ts           # Order history & status simulation
+│   │   ├── payment/                  # Razorpay / UPI order creation
+│   │   └── products/route.ts         # Categorized catalog lookup & filters
+│   ├── globals.css                   # Obsidian Black, Amber Gold & Tailwind tokens
+│   ├── layout.tsx                    # Root layout with metadata & fonts
+│   └── page.tsx                      # Main Storefront & Copilot dual-column page
+├── components/
+│   ├── Navbar.tsx                    # Two-tier header, mobile drawer & category ribbon
+│   ├── ChatInput.tsx                 # Multimodal input (text, photo upload, voice STT)
+│   ├── auth/
+│   │   ├── AddressModal.tsx          # Saved delivery addresses modal
+│   │   ├── AuthModal.tsx             # Login & VIP member registration modal
+│   │   └── PersonalisationModal.tsx  # Dietary & AI preferences modal
+│   ├── cart/
+│   │   ├── AddNewAddressModal.tsx    # Address addition dialog
+│   │   ├── CardSecurityModal.tsx     # 3D Secure / CVV payment modal
+│   │   ├── CartDrawer.tsx            # 3-step checkout drawer with UPI/Card/COD
+│   │   ├── DynamicUpiQrModal.tsx     # Dynamic UPI QR code with live timer
+│   │   └── InvoiceModal.tsx          # GST Tax Invoice download & print modal
+│   ├── chat/
+│   │   ├── AgentTraceModal.tsx       # Internal SQL & reasoning trace inspector
+│   │   ├── ClarifyMessage.tsx        # Interactive clarification buttons
+│   │   ├── CompareMessage.tsx        # Side-by-side product comparison tables
+│   │   ├── EmptyChatPrompt.tsx       # Suggested prompts & queries
+│   │   ├── EmptyStateMessage.tsx     # Empty state handler with suggestions
+│   │   ├── ImageAnalysisMessage.tsx  # Visual search results with dietary tags
+│   │   ├── ProductsMessage.tsx       # Interactive product cards in chat
+│   │   ├── SatelliteGpsModal.tsx     # Real-time satellite delivery tracking map
+│   │   ├── TextMessage.tsx           # Markdown-rendered assistant bubble
+│   │   ├── ThinkingMessage.tsx       # Animated thinking state indicator
+│   │   └── UserBubble.tsx            # User speech & text bubble
+│   ├── orders/
+│   │   └── OrdersView.tsx            # Order history, live progress bar & reorder
+│   └── product/
+│       └── ProductDetailModal.tsx    # Comprehensive product quick-view modal
+├── context/
+│   ├── CartContext.tsx               # Cart state, subtotal & active tab provider
+│   ├── UserContext.tsx               # User auth, active address & dietary preferences
+│   └── VoiceContext.tsx              # Multilingual STT & TTS speech engine
+├── data/
+│   └── store.db                      # SQLite 3 database file
+├── lib/
+│   ├── agent/                        # AI Agent orchestration (mock vs real)
+│   ├── db.ts                         # SQLite connection & schema initializer
+│   ├── invoice.ts                    # GST Invoice calculation & generation
+│   ├── storeData.ts                  # Reference seed catalog with 11 categories
+│   └── types.ts                      # TypeScript type definitions
+└── scripts/
+    └── seed.ts                       # Database reset & seeding script
 ```
-**Demo Vision Cases:**
-1. Upload `honey.png`: Returns "Organic Raw Honey" tags and 3 honey products.
-2. Upload `oats.png`: Returns "Whole Grain Oats" tags and 3 oat/granola products.
-3. Upload `elephant.png`: Returns a warning for a non-product image and 0 matches.
+
+---
+
+## 🚀 4. Quick Start Guide
+
+### Prerequisites
+- **Node.js**: v18.0.0 or higher (v20+ recommended)
+- **npm** or **pnpm**
+
+### Step-by-Step Setup
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/coder-soumyadip29/E_Commerce-Agent.git
+cd E_Commerce-Agent
+
+# 2. Install dependencies
+npm install
+
+# 3. Configure environment variables
+cp .env.example .env
+# Edit .env to set your GEMINI_API_KEY or keep AGENT_MODE=mock for local demo
+
+# 4. Seed the database with 11 real-world product categories
+npm run db:seed
+
+# 5. Start the local development server
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to view Cartwise Plus.
+
+---
+
+## ⚡ 5. Environment Configuration (`.env`)
+
+```env
+# Agent Execution Mode: 'mock' (standalone deterministic) or 'real' (Gemini / Groq LLM)
+AGENT_MODE=mock
+
+# Gemini API Key (Required if AGENT_MODE=real)
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Groq API Key (Optional alternative LLM provider)
+GROQ_API_KEY=your_groq_api_key_here
+
+# Next.js Port (Default 3000)
+PORT=3000
+```
+
+---
+
+## 🧪 6. Testing & Demo Scenarios
+
+### Multimodal Vision Search:
+1. **Raw Forest Honey**: Click the camera icon or select `Photo Search` ➔ matches *Organic Raw Forest Honey*.
+2. **Whole Grain Oats**: Upload `oats.png` ➔ returns gluten-free oats & breakfast granola.
+3. **Non-Product Images**: Upload an animal or object photo ➔ returns friendly advice with zero false matches.
+
+### Multilingual Voice Search:
+- Click the microphone icon in the chat bar.
+- Speak in **English** (*"Show me flagship 5G mobiles"*), **Hindi** (*"मुझे ऑर्गेनिक शहद और ड्राई फ्रूट्स दिखाओ"*), or **Bengali** (*"আমাকে সেরা ল্যাপটপ আর স্মার্টফোন দেখাও"*).
+
+### Promo Arbitrage & Discount:
+- Ask: *"Apply discount code SAVE10"* ➔ receives 10% instant price deduction.
+
+---
+
+## 📄 7. License
+This project is licensed under the **MIT License**.
