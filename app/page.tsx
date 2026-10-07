@@ -47,6 +47,11 @@ import {
   Mic,
   Plus,
   Tag,
+  ArrowRight,
+  Filter,
+  Eye,
+} from "lucide-react";
+
 // Dynamic Subcategory & Filter Presets for Each Category (Flipkart / Amazon style)
 const CATEGORY_CHIP_PRESETS: Record<string, Array<{ id: string; label: string; isRating?: boolean }>> = {
   all: [
