@@ -22,6 +22,7 @@ import { OrdersView } from "@/components/orders/OrdersView";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { AddressModal } from "@/components/auth/AddressModal";
 import { PersonalisationModal } from "@/components/auth/PersonalisationModal";
+import { ProductDetailModal } from "@/components/product/ProductDetailModal";
 import { ChatMessage, AssistantMessage, Product, OrderTrackingInfo } from "@/lib/types";
 import {
   Sparkles,
@@ -33,6 +34,7 @@ import {
   CheckCircle2,
   Clock,
   ChevronRight,
+  ChevronLeft,
   Heart,
   ShoppingCart,
   Star,
@@ -43,19 +45,187 @@ import {
   MessageSquare,
   Camera,
   Mic,
+  Plus,
+  Tag,
+  ArrowRight,
+  Filter,
+  Eye,
 } from "lucide-react";
 
+// Top Tech Deals for Cartwise Plus
+const CARTWISE_TOP_TECH_DEALS = [
+  {
+    id: 101,
+    title: "edge 70 Fusion",
+    offerTag: "From ₹29,999*",
+    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80",
+    category: "mobiles",
+    product: {
+      id: 101,
+      name: "Motorola edge 70 Fusion (12GB RAM, 256GB)",
+      category: "mobiles",
+      sub_category: "smartphones",
+      price: 29999,
+      description: "144Hz 3D Curved pOLED Display, Sony LYTIA 700C Camera with OIS, IP68 Protection",
+      is_organic: false,
+      stock: 40,
+      average_rating: 4.9,
+      review_count: 1420,
+      image_url: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80",
+    }
+  },
+  {
+    id: 201,
+    title: "Vivobook 15",
+    offerTag: "From ₹59,990*",
+    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=600&q=80",
+    category: "electronics",
+    product: {
+      id: 201,
+      name: "ASUS Vivobook 15 OLED Laptop (Intel Core i5 13th Gen, 16GB, 512GB SSD)",
+      category: "electronics",
+      sub_category: "laptops",
+      price: 59990,
+      description: "15.6-inch FHD OLED 600nits HDR display, Thin & Light 1.7kg, Windows 11 + MS Office 2024",
+      is_organic: false,
+      stock: 15,
+      average_rating: 4.9,
+      review_count: 310,
+      image_url: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=600&q=80",
+    }
+  },
+  {
+    id: 202,
+    title: "TCL 43\" QLED",
+    offerTag: "Just ₹25,999*",
+    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=600&q=80",
+    category: "electronics",
+    product: {
+      id: 202,
+      name: "TCL 43-inch 4K Ultra HD Smart QLED Google TV (43C645)",
+      category: "electronics",
+      sub_category: "televisions",
+      price: 25999,
+      description: "QLED 4K with Dolby Vision & Atmos, 120Hz DLG Game Master, Hands-Free Voice Control",
+      is_organic: false,
+      stock: 20,
+      average_rating: 4.8,
+      review_count: 420,
+      image_url: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=600&q=80",
+    }
+  },
+  {
+    id: 102,
+    title: "iPhone 15",
+    offerTag: "From ₹63,999*",
+    image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80",
+    category: "mobiles",
+    product: {
+      id: 102,
+      name: "Apple iPhone 15 (Blue, 128GB)",
+      category: "mobiles",
+      sub_category: "smartphones",
+      price: 63999,
+      description: "Dynamic Island, 48MP Main Camera, 2x Telephoto, All-Day Battery Life, USB-C Charging",
+      is_organic: false,
+      stock: 25,
+      average_rating: 4.9,
+      review_count: 3890,
+      image_url: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80",
+    }
+  },
+  {
+    id: 203,
+    title: "Neckbands",
+    offerTag: "Under ₹1,999",
+    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80",
+    category: "electronics",
+    product: {
+      id: 203,
+      name: "OnePlus Bullets Wireless Z2 Bluetooth Neckband (Acoustic Red)",
+      category: "electronics",
+      sub_category: "audio",
+      price: 1499,
+      description: "12.4mm Bass Drivers, 30 Hours Playtime, Fast 10-Min Charge = 20 Hours Battery, IP55",
+      is_organic: false,
+      stock: 100,
+      average_rating: 4.7,
+      review_count: 2150,
+      image_url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80",
+    }
+  },
+  {
+    id: 301,
+    title: "Most Loved (Fridge)",
+    offerTag: "From ₹16,990*",
+    image: "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?auto=format&fit=crop&w=600&q=80",
+    category: "appliances",
+    product: {
+      id: 301,
+      name: "LG 190L 4-Star Smart Inverter Direct Cool Single Door Refrigerator",
+      category: "appliances",
+      sub_category: "refrigerators",
+      price: 16990,
+      description: "Smart Inverter Compressor, Fastest in Ice Making, Toughened Glass Shelves, Works without Stabilizer",
+      is_organic: false,
+      stock: 15,
+      average_rating: 4.9,
+      review_count: 580,
+      image_url: "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?auto=format&fit=crop&w=600&q=80",
+    }
+  },
+  {
+    id: 105,
+    title: "K14 Plus 5G",
+    offerTag: "From ₹25,999*",
+    image: "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=600&q=80",
+    category: "mobiles",
+    product: {
+      id: 105,
+      name: "Realme K14 Plus 5G (Submarine Blue, 128GB)",
+      category: "mobiles",
+      sub_category: "smartphones",
+      price: 25999,
+      description: "Periscope Portrait Camera, Luxury Watch Design, 120Hz Curved Vision OLED Display",
+      is_organic: false,
+      stock: 50,
+      average_rating: 4.7,
+      review_count: 720,
+      image_url: "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=600&q=80",
+    }
+  },
+  {
+    id: 601,
+    title: "Raw Forest Honey",
+    offerTag: "Just ₹349*",
+    image: "/images/honey.png",
+    category: "food-health",
+    product: {
+      id: 601,
+      name: "Organic Raw Forest Honey (Cold-Extracted, 500g Jar)",
+      category: "food-health",
+      sub_category: "grocery-staples",
+      price: 349,
+      description: "Unheated, unfiltered wild forest honey directly extracted from certified natural reserves",
+      is_organic: true,
+      stock: 55,
+      average_rating: 5.0,
+      review_count: 342,
+      image_url: "/images/honey.png",
+    }
+  }
+];
+
 function MainApp() {
-  const { activeTab, selectedTrace, setSelectedTrace, addToCart, setIsCartOpen } = useCart();
+  const { activeTab, selectedTrace, setSelectedTrace, addToCart, setIsCartOpen, cart, updateQuantity } = useCart();
   const { speak, isAutoSpeakEnabled } = useVoice();
   const { user, personalizedProducts, setIsPersonalisationModalOpen } = useUser();
   const [mobileView, setMobileView] = useState<"store" | "copilot">("store");
 
-  // Initial screenshot match conversation state
   const initialUserMessage: ChatMessage = {
     id: "usr-init-1",
     role: "user",
-    content: "Find me top organic honey under $20 and track order #1040.",
+    content: "Find me top deals on edge 70 Fusion and organic honey.",
     timestamp: Date.now() - 1000 * 60 * 12,
   };
 
@@ -65,47 +235,58 @@ function MainApp() {
     timestamp: Date.now() - 1000 * 60 * 12 + 1500,
     payload: {
       type: "products",
-      text: "Found top organic honey under $20 and synced your live shipment dispatch:",
+      text: "Found top revealed tech & pantry deals with instant discount coupon SAVE10:",
       products: [
         {
-          id: 99,
-          name: "Organic Raw Forest Honey (500g)",
-          category: "snacks-packaged-foods",
-          sub_category: "spreads-sauces-pickles",
-          price: 14.99,
-          description: "Unfiltered cold-extracted raw wild forest honey from deep reserves",
+          id: 101,
+          name: "Motorola edge 70 Fusion (12GB RAM, 256GB)",
+          category: "mobiles",
+          sub_category: "smartphones",
+          price: 29999.0,
+          description: "144Hz 3D Curved pOLED Display, Sony LYTIA 700C Camera with OIS, IP68 Underwater Protection",
+          is_organic: false,
+          average_rating: 4.9,
+          review_count: 1420,
+          image_url: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80",
+          stock: 40,
+        },
+        {
+          id: 601,
+          name: "Organic Raw Forest Honey (Cold-Extracted, 500g Jar)",
+          category: "food-health",
+          sub_category: "grocery-staples",
+          price: 349.0,
+          description: "Unfiltered cold-extracted raw wild forest honey from deep natural reserves",
           is_organic: true,
           average_rating: 5.0,
-          review_count: 30,
+          review_count: 342,
           image_url: "/images/honey.png",
-          stock: 30,
-        },
+          stock: 55,
+        }
       ],
       orderTracking: {
         orderId: "#1040",
-        productName: "Organic Japanese Sencha Green Tea",
-        carrier: "CartWise FastFleet",
+        productName: "Organic Raw Forest Honey (500g)",
+        carrier: "Cartwise Express Rider",
         status: "OUT FOR DELIVERY",
         estimatedArrival: "Today by 3:45 PM",
         step: "out_for_delivery",
       },
       promoArbitrage: {
         code: "SAVE10",
-        savings: 1.5,
-        finalTotal: 13.49,
+        savings: 3034.8,
+        finalTotal: 27313.2,
       },
       trace: {
-        query: "Find me top organic honey under $20 and track order #1040.",
-        parsed_intent: "Find organic honey under $20 and track live order",
-        filters: { keyword: "honey", max_price: 20, is_organic: true },
-        sql_query:
-          "SELECT * FROM products WHERE (name LIKE '%honey%' OR category = 'spreads-sauces-pickles') AND price <= 20",
-        results_count: 1,
+        query: "Find me top deals on edge 70 Fusion and organic honey.",
+        parsed_intent: "Search multi-category products across Mobiles & Grocery",
+        filters: { keyword: "edge 70, honey" },
+        sql_query: "SELECT * FROM products WHERE (name LIKE '%edge 70%' OR name LIKE '%honey%')",
+        results_count: 2,
         steps: [
-          { title: "Query Parsing", detail: "Parsed dual intent: Product search + Live order dispatch lookup", status: "complete" },
-          { title: "Database Query", detail: "Selected Organic Raw Forest Honey (ID: 99) in SQLite catalog", status: "complete" },
-          { title: "Fleet Telemetry", detail: "Connected to FastFleet Satellite GPS for Order #1040", status: "complete" },
-          { title: "Price Arbitrage", detail: "Calculated SAVE10 voucher arbitrage with net price $13.49", status: "complete" },
+          { title: "Query Parsing", detail: "Parsed multi-category search: Smartphones + Organic Harvest", status: "complete" },
+          { title: "Catalog Lookups", detail: "Retrieved Motorola edge 70 Fusion (ID: 101) & Raw Forest Honey (ID: 601)", status: "complete" },
+          { title: "Price Arbitrage", detail: "Calculated SAVE10 voucher arbitrage with net total ₹27,313.20", status: "complete" },
         ],
       },
     },
@@ -113,29 +294,56 @@ function MainApp() {
 
   const [messages, setMessages] = useState<ChatMessage[]>([initialUserMessage, initialAssistantMessage]);
   const [isLoading, setIsLoading] = useState(false);
-  const [thinkingLabel, setThinkingLabel] = useState("Searching organic catalog…");
+  const [thinkingLabel, setThinkingLabel] = useState("Searching Cartwise Plus product catalog…");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
   const [wishlistActive, setWishlistActive] = useState<Record<number, boolean>>({});
   const [activeCopilotTab, setActiveCopilotTab] = useState<"chat" | "snap" | "voice">("chat");
   const [activeTrackingModal, setActiveTrackingModal] = useState<OrderTrackingInfo | null>(null);
+  const [selectedProductForModal, setSelectedProductForModal] = useState<Product | null>(null);
+  const [activeFilterTag, setActiveFilterTag] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<"featured" | "price-low" | "price-high" | "rating">("featured");
 
-  // Live Countdown Timer (Screenshot match: Ends in 08h : 42m : 19s)
-  const [timeLeft, setTimeLeft] = useState({ hours: 8, minutes: 42, seconds: 19 });
+  // Derived filtered & sorted products
+  const displayedProducts = React.useMemo(() => {
+    let list = [...catalogProducts];
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
-        if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        return { hours: 8, minutes: 42, seconds: 19 };
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+    // Filter Tag
+    if (activeFilterTag === "top-rated") {
+      list = list.filter((p) => (p.average_rating || 0) >= 4.8);
+    } else if (activeFilterTag === "under-2k") {
+      list = list.filter((p) => p.price <= 2000);
+    } else if (activeFilterTag === "under-30k") {
+      list = list.filter((p) => p.price <= 30000);
+    } else if (activeFilterTag === "organic") {
+      list = list.filter((p) => p.is_organic);
+    } else if (activeFilterTag !== "all") {
+      list = list.filter((p) => p.sub_category === activeFilterTag);
+    }
 
-  // Fetch Storefront Featured Deals
+    // Sort
+    if (sortBy === "price-low") {
+      list.sort((a, b) => a.price - b.price);
+    } else if (sortBy === "price-high") {
+      list.sort((a, b) => b.price - a.price);
+    } else if (sortBy === "rating") {
+      list.sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0));
+    }
+
+    return list;
+  }, [catalogProducts, activeFilterTag, sortBy]);
+
+  // Carousel scroll ref
+  const dealsScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollDeals = (direction: "left" | "right") => {
+    if (dealsScrollRef.current) {
+      const scrollAmount = direction === "left" ? -280 : 280;
+      dealsScrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
+
+  // Fetch Storefront Products based on Category
   useEffect(() => {
     async function loadCatalog() {
       try {
@@ -143,7 +351,7 @@ function MainApp() {
         const res = await fetch(url);
         const data = await res.json();
         if (data.success && Array.isArray(data.products)) {
-          setCatalogProducts(data.products.slice(0, 6));
+          setCatalogProducts(data.products);
         }
       } catch (e) {
         console.error("Error loading products", e);
@@ -174,14 +382,14 @@ function MainApp() {
     setMessages(newMessages);
     setIsLoading(true);
 
-    if (text.toLowerCase().includes("honey") || text.includes("मधु")) {
-      setThinkingLabel("Finding organic honeys from local apiaries…");
+    if (text.toLowerCase().includes("phone") || text.toLowerCase().includes("edge") || text.toLowerCase().includes("iphone")) {
+      setThinkingLabel("Finding smartphone deals & specifications…");
     } else if (text.toLowerCase().includes("compare") || text.includes("तुलना")) {
-      setThinkingLabel("Synthesizing nutritional comparison matrix…");
+      setThinkingLabel("Comparing features, ratings & pricing…");
     } else if (text.toLowerCase().includes("track") || text.toLowerCase().includes("order")) {
-      setThinkingLabel("Querying FastFleet Satellite Telemetry…");
+      setThinkingLabel("Querying live order tracking & dispatch…");
     } else {
-      setThinkingLabel("Searching organic grocery catalog…");
+      setThinkingLabel("Searching product catalog…");
     }
 
     try {
@@ -227,7 +435,7 @@ function MainApp() {
         payload: {
           type: "empty_state",
           reason: "An unexpected error occurred while communicating with the catalog. Please try again.",
-          suggestions: ["Organic Raw Honey", "Rolled Oats", "Extra Virgin Olive Oil"],
+          suggestions: ["Motorola edge 70", "iPhone 15", "ASUS Vivobook 15", "Organic Raw Honey"],
         },
         timestamp: Date.now(),
       };
@@ -259,7 +467,7 @@ function MainApp() {
 
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
-    setThinkingLabel("Analyzing visual attributes & labels…");
+    setThinkingLabel("Analyzing visual attributes & product features…");
 
     try {
       const res = await fetch("/api/image-search", {
@@ -298,27 +506,27 @@ function MainApp() {
     setWishlistActive((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const formatCountdown = () => {
-    const pad = (n: number) => String(n).padStart(2, "0");
-    return `${pad(timeLeft.hours)}h : ${pad(timeLeft.minutes)}m : ${pad(timeLeft.seconds)}s`;
+  const getCartQuantity = (productId: number) => {
+    const item = cart.find((i) => i.product.id === productId);
+    return item ? item.quantity : 0;
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-[#0a0e17] text-slate-100 selection:bg-cyan-500 selection:text-black">
-      {/* Top Navigation Bar with Search and Categories */}
+    <div className="min-h-screen flex flex-col justify-between bg-slate-100 text-slate-900 selection:bg-amber-400 selection:text-slate-950 font-sans antialiased">
+      {/* Top Navigation Bar */}
       <Navbar
         onNewChat={handleNewChat}
         onOpenTrace={() =>
           setSelectedTrace(
             selectedTrace || {
-              query: "Recent Agent Execution",
-              parsed_intent: "Verified catalog retrieval with SQLite",
-              filters: { keyword: "organic" },
-              sql_query: "SELECT * FROM products WHERE is_organic = 1",
+              query: "Recent Product Catalog Scan",
+              parsed_intent: "Real-time inventory lookup across Cartwise Plus product catalog",
+              filters: { keyword: "mobiles, tech" },
+              sql_query: "SELECT * FROM products WHERE stock > 0 ORDER BY price DESC",
               steps: [
-                { title: "Query Parsing", detail: "Parsed user search filters and intent", status: "complete" },
-                { title: "Database Query", detail: "Scanned SQLite products with index lookups", status: "complete" },
-                { title: "Review Aggregation", detail: "Aggregated customer ratings and star counts", status: "complete" },
+                { title: "Intent Parsing", detail: "Analyzed search keywords and customer preference filters", status: "complete" },
+                { title: "Catalog Match", detail: "Scanned SQLite store records with index optimization", status: "complete" },
+                { title: "Pricing & Stock Check", detail: "Verified real-time inventory and instant discounts", status: "complete" },
               ],
             }
           )
@@ -328,513 +536,440 @@ function MainApp() {
         selectedCategory={selectedCategory}
       />
 
-      {/* Main Dual-Column Content Layout */}
+      {/* Main Content Layout */}
       {activeTab === "orders" ? (
         <OrdersView />
       ) : (
-        <div className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6">
+        <main className="flex-1 max-w-[1600px] w-full mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-5 pb-24 sm:pb-8">
           {/* Mobile View Toggle Switcher (< lg screens) */}
-          <div className="lg:hidden flex items-center p-1 bg-[#121828] border border-white/10 rounded-2xl mb-4 shadow-lg">
+          <div className="lg:hidden flex items-center p-1 bg-white border border-slate-200 rounded-xl mb-3 shadow-xs">
             <button
               onClick={() => setMobileView("store")}
-              className={`flex-1 py-2 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 mobileView === "store"
-                  ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/20"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-slate-950 text-amber-400 shadow-xs"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              <ShoppingBag className="w-3.5 h-3.5" />
-              <span>Store Catalog</span>
+              <ShoppingBag className="w-4 h-4" />
+              <span>Explore Products</span>
             </button>
             <button
               onClick={() => setMobileView("copilot")}
-              className={`flex-1 py-2 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 mobileView === "copilot"
-                  ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/20"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-slate-950 text-amber-400 shadow-xs"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              <Bot className="w-3.5 h-3.5 text-cyan-300" />
-              <span>AI Copilot & Chat</span>
+              <Bot className="w-4 h-4" />
+              <span>AI Assistant</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-            {/* ======================================================== */}
-            {/* LEFT / MAIN STOREFRONT COLUMN (7 cols on Desktop)         */}
-            {/* ======================================================== */}
-            <div className={`space-y-4 lg:col-span-7 ${mobileView === "store" ? "block" : "hidden lg:block"}`}>
-              {/* 1. Hero Feature Banner ("MEGA SAVINGS DAYS • LIVE NOW") */}
-              <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#12192a] via-[#101625] to-[#0c101c] border border-white/10 p-5 sm:p-7 shadow-2xl">
-                {/* Background glow orb */}
-                <div className="absolute top-0 right-1/4 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+          {/* ======================================================== */}
+          {/* 1. TOP TECH DEALS BANNER (Sleek Onyx Black & Gold)        */}
+          {/* ======================================================== */}
+          <section className="mb-4 rounded-2xl overflow-hidden bg-gradient-to-r from-slate-950 via-slate-900 to-zinc-950 border border-amber-500/30 p-3 sm:p-5 text-white shadow-md relative">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <div className="flex items-center gap-2">
+                <h2 className="text-base sm:text-xl font-black text-white tracking-tight">
+                  Top tech deals revealed
+                </h2>
+                <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-black uppercase bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950">
+                  BIG SAVINGS
+                </span>
+              </div>
 
-                <div className="relative z-10 flex flex-col md:flex-row gap-6 items-center justify-between">
-                  <div className="space-y-4 max-w-md">
-                    {/* Live countdown pill */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#162137] border border-cyan-500/30 text-xs font-bold text-cyan-300">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span>MEGA SAVINGS DAYS • LIVE NOW</span>
-                      <span className="text-slate-400">|</span>
-                      <span className="text-slate-300 font-mono">Ends in {formatCountdown()}</span>
-                    </div>
+              {/* Scroll Controls */}
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => scrollDeals("left")}
+                  aria-label="Previous Deals"
+                  className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-amber-400 flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => scrollDeals("right")}
+                  aria-label="Next Deals"
+                  className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-amber-400 flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
 
-                    {/* Headline */}
-                    <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
-                      Up to <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">30% Off</span> Flagship Organic Harvest & Cold-Pressed Staples
-                    </h1>
-
-                    {/* Subtitle */}
-                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                      Exclusive pre-negotiated farm-direct wholesale rates. Instant checkout tokenized by your personal copilot with 1-tap price protection guarantee.
-                    </p>
-
-                    {/* Action buttons */}
-                    <div className="flex flex-wrap items-center gap-2.5 pt-1">
-                      <button
-                        onClick={() => handleSendMessage("Show me top featured deals under $20")}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-extrabold text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-lg shadow-indigo-500/25 active:scale-95 transition-all cursor-pointer"
-                      >
-                        <ShoppingBag className="w-3.5 h-3.5" />
-                        <span>Shop Featured Deals</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleSendMessage("What are your best organic picks today?")}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold text-slate-200 bg-[#162035] hover:bg-[#1c2944] border border-white/10 active:scale-95 transition-all cursor-pointer"
-                      >
-                        <Bot className="w-3.5 h-3.5 text-cyan-400" />
-                        <span>Ask AI for Best Picks</span>
-                      </button>
-                    </div>
-
-                    {/* Trust badges */}
-                    <div className="flex flex-wrap items-center gap-3 pt-2 text-[11px] text-slate-400">
-                      <span className="flex items-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 100% Authentic
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Truck className="w-3.5 h-3.5 text-cyan-400" /> Free Express 2-Hour Delivery
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <ReturnIcon className="w-3.5 h-3.5 text-purple-400" /> 14-Day Free Returns
-                      </span>
-                    </div>
+            {/* Horizontal Scrollable Carousel Cards */}
+            <div
+              ref={dealsScrollRef}
+              className="flex items-stretch gap-2.5 sm:gap-3.5 overflow-x-auto scrollbar-none pb-1 scroll-smooth"
+            >
+              {CARTWISE_TOP_TECH_DEALS.map((deal) => (
+                <div
+                  key={deal.id}
+                  onClick={() => {
+                    setSelectedProductForModal(deal.product as any);
+                  }}
+                  className="w-36 sm:w-44 md:w-48 flex-shrink-0 bg-white rounded-xl p-2.5 sm:p-3 flex flex-col justify-between items-center text-center text-slate-900 cursor-pointer group hover:shadow-lg hover:scale-102 transition-all duration-200 border border-transparent hover:border-amber-400/40"
+                >
+                  {/* Thumbnail */}
+                  <div className="relative w-full h-28 sm:h-32 rounded-lg bg-slate-50 flex items-center justify-center p-1.5 mb-2 overflow-hidden">
+                    <img
+                      src={deal.image}
+                      alt={deal.title}
+                      className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-200"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/images/honey.png";
+                      }}
+                    />
                   </div>
 
-                  {/* Right Bestseller Showcase Card inside Hero */}
-                  <div className="w-full md:w-56 bg-[#131b2d] border border-white/10 rounded-2xl p-3 space-y-2.5 flex-shrink-0 shadow-xl group hover:border-cyan-500/40 transition-all">
-                    <div className="flex items-center justify-between">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-black/60 text-cyan-300 border border-cyan-500/30">
-                        BESTSELLER #1
-                      </span>
-                      <span className="text-[10px] text-emerald-400 font-mono font-bold">In Stock</span>
-                    </div>
+                  {/* Price Tag Pill */}
+                  <div className="w-full bg-slate-950 text-amber-400 border border-amber-500/40 py-1 px-1.5 rounded-lg text-[11px] font-black mb-1">
+                    {deal.offerTag}
+                  </div>
 
-                    <div className="relative w-full h-36 rounded-xl bg-[#090d16] overflow-hidden flex items-center justify-center p-2 border border-white/5">
-                      <img
-                        src={catalogProducts[0]?.image_url || "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80"}
-                        alt={catalogProducts[0]?.name || "Organic Bestseller"}
-                        className="max-h-full max-w-full object-cover rounded-lg group-hover:scale-105 transition-transform"
-                      />
-                    </div>
+                  {/* Product Title */}
+                  <div className="text-xs font-bold text-slate-800 line-clamp-1 group-hover:text-amber-600">
+                    {deal.title}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
 
-                    <div className="space-y-1">
-                      <div className="font-bold text-xs text-white truncate">
-                        {catalogProducts[0]?.name || "Organic Alphonso Mangoes (1kg)"}
-                      </div>
-                      <div className="flex items-baseline justify-between">
-                        <span className="text-sm font-extrabold text-emerald-400">
-                          ${catalogProducts[0]?.price.toFixed(2) || "12.99"}
-                        </span>
-                        <div className="text-[11px] text-slate-500 line-through">
-                          ${((catalogProducts[0]?.price || 12.99) * 1.25).toFixed(2)}{" "}
-                          <span className="text-emerald-400 font-bold ml-0.5">-25%</span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => {
-                          const item = catalogProducts[0];
-                          if (item) addToCart(item, 1);
-                        }}
-                        className="w-full py-1.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors flex items-center justify-center gap-1 cursor-pointer"
-                      >
-                        <ShoppingCart className="w-3 h-3" />
-                        <span>Add to Cart</span>
-                      </button>
-                    </div>
+          {/* Dual-Column Storefront + Copilot Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start">
+            {/* ======================================================== */}
+            {/* LEFT / MAIN STOREFRONT COLUMN (7-8 cols on Desktop)       */}
+            {/* ======================================================== */}
+            <div className={`space-y-4 lg:col-span-7 xl:col-span-8 ${mobileView === "store" ? "block" : "hidden lg:block"}`}>
+              {/* 4 Value Pillars */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="p-2.5 bg-white border border-slate-200 rounded-xl flex items-center gap-2.5 shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-slate-950 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
+                    <Truck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900">15-Min Delivery</div>
+                    <div className="text-[10px] text-slate-500">Free over ₹199</div>
+                  </div>
+                </div>
+
+                <div className="p-2.5 bg-white border border-slate-200 rounded-xl flex items-center gap-2.5 shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-slate-950 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900">100% Genuine</div>
+                    <div className="text-[10px] text-slate-500">Brand authorized</div>
+                  </div>
+                </div>
+
+                <div className="p-2.5 bg-white border border-slate-200 rounded-xl flex items-center gap-2.5 shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-slate-950 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
+                    <Tag className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900">Best Prices</div>
+                    <div className="text-[10px] text-slate-500">Direct deal rates</div>
+                  </div>
+                </div>
+
+                <div className="p-2.5 bg-white border border-slate-200 rounded-xl flex items-center gap-2.5 shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-slate-950 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
+                    <ReturnIcon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900">7-Day Return</div>
+                    <div className="text-[10px] text-slate-500">Instant refund</div>
                   </div>
                 </div>
               </div>
 
-              {/* 2. Bank Offer Bar (Screenshot match) */}
-              <div className="rounded-2xl bg-[#111726] border border-white/10 p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-slate-300 shadow-md">
+              {/* Bank Offer Ribbon */}
+              <div className="rounded-xl bg-slate-950 border border-amber-500/30 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-200 shadow-sm">
                 <div className="flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <CreditCard className="w-4 h-4 text-amber-400 shrink-0" />
                   <span>
-                    <strong className="text-white">Bank Offer:</strong> Instant 10% Discount up to $50 on Apple Card, HDFC & Chase Infinite
+                    <strong className="text-amber-400">Cartwise Exclusive:</strong> Flat 10% Instant Discount on SBI, HDFC &amp; Axis Bank Cards. Use coupon <strong className="text-slate-950 font-mono font-black bg-gradient-to-r from-amber-400 to-yellow-400 px-1.5 py-0.2 rounded">SAVE10</strong>.
                   </span>
                 </div>
-                <div className="flex items-center gap-3 text-[11px] text-slate-400">
-                  <span>• No Cost EMI available</span>
-                  <span>• CartWise 5% Unlimited Cashback</span>
-                  <button
-                    onClick={() => alert("Bank Offer Terms: 10% instant off on select cards for orders over $30.")}
-                    className="text-cyan-400 hover:underline font-semibold cursor-pointer"
-                  >
-                    View T&C
-                  </button>
-                </div>
+                <button
+                  onClick={() => handleSendMessage("Apply promo voucher SAVE10")}
+                  className="text-amber-400 hover:text-amber-300 font-bold text-xs shrink-0 cursor-pointer underline underline-offset-2"
+                >
+                  Apply Code
+                </button>
               </div>
 
-              {/* 2.5 Section: AI Personalised Choices & Recommendations (MongoDB Stored Preferences) */}
-              {user && personalizedProducts && personalizedProducts.length > 0 && (
-                <div className="rounded-3xl bg-[#0f1524] border border-cyan-500/20 p-4 sm:p-5 shadow-xl relative overflow-hidden space-y-3">
-                  <div className="absolute top-0 right-0 w-48 h-48 bg-cyan-500/5 rounded-full blur-2xl pointer-events-none" />
-                  
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border border-emerald-500/30">
-                          AI Personalised For You
-                        </span>
-                        <span className="text-xs text-slate-400">
-                          Based on {user.preferences?.dietary_tags?.join(", ") || "Certified Organic"}
-                        </span>
-                      </div>
-                      <h3 className="font-extrabold text-sm sm:text-base text-white mt-1">
-                        Tailored Recommendations for {user.name.split(" ")[0]}
-                      </h3>
-                    </div>
+              {/* Main Product Catalog Grid & Quick Filters */}
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-5 bg-gradient-to-b from-amber-400 to-yellow-500 rounded-full inline-block" />
+                    <h2 className="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight capitalize">
+                      {selectedCategory === "all" ? "Featured Products & Top Deals" : `${selectedCategory.replace("-", " ")} Catalog`}
+                    </h2>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                      {displayedProducts.length} Items
+                    </span>
+                  </div>
 
-                    <button
-                      onClick={() => setIsPersonalisationModalOpen(true)}
-                      className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition-all cursor-pointer"
+                  {/* Sort Controls */}
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="text-slate-500 font-medium">Sort by:</span>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as any)}
+                      className="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-700 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
                     >
-                      <Sliders className="w-3.5 h-3.5" />
-                      <span>Adjust Diet & Budget</span>
+                      <option value="featured">Featured Deals</option>
+                      <option value="price-low">Price: Low to High</option>
+                      <option value="price-high">Price: High to Low</option>
+                      <option value="rating">Highest Customer Rating</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Subcategory & Price Filter Chips */}
+                <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-1 text-xs">
+                  <button
+                    onClick={() => setActiveFilterTag("all")}
+                    className={`px-3 py-1 rounded-full font-bold transition-all shrink-0 cursor-pointer text-xs ${
+                      activeFilterTag === "all"
+                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
+                        : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    All Items
+                  </button>
+                  <button
+                    onClick={() => setActiveFilterTag("top-rated")}
+                    className={`px-3 py-1 rounded-full font-bold transition-all shrink-0 cursor-pointer text-xs flex items-center gap-1 ${
+                      activeFilterTag === "top-rated"
+                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
+                        : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    <span>Top Rated (4.8★+)</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveFilterTag("under-2k")}
+                    className={`px-3 py-1 rounded-full font-bold transition-all shrink-0 cursor-pointer text-xs ${
+                      activeFilterTag === "under-2k"
+                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
+                        : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    Under ₹2,000
+                  </button>
+                  <button
+                    onClick={() => setActiveFilterTag("under-30k")}
+                    className={`px-3 py-1 rounded-full font-bold transition-all shrink-0 cursor-pointer text-xs ${
+                      activeFilterTag === "under-30k"
+                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
+                        : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    Under ₹30,000
+                  </button>
+                  <button
+                    onClick={() => setActiveFilterTag("organic")}
+                    className={`px-3 py-1 rounded-full font-bold transition-all shrink-0 cursor-pointer text-xs ${
+                      activeFilterTag === "organic"
+                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
+                        : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    100% Organic
+                  </button>
+                </div>
+
+                {/* Adaptive Product Cards Grid (1 col on mobile, 2 on sm, 3 on md/lg, up to 4 on ultra-wide) */}
+                {displayedProducts.length === 0 ? (
+                  <div className="p-8 bg-white border border-slate-200 rounded-2xl text-center space-y-2">
+                    <p className="text-sm font-bold text-slate-800">No products match this filter tag.</p>
+                    <button
+                      onClick={() => setActiveFilterTag("all")}
+                      className="text-xs font-bold text-amber-600 hover:underline cursor-pointer"
+                    >
+                      Clear Filter &amp; View All Products
                     </button>
                   </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
+                    {displayedProducts.map((product) => {
+                      const isWishlisted = Boolean(wishlistActive[product.id]);
+                      const originalPrice = (product.price * 1.25).toFixed(0);
+                      const discountPercent = 20;
+                      const quantityInCart = getCartQuantity(product.id);
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-1">
-                    {personalizedProducts.slice(0, 3).map((prod) => (
-                      <div
-                        key={`pers-${prod.id}`}
-                        className="bg-[#141b2a] border border-white/5 hover:border-emerald-500/30 rounded-2xl p-2.5 flex flex-col justify-between transition-all group"
-                      >
-                        <div>
-                          <div className="relative w-full h-24 rounded-xl bg-[#0a0e17] flex items-center justify-center p-2 mb-2 overflow-hidden">
-                            <img
-                              src={prod.image_url || "/images/honey.png"}
-                              alt={prod.name}
-                              className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = "/images/honey.png";
-                              }}
-                            />
-                            <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-emerald-500/90 text-white">
-                              {prod.is_organic ? "100% Organic" : "Recommended"}
+                      return (
+                        <div
+                          key={product.id}
+                          className="group bg-white border border-slate-200 hover:border-amber-400/80 rounded-xl p-3 flex flex-col justify-between transition-all duration-200 shadow-xs hover:shadow-lg"
+                        >
+                          <div>
+                            {/* Card Top: Tag & Wishlist */}
+                            <div className="flex items-center justify-between mb-1.5">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-200">
+                                {product.category}
+                              </span>
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => setSelectedProductForModal(product)}
+                                  className="p-1 rounded-full text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors cursor-pointer"
+                                  title="Quick View Details"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  onClick={() => toggleWishlist(product.id)}
+                                  className="p-1 rounded-full text-slate-300 hover:text-rose-500 transition-colors cursor-pointer"
+                                  title="Add to Wishlist"
+                                >
+                                  <Heart
+                                    className={`w-4 h-4 ${
+                                      isWishlisted ? "text-rose-500 fill-rose-500" : "text-slate-300"
+                                    }`}
+                                  />
+                                </button>
+                              </div>
                             </div>
-                          </div>
 
-                          <h4 className="font-bold text-xs text-white line-clamp-1 mb-0.5">
-                            {prod.name}
-                          </h4>
-                          <p className="text-[10px] text-slate-400 line-clamp-1 mb-1.5">
-                            {prod.description}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center justify-between pt-1 border-t border-white/5">
-                          <span className="text-xs font-black text-emerald-400">
-                            ${prod.price.toFixed(2)}
-                          </span>
-                          <button
-                            onClick={() => addToCart(prod, 1)}
-                            className="px-2.5 py-1 rounded-lg text-[10px] font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition-colors cursor-pointer flex items-center gap-1 shadow-sm"
-                          >
-                            <ShoppingCart className="w-2.5 h-2.5" />
-                            <span>Add</span>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* 3. Section: "Best Deals on Organic Harvest & Pantry Essentials" */}
-              <div className="space-y-3 pt-2">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-lg bg-indigo-500/20 flex items-center justify-center text-cyan-300">
-                        <Sparkles className="w-3.5 h-3.5" />
-                      </div>
-                      <h2 className="font-extrabold text-base sm:text-lg text-white tracking-tight">
-                        Best Deals on Organic Harvest & Pantry Essentials
-                      </h2>
-                    </div>
-                    <p className="text-xs text-slate-400 pl-8">
-                      Curated by CartWise AI based on real-time price drops across SQLite store catalog
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() => setSelectedCategory("all")}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-300 hover:text-white bg-[#151c2d] hover:bg-[#1a243a] border border-white/10 transition-colors cursor-pointer"
-                  >
-                    <span>View All Deals</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-
-                {/* 3-Card Grid Matching Screenshot Layout */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  {catalogProducts.map((product, idx) => {
-                    const isWishlisted = Boolean(wishlistActive[product.id]);
-                    const originalPrice = (product.price * 1.25).toFixed(2);
-                    const badges = ["98% AI MATCH", "HOT DEAL", "ORGANIC HARVEST", "BEST VALUE"];
-                    const subTags = ["🛡️ Prime Choice", "⚡ Mega Savings Drop", "🌿 Pure Cold-Pressed", "🌾 Whole Grain"];
-                    const badge = badges[idx % badges.length];
-                    const subTag = subTags[idx % subTags.length];
-
-                    return (
-                      <div
-                        key={product.id}
-                        className="group bg-[#121827] border border-white/10 hover:border-cyan-500/40 rounded-2xl p-3 flex flex-col justify-between transition-all duration-200 shadow-md hover:shadow-cyan-500/10"
-                      >
-                        <div>
-                          {/* Card Top: Badge & Heart Wishlist */}
-                          <div className="flex items-center justify-between mb-2">
-                            <span
-                              className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
-                                idx === 0
-                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                                  : idx === 1
-                                  ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                                  : "bg-indigo-500/20 text-cyan-300 border border-indigo-500/30"
-                              }`}
+                            {/* Image (Click opens modal) */}
+                            <div
+                              onClick={() => setSelectedProductForModal(product)}
+                              className="relative w-full h-36 rounded-lg bg-slate-50 overflow-hidden flex items-center justify-center p-2 mb-2 cursor-pointer"
                             >
-                              {badge}
-                            </span>
-                            <button
-                              onClick={() => toggleWishlist(product.id)}
-                              className="p-1 rounded-full text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
-                              title="Add to Wishlist"
-                            >
-                              <Heart
-                                className={`w-4 h-4 ${
-                                  isWishlisted ? "text-rose-500 fill-rose-500" : "text-slate-400"
-                                }`}
+                              <img
+                                src={product.image_url || "/images/honey.png"}
+                                alt={product.name}
+                                className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-200"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = "/images/honey.png";
+                                }}
                               />
-                            </button>
-                          </div>
-
-                          {/* Product Image */}
-                          <div className="relative w-full h-36 rounded-xl bg-[#0a0e17] overflow-hidden flex items-center justify-center p-2 mb-2 border border-white/5">
-                            <img
-                              src={product.image_url || "/images/honey.png"}
-                              alt={product.name}
-                              className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = "/images/honey.png";
-                              }}
-                            />
-                          </div>
-
-                          {/* Tag & Non-Truncated Title */}
-                          <div className="text-[10px] font-semibold text-cyan-400 mb-1 flex items-center gap-1">
-                            <span>{subTag}</span>
-                          </div>
-
-                          <h3 className="font-bold text-xs sm:text-sm text-white leading-snug break-words mb-1">
-                            {product.name}
-                          </h3>
-
-                          <p className="text-[11px] text-slate-400 line-clamp-2 mb-2">
-                            {product.description}
-                          </p>
-                        </div>
-
-                        {/* Price & Add to Cart button */}
-                        <div className="pt-2 border-t border-white/5 space-y-2">
-                          <div className="flex items-baseline justify-between">
-                            <div>
-                              <span className="font-extrabold text-sm sm:text-base text-emerald-400">
-                                ${product.price.toFixed(2)}
-                              </span>
-                              <span className="text-[11px] text-slate-500 line-through ml-1.5">
-                                ${originalPrice}
+                              <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-900/90 text-amber-400 border border-amber-400/30">
+                                ⚡ 15 MINS
                               </span>
                             </div>
-                            <div className="text-[11px] text-amber-300 font-semibold flex items-center gap-0.5">
-                              <Star className="w-3 h-3 fill-amber-300" />
-                              <span>{product.average_rating || 4.8}</span>
+
+                            {/* Ratings */}
+                            <div className="flex items-center gap-1 mb-1">
+                              <div className="flex items-center gap-0.5 px-1.5 py-0.2 rounded bg-slate-900 text-amber-400 border border-amber-500/30 text-[10px] font-bold">
+                                <span>{product.average_rating || 4.8}</span>
+                                <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+                              </div>
+                              <span className="text-[11px] text-slate-400">
+                                ({product.review_count || 320})
+                              </span>
                             </div>
+
+                            {/* Title (Click opens modal) */}
+                            <h3
+                              onClick={() => setSelectedProductForModal(product)}
+                              className="font-bold text-xs sm:text-sm text-slate-900 leading-snug break-words mb-1 line-clamp-2 group-hover:text-amber-600 transition-colors cursor-pointer"
+                            >
+                              {product.name}
+                            </h3>
+
+                            <p className="text-[11px] text-slate-500 line-clamp-2 mb-2">
+                              {product.description}
+                            </p>
                           </div>
 
-                          <button
-                            onClick={() => addToCart(product, 1)}
-                            className="w-full py-1.5 px-3 rounded-xl text-xs font-bold text-white bg-[#182136] hover:bg-gradient-to-r hover:from-indigo-600 hover:to-purple-600 border border-white/10 hover:border-transparent transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
-                          >
-                            <ShoppingCart className="w-3.5 h-3.5 text-cyan-300" />
-                            <span>Add to Cart</span>
-                          </button>
+                          {/* Price & Add to Cart button */}
+                          <div className="pt-2 border-t border-slate-100 space-y-2">
+                            <div className="flex items-baseline justify-between">
+                              <div>
+                                <span className="font-black text-sm sm:text-base text-slate-950">
+                                  ₹{product.price.toLocaleString("en-IN")}
+                                </span>
+                                <span className="text-[11px] text-slate-400 line-through ml-1.5">
+                                  ₹{Number(originalPrice).toLocaleString("en-IN")}
+                                </span>
+                              </div>
+                              <span className="text-[10px] font-bold text-amber-900 bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded">
+                                {discountPercent}% off
+                              </span>
+                            </div>
+
+                            {quantityInCart > 0 ? (
+                              <div className="flex items-center justify-between bg-slate-950 border border-amber-500/30 rounded-lg p-1">
+                                <button
+                                  onClick={() => updateQuantity(product.id, quantityInCart - 1)}
+                                  className="w-7 h-7 rounded bg-slate-900 text-amber-400 font-bold flex items-center justify-center shadow-xs cursor-pointer hover:bg-slate-800"
+                                >
+                                  -
+                                </button>
+                                <span className="text-xs font-bold text-amber-400">
+                                  {quantityInCart} in cart
+                                </span>
+                                <button
+                                  onClick={() => addToCart(product, 1)}
+                                  className="w-7 h-7 rounded bg-amber-500 text-slate-950 font-black flex items-center justify-center shadow-xs cursor-pointer hover:bg-amber-400"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => addToCart(product, 1)}
+                                className="w-full py-1.5 px-3 rounded-lg text-xs font-bold text-amber-400 bg-slate-950 hover:bg-slate-900 border border-amber-500/40 hover:border-amber-400 transition-colors flex items-center justify-center gap-1.5 active:scale-98 cursor-pointer shadow-xs"
+                              >
+                                <ShoppingCart className="w-3.5 h-3.5 text-amber-400" />
+                                <span>ADD TO CART</span>
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
-              {/* 4. Section: "Personalised for [User Name]" */}
-              <div className="space-y-3 pt-3 border-t border-white/10">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-300">
-                        <Sparkles className="w-3.5 h-3.5" />
-                      </div>
-                      <h2 className="font-extrabold text-base sm:text-lg text-white tracking-tight">
-                        Personalised for {user?.name || "You"}
-                      </h2>
-                      {user?.vip_level && (
-                        <span className="hidden sm:inline-block px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                          {user.vip_level}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1.5 pl-8 flex-wrap">
-                      <span className="text-xs text-slate-400">Dietary regimen:</span>
-                      {(user?.preferences?.dietary_tags || ["Certified Organic", "Clean Eating"]).slice(0, 3).map((t) => (
-                        <span
-                          key={t}
-                          className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-400/20"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => setIsPersonalisationModalOpen(true)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-300 hover:text-white bg-[#151c2d] hover:bg-[#1a243a] border border-white/10 transition-colors cursor-pointer flex-shrink-0"
-                  >
-                    <Sliders className="w-3.5 h-3.5 text-purple-400" />
-                    <span className="hidden sm:inline">Customise Diet</span>
-                  </button>
+              {/* Trust Footer */}
+              <div className="p-3.5 bg-white border border-slate-200 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600 shadow-xs">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0" />
+                  <span>
+                    <strong>100% Payment Protection:</strong> UPI, Credit/Debit Cards, Netbanking &amp; Cash on Delivery.
+                  </span>
                 </div>
-
-                {/* Personalized Products Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  {(personalizedProducts.length > 0 ? personalizedProducts : catalogProducts).slice(0, 3).map((product, idx) => {
-                    const isWishlisted = Boolean(wishlistActive[product.id]);
-                    const originalPrice = (product.price * 1.25).toFixed(2);
-
-                    return (
-                      <div
-                        key={`pers-${product.id}`}
-                        className="group bg-[#121827] border border-emerald-500/20 hover:border-emerald-400/50 rounded-2xl p-3 flex flex-col justify-between transition-all duration-200 shadow-md hover:shadow-emerald-500/10"
-                      >
-                        <div>
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                              ✨ AI RECOM 99%
-                            </span>
-                            <button
-                              onClick={() => toggleWishlist(product.id)}
-                              className="p-1 rounded-full text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
-                            >
-                              <Heart
-                                className={`w-4 h-4 ${
-                                  isWishlisted ? "text-rose-500 fill-rose-500" : "text-slate-400"
-                                }`}
-                              />
-                            </button>
-                          </div>
-
-                          <div className="relative w-full h-36 rounded-xl bg-[#0a0e17] overflow-hidden flex items-center justify-center p-2 mb-2 border border-white/5">
-                            <img
-                              src={product.image_url || "/images/honey.png"}
-                              alt={product.name}
-                              className="max-h-full max-w-full object-cover rounded-lg group-hover:scale-105 transition-transform"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = "/images/honey.png";
-                              }}
-                            />
-                          </div>
-
-                          <div className="text-[10px] font-semibold text-emerald-400 mb-1 flex items-center gap-1">
-                            <span>🌿 Verified Organic Match</span>
-                          </div>
-
-                          <h3 className="font-bold text-xs sm:text-sm text-white leading-snug break-words mb-1">
-                            {product.name}
-                          </h3>
-
-                          <p className="text-[11px] text-slate-400 line-clamp-2 mb-2">
-                            {product.description}
-                          </p>
-                        </div>
-
-                        <div className="pt-2 border-t border-white/5 space-y-2">
-                          <div className="flex items-baseline justify-between">
-                            <div>
-                              <span className="font-extrabold text-sm sm:text-base text-emerald-400">
-                                ${product.price.toFixed(2)}
-                              </span>
-                              <span className="text-[11px] text-slate-500 line-through ml-1.5">
-                                ${originalPrice}
-                              </span>
-                            </div>
-                            <div className="text-[11px] text-amber-300 font-semibold flex items-center gap-0.5">
-                              <Star className="w-3 h-3 fill-amber-300" />
-                              <span>{product.average_rating || 4.9}</span>
-                            </div>
-                          </div>
-
-                          <button
-                            onClick={() => addToCart(product, 1)}
-                            className="w-full py-1.5 px-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer shadow-md shadow-emerald-500/20"
-                          >
-                            <ShoppingCart className="w-3.5 h-3.5 text-white" />
-                            <span>Add to Cart</span>
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                <span className="text-[11px] text-slate-400 font-medium">
+                  Cartwise Plus Verified
+                </span>
               </div>
             </div>
 
             {/* ======================================================== */}
-            {/* RIGHT / AURA AI COPILOT SIDEBAR PANEL (5 cols on Desktop) */}
+            {/* RIGHT / AI SHOPPING ASSISTANT SIDEBAR (4-5 cols on Desktop) */}
             {/* ======================================================== */}
             <div
-              className={`bg-[#0f1422] border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[780px] lg:sticky top-24 lg:col-span-5 ${
+              className={`bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex flex-col h-[740px] lg:h-[calc(100vh-130px)] lg:min-h-[640px] lg:max-h-[920px] lg:sticky top-28 lg:col-span-5 xl:col-span-4 ${
                 mobileView === "copilot" ? "flex" : "hidden lg:flex"
               }`}
             >
               {/* Copilot Header */}
-              <div className="p-3.5 sm:p-4 bg-[#131b2e] border-b border-white/10 flex items-center justify-between">
+              <div className="p-3.5 bg-slate-950 text-white flex items-center justify-between border-b border-amber-500/20">
                 <div className="flex items-center gap-2.5">
-                  <div className="relative w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center shadow">
-                    <Bot className="w-4 h-4 text-cyan-300" />
-                    <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0f1422] animate-pulse" />
+                  <div className="w-8 h-8 rounded-lg bg-slate-900 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold shadow-xs">
+                    <Bot className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-xs sm:text-sm text-white">CartWise AI Copilot</h3>
-                      <span className="px-1.5 py-0.2 rounded text-[9px] font-mono text-cyan-300 bg-cyan-500/10 border border-cyan-400/20">
-                        v3.8
+                      <h3 className="font-bold text-xs sm:text-sm text-white">Cartwise AI Assistant</h3>
+                      <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 shadow-xs">
+                        LIVE
                       </span>
                     </div>
-                    <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                      <span>Online & Listening</span>
+                    <div className="flex items-center gap-1 text-[10px] text-amber-200/80">
+                      <span>Instant comparison &amp; price arbitrage</span>
                     </div>
                   </div>
                 </div>
@@ -844,10 +979,10 @@ function MainApp() {
                     onClick={() =>
                       setSelectedTrace(
                         selectedTrace || {
-                          query: "Live Copilot Reasoning",
+                          query: "Recent Product Catalog Scan",
                           parsed_intent: "Verified catalog retrieval with SQLite",
-                          filters: { keyword: "organic" },
-                          sql_query: "SELECT * FROM products WHERE is_organic = 1",
+                          filters: { keyword: "mobiles" },
+                          sql_query: "SELECT * FROM products WHERE category = 'mobiles'",
                           steps: [
                             { title: "Query Parsing", detail: "Parsed user search filters and intent", status: "complete" },
                             { title: "Database Query", detail: "Scanned SQLite products with index lookups", status: "complete" },
@@ -856,14 +991,14 @@ function MainApp() {
                         }
                       )
                     }
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-white/10 transition-colors cursor-pointer"
                     title="Agent Trace Inspector"
                   >
                     <Sliders className="w-4 h-4" />
                   </button>
                   <button
                     onClick={handleNewChat}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-white/10 transition-colors cursor-pointer"
                     title="Clear Chat / New Thread"
                   >
                     <RotateCcw className="w-4 h-4" />
@@ -872,18 +1007,18 @@ function MainApp() {
               </div>
 
               {/* Mode Tabs: [Chat & Search] [Snap Search] [Voice] */}
-              <div className="px-3 pt-2 pb-1.5 bg-[#0d121f] border-b border-white/5 flex items-center justify-between text-xs">
+              <div className="px-3 pt-2 pb-1.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => setActiveCopilotTab("chat")}
                     className={`flex items-center gap-1 px-3 py-1 rounded-full font-bold transition-all cursor-pointer ${
                       activeCopilotTab === "chat"
-                        ? "bg-gradient-to-r from-indigo-500/30 to-purple-500/30 text-cyan-300 border border-cyan-400/40 shadow-sm"
-                        : "text-slate-400 hover:text-slate-200"
+                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     <MessageSquare className="w-3 h-3" />
-                    <span>Chat & Search</span>
+                    <span>Chat &amp; Find</span>
                   </button>
 
                   <button
@@ -893,39 +1028,39 @@ function MainApp() {
                     }}
                     className={`flex items-center gap-1 px-3 py-1 rounded-full font-semibold transition-all cursor-pointer ${
                       activeCopilotTab === "snap"
-                        ? "bg-gradient-to-r from-indigo-500/30 to-purple-500/30 text-cyan-300 border border-cyan-400/40 shadow-sm"
-                        : "text-slate-400 hover:text-slate-200"
+                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     <Camera className="w-3 h-3" />
-                    <span>Snap Search</span>
+                    <span>Photo Search</span>
                   </button>
 
                   <button
                     onClick={() => setActiveCopilotTab("voice")}
                     className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-semibold transition-all cursor-pointer ${
                       activeCopilotTab === "voice"
-                        ? "bg-gradient-to-r from-indigo-500/30 to-purple-500/30 text-cyan-300 border border-cyan-400/40 shadow-sm"
-                        : "text-slate-400 hover:text-slate-200"
+                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     <Mic className="w-3 h-3" />
                   </button>
                 </div>
 
-                <div className="text-[10px] text-slate-500 font-mono hidden sm:inline">
-                  Synced: 105 Items
+                <div className="text-[10px] text-slate-500 font-medium hidden sm:inline">
+                  ⚡ 15-Min Delivery
                 </div>
               </div>
 
               {/* Chat Stream (Scrollable message area) */}
-              <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3.5 scrollbar-thin">
+              <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3.5 scrollbar-thin bg-slate-50/50">
                 {messages.length === 0 ? (
                   <EmptyChatPrompt onSelectPrompt={handleSendMessage} />
                 ) : (
                   <>
-                    <div className="text-center text-[10px] text-slate-500 font-mono py-1">
-                      AI Agent synced with SQLite Store Nodes • Zero Hallucination
+                    <div className="text-center text-[10px] text-slate-400 font-medium py-1">
+                      Real-time retail assistant • Grounded in store inventory
                     </div>
 
                     {messages.map((msg) => {
@@ -1017,7 +1152,7 @@ function MainApp() {
               />
             </div>
           </div>
-        </div>
+        </main>
       )}
 
       {/* Global Modals */}
@@ -1033,6 +1168,11 @@ function MainApp() {
         productName={activeTrackingModal?.productName}
         carrier={activeTrackingModal?.carrier}
         estimatedArrival={activeTrackingModal?.estimatedArrival}
+      />
+      <ProductDetailModal
+        product={selectedProductForModal}
+        onClose={() => setSelectedProductForModal(null)}
+        onAskAI={handleSendMessage}
       />
     </div>
   );

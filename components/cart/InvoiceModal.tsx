@@ -6,7 +6,6 @@ import {
   Mail,
   ShieldCheck,
   CheckCircle2,
-  Sparkles,
   MapPin,
   Clock,
   CreditCard,
@@ -43,26 +42,26 @@ export function InvoiceModal({ isOpen, onClose, invoice }: InvoiceModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
       <div
-        className="relative w-full max-w-3xl bg-[#0b101d] border border-white/10 rounded-3xl shadow-2xl text-white overflow-hidden max-h-[94vh] flex flex-col"
+        className="relative w-full max-w-3xl bg-white border border-slate-200 rounded-2xl shadow-2xl text-slate-900 overflow-hidden max-h-[94vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Action Bar (Hidden in Print) */}
-        <div className="print:hidden bg-[#111827] border-b border-white/10 px-5 py-3.5 flex items-center justify-between">
+        <div className="print:hidden bg-slate-50 border-b border-slate-200 px-5 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-300">
+            <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-800 font-bold">
               <FileTextIcon className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
-                <span>Tax Invoice & Receipt</span>
-                <span className="font-mono text-[10px] text-cyan-300 font-bold px-2 py-0.5 rounded bg-cyan-400/10 border border-cyan-400/20">
+              <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                <span>Tax Invoice &amp; Cash Receipt</span>
+                <span className="font-mono text-[10px] text-slate-700 font-bold px-2 py-0.5 rounded bg-slate-200">
                   {invoice.invoiceNumber}
                 </span>
               </h3>
-              <p className="text-[10px] text-slate-400">
-                GST Compliant • Cryptographically Authenticated
+              <p className="text-xs text-slate-500">
+                GST Compliant • Registered Business Invoice
               </p>
             </div>
           </div>
@@ -70,14 +69,14 @@ export function InvoiceModal({ isOpen, onClose, invoice }: InvoiceModalProps) {
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:opacity-90 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shadow-indigo-500/20 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
             >
               <PrinterIcon className="w-3.5 h-3.5" />
               <span>Print / Download PDF</span>
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -87,145 +86,97 @@ export function InvoiceModal({ isOpen, onClose, invoice }: InvoiceModalProps) {
         {/* Printable Invoice Container */}
         <div
           id="cartwise-printable-invoice"
-          className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 text-slate-200 print:text-black print:bg-white print:p-0 print:overflow-visible print:text-xs"
+          className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 text-slate-800 print:text-black print:bg-white print:p-0 print:overflow-visible print:text-xs"
         >
           {/* Printable Invoice Header */}
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-5 border-b border-white/10 print:border-gray-300">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-5 border-b border-slate-200">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xl sm:text-2xl font-black text-cyan-400 print:text-emerald-800 tracking-tight">
+                <span className="text-xl sm:text-2xl font-black text-emerald-700 tracking-tight">
                   CartWise
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 print:border-gray-400 print:text-black">
-                  PLUS
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                  SUPERMART
                 </span>
               </div>
-              <p className="font-extrabold text-xs text-white print:text-black mt-1">
-                {invoice.storeName}
+              <p className="text-xs text-slate-500 mt-1">
+                CartWise Retail Private Limited
               </p>
-              <p className="text-[11px] text-slate-400 print:text-gray-600 leading-relaxed max-w-sm">
-                {invoice.storeAddress}
+              <p className="text-xs text-slate-500">
+                Plot 4A, Major Arterial Road, New Town, Kolkata - 700156
               </p>
-              <div className="mt-1 flex flex-wrap gap-x-3 text-[10px] font-mono text-cyan-300 print:text-gray-700">
-                <span>GSTIN: {invoice.storeGstin}</span>
-                <span>FSSAI Lic: {invoice.storeFssai}</span>
-              </div>
+              <p className="text-xs text-slate-500">
+                GSTIN: <strong className="font-mono text-slate-800">19AAACC1206D1ZM</strong> • FSSAI Lic: <strong className="font-mono text-slate-800">10020031000123</strong>
+              </p>
             </div>
 
             <div className="text-left sm:text-right space-y-1">
-              <span className="inline-block text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 print:border-gray-400 print:text-black">
+              <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
                 ORIGINAL TAX INVOICE
               </span>
-              <div className="font-mono font-bold text-sm text-white print:text-black">
-                {invoice.invoiceNumber}
+              <div className="text-xs font-mono">
+                <span className="text-slate-500">Invoice: </span>
+                <strong className="text-slate-900">{invoice.invoiceNumber}</strong>
               </div>
-              <div className="text-[11px] text-slate-400 print:text-gray-600">
-                Date: {invoice.date}
+              <div className="text-xs text-slate-500">
+                <span>Date: </span>
+                <span className="font-medium text-slate-900">{invoice.invoiceDate}</span>
               </div>
-              <div className="text-[11px] text-slate-400 print:text-gray-600">
-                Order ID: <span className="font-mono font-semibold text-cyan-300 print:text-black">#{invoice.orderId}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Two-Column Details: Customer Logistics & Payment Meta */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-[#12192b] border border-white/10 print:border print:border-gray-300 print:bg-gray-50 text-xs">
-            {/* Left: Customer Address */}
-            <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 print:text-gray-500 block">
-                Billed To & Delivery Destination
-              </span>
-              <strong className="text-sm font-bold text-white print:text-black block">
-                {invoice.customerName}
-              </strong>
-              <div className="text-slate-300 print:text-gray-700 text-[11px] leading-relaxed">
-                <p>{invoice.deliveryAddress.street_address}</p>
-                {invoice.deliveryAddress.landmark && <p>Landmark: {invoice.deliveryAddress.landmark}</p>}
-                <p className="font-semibold text-cyan-300 print:text-black">
-                  {invoice.deliveryAddress.city} - {invoice.deliveryAddress.pincode}
-                </p>
-                <p className="text-slate-400 print:text-gray-600 mt-0.5">Phone: {invoice.deliveryAddress.phone}</p>
-                {invoice.customerEmail && (
-                  <p className="text-slate-400 print:text-gray-600">Email: {invoice.customerEmail}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Right: Payment Details & Logistics */}
-            <div className="space-y-1 sm:border-l sm:border-white/10 sm:pl-4 print:border-gray-300">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 print:text-gray-500 block">
-                Payment & Fulfillment Log
-              </span>
-              <div className="space-y-1 text-[11px]">
-                <div className="flex justify-between">
-                  <span className="text-slate-400 print:text-gray-600">Payment Mode:</span>
-                  <span className="font-bold uppercase text-white print:text-black">
-                    {invoice.paymentMethod}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400 print:text-gray-600">Transaction ID:</span>
-                  <span className="font-mono text-cyan-300 print:text-black">
-                    {invoice.paymentId}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400 print:text-gray-600">Delivery Slot:</span>
-                  <span className="font-bold text-amber-300 print:text-black">
-                    {invoice.deliverySlot?.title || "30-Min Fast Express"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400 print:text-gray-600">Fulfillment Status:</span>
-                  <span className="font-bold text-emerald-400 print:text-emerald-700">
-                    Dispatched / Verified
-                  </span>
-                </div>
+              <div className="text-xs text-slate-500">
+                <span>Place of Supply: </span>
+                <strong className="text-slate-900">West Bengal (19)</strong>
               </div>
             </div>
           </div>
 
-          {/* Itemized Table */}
-          <div className="overflow-x-auto rounded-2xl border border-white/10 print:border-gray-300">
+          {/* Billed To & Shipped To */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+            <div>
+              <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px] block mb-1">
+                Billed To (Customer):
+              </span>
+              <p className="font-bold text-slate-900 text-sm">{invoice.customer.name}</p>
+              <p className="text-slate-600">{invoice.customer.email}</p>
+              <p className="text-slate-600">{invoice.customer.phone}</p>
+            </div>
+
+            <div>
+              <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px] block mb-1">
+                Delivery Destination:
+              </span>
+              <p className="font-semibold text-slate-900">{invoice.deliveryAddress.name} ({invoice.deliveryAddress.type})</p>
+              <p className="text-slate-600">{invoice.deliveryAddress.street_address}</p>
+              <p className="text-slate-600">
+                {invoice.deliveryAddress.city}, {invoice.deliveryAddress.pincode}
+              </p>
+            </div>
+          </div>
+
+          {/* Line Items Table */}
+          <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-[#141d30] print:bg-gray-200 text-slate-300 print:text-black border-b border-white/10 print:border-gray-300">
-                  <th className="py-2.5 px-3 font-bold text-[10px] uppercase">#</th>
-                  <th className="py-2.5 px-3 font-bold text-[10px] uppercase">Item Description</th>
-                  <th className="py-2.5 px-3 font-bold text-[10px] uppercase font-mono">HSN Code</th>
-                  <th className="py-2.5 px-3 font-bold text-[10px] uppercase text-center">Qty</th>
-                  <th className="py-2.5 px-3 font-bold text-[10px] uppercase text-right">Unit Price</th>
-                  <th className="py-2.5 px-3 font-bold text-[10px] uppercase text-right">Taxable</th>
-                  <th className="py-2.5 px-3 font-bold text-[10px] uppercase text-right">GST %</th>
-                  <th className="py-2.5 px-3 font-bold text-[10px] uppercase text-right">Line Total</th>
+                <tr className="border-b-2 border-slate-200 bg-slate-50 text-slate-600 font-bold">
+                  <th className="py-2.5 px-3">#</th>
+                  <th className="py-2.5 px-3">Item Description</th>
+                  <th className="py-2.5 px-3">HSN</th>
+                  <th className="py-2.5 px-3 text-right">Qty</th>
+                  <th className="py-2.5 px-3 text-right">Rate (₹)</th>
+                  <th className="py-2.5 px-3 text-right">Amount (₹)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 print:divide-gray-200">
+              <tbody className="divide-y divide-slate-100">
                 {invoice.items.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-white/[0.02]">
-                    <td className="py-2.5 px-3 font-mono text-slate-400 print:text-gray-600 text-[11px]">
-                      {item.id}
+                  <tr key={idx} className="hover:bg-slate-50/50">
+                    <td className="py-2.5 px-3 font-mono text-slate-500">{idx + 1}</td>
+                    <td className="py-2.5 px-3">
+                      <span className="font-bold text-slate-900 block">{item.name}</span>
                     </td>
-                    <td className="py-2.5 px-3 font-semibold text-white print:text-black">
-                      {item.product_name}
-                    </td>
-                    <td className="py-2.5 px-3 font-mono text-slate-400 print:text-gray-600 text-[10px]">
-                      {item.hsn_code}
-                    </td>
-                    <td className="py-2.5 px-3 text-center text-slate-300 print:text-black">
-                      {item.quantity}
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-slate-300 print:text-black">
-                      ${item.unit_price.toFixed(2)}
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-slate-400 print:text-gray-600">
-                      ${item.taxable_amount.toFixed(2)}
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-slate-400 print:text-gray-600">
-                      {item.gst_rate}%
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-400 print:text-black">
-                      ${item.line_total.toFixed(2)}
+                    <td className="py-2.5 px-3 font-mono text-slate-500">{item.hsnCode || "040900"}</td>
+                    <td className="py-2.5 px-3 text-right font-bold text-slate-900">{item.quantity}</td>
+                    <td className="py-2.5 px-3 text-right font-mono">₹{item.unitPrice.toFixed(2)}</td>
+                    <td className="py-2.5 px-3 text-right font-bold text-slate-900 font-mono">
+                      ₹{item.total.toFixed(2)}
                     </td>
                   </tr>
                 ))}
@@ -233,103 +184,65 @@ export function InvoiceModal({ isOpen, onClose, invoice }: InvoiceModalProps) {
             </table>
           </div>
 
-          {/* Tax Breakdown & Grand Total */}
-          <div className="flex flex-col sm:flex-row justify-between items-start gap-4 pt-2">
-            <div className="text-[11px] text-slate-400 print:text-gray-600 space-y-1.5 max-w-sm">
-              <div className="flex items-center gap-1.5 text-emerald-400 print:text-emerald-800 font-bold">
-                <ShieldCheck className="w-4 h-4 flex-shrink-0" />
-                <span>GST Tax Breakdown (5% Composite Grocery Rate)</span>
+          {/* Calculations & GST Breakup */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-200 text-xs">
+            <div className="space-y-1.5 p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">
+              <span className="font-bold uppercase tracking-wider text-[10px] text-slate-500 block">
+                Payment Verification
+              </span>
+              <div className="flex justify-between">
+                <span>Payment Mode:</span>
+                <strong className="text-slate-900 uppercase">{invoice.paymentDetails.method}</strong>
               </div>
-              <p className="text-[10px] leading-relaxed">
-                Central GST (CGST) calculated at 2.5% and State GST (SGST) calculated at 2.5% on all organic grocery items.
-              </p>
-              <div className="p-2.5 rounded-xl bg-[#12192b] print:bg-gray-100 border border-white/5 print:border-gray-200 font-mono text-[10px] space-y-1">
-                <div className="flex justify-between">
-                  <span>Taxable Base Value:</span>
-                  <span className="font-bold text-white print:text-black">${invoice.gst.taxableSubtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>CGST @ 2.5%:</span>
-                  <span>${invoice.gst.cgstAmount.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>SGST @ 2.5%:</span>
-                  <span>${invoice.gst.sgstAmount.toFixed(2)}</span>
-                </div>
+              <div className="flex justify-between font-mono">
+                <span>Transaction ID:</span>
+                <span className="text-slate-800">{invoice.paymentDetails.transactionId}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Payment Status:</span>
+                <span className="text-emerald-700 font-bold">PAID &amp; SETTLED</span>
               </div>
             </div>
 
-            {/* Total Calculation Card */}
-            <div className="w-full sm:w-72 p-4 rounded-2xl bg-[#12192b] border border-white/10 print:border-gray-300 print:bg-gray-50 text-xs space-y-2">
-              <div className="flex justify-between text-slate-400 print:text-gray-600">
-                <span>Subtotal</span>
-                <span className="font-mono text-white print:text-black">${invoice.subtotal.toFixed(2)}</span>
+            <div className="space-y-1.5 text-right">
+              <div className="flex justify-between text-slate-600">
+                <span>Subtotal (Taxable Value):</span>
+                <span className="font-mono font-semibold">₹{invoice.subtotal.toFixed(2)}</span>
               </div>
-
               {invoice.discountAmount > 0 && (
-                <div className="flex justify-between text-cyan-300 font-semibold print:text-blue-800">
-                  <span>Discount ({invoice.discountCode})</span>
-                  <span className="font-mono">-${invoice.discountAmount.toFixed(2)}</span>
+                <div className="flex justify-between text-emerald-700 font-semibold">
+                  <span>Coupon Discount ({invoice.discountCode}):</span>
+                  <span className="font-mono">-₹{invoice.discountAmount.toFixed(2)}</span>
                 </div>
               )}
-
-              <div className="flex justify-between text-slate-400 print:text-gray-600">
-                <span>Total GST Included</span>
-                <span className="font-mono">${invoice.gst.totalGst.toFixed(2)}</span>
+              <div className="flex justify-between text-slate-600">
+                <span>CGST (2.5%):</span>
+                <span className="font-mono">₹{invoice.cgst.toFixed(2)}</span>
               </div>
-
-              <div className="flex justify-between text-slate-400 print:text-gray-600">
-                <span>Express Delivery</span>
-                <span className="font-bold text-emerald-400 print:text-emerald-700">FREE</span>
+              <div className="flex justify-between text-slate-600">
+                <span>SGST (2.5%):</span>
+                <span className="font-mono">₹{invoice.sgst.toFixed(2)}</span>
               </div>
-
-              <div className="pt-2 border-t border-white/10 print:border-gray-300 flex justify-between items-baseline font-black text-base text-white print:text-black">
-                <span>Grand Total</span>
-                <span className="text-emerald-400 print:text-black text-lg">
-                  ${invoice.finalTotal.toFixed(2)}
-                </span>
+              <div className="flex justify-between text-slate-600">
+                <span>Delivery Fee:</span>
+                <span className="font-bold text-emerald-700">FREE</span>
+              </div>
+              <div className="pt-2 border-t-2 border-slate-200 flex justify-between font-black text-base text-slate-900">
+                <span>Total Invoice Value:</span>
+                <span className="text-slate-900 font-mono">₹{invoice.finalTotal.toFixed(2)}</span>
               </div>
             </div>
           </div>
 
-          {/* Footer Notice & Stamp */}
-          <div className="pt-4 border-t border-white/10 print:border-gray-300 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-slate-400 print:text-gray-600">
-            <div>
-              <p>Certified Computer-Generated Tax Invoice • Valid without Physical Seal</p>
-              <p className="mt-0.5">Dispatched from CartWise Hyperlocal Fulfillment Hub</p>
+          {/* Legal Sign-off Footer */}
+          <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>Computer-generated official tax invoice • No physical signature required</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono font-bold flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" />
-                <span>SIGNATURE VERIFIED</span>
-              </div>
-            </div>
+            <span>Thank you for shopping at CartWise Supermart!</span>
           </div>
         </div>
-
-        {/* Print CSS Injection */}
-        <style jsx global>{`
-          @media print {
-            body * {
-              visibility: hidden;
-            }
-            #cartwise-printable-invoice,
-            #cartwise-printable-invoice * {
-              visibility: visible;
-            }
-            #cartwise-printable-invoice {
-              position: fixed;
-              left: 0;
-              top: 0;
-              width: 100%;
-              height: auto;
-              margin: 0;
-              padding: 20px !important;
-              background: white !important;
-              color: black !important;
-            }
-          }
-        `}</style>
       </div>
     </div>
   );

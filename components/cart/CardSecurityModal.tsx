@@ -17,7 +17,7 @@ interface CardSecurityModalProps {
   amount: number;
   last4: string;
   bankName: string;
-  onVerificationSuccess: (paymentId: string) => void;
+  onVerificationSuccess: (receipt: any) => void;
 }
 
 export function CardSecurityModal({
@@ -47,93 +47,97 @@ export function CardSecurityModal({
 
     setTimeout(() => {
       const mockPayId = `pay_card_${Date.now().toString(36)}`;
-      onVerificationSuccess(mockPayId);
+      onVerificationSuccess({
+        paymentId: mockPayId,
+        method: "card",
+        amount,
+        status: "confirmed",
+      });
       setIsVerifying(false);
     }, 1200);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
       <div
-        className="relative w-full max-w-md bg-[#0d1322] border border-white/10 rounded-3xl p-5 sm:p-6 shadow-2xl text-white overflow-hidden"
+        className="relative w-full max-w-md bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-2xl text-slate-900 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-500" />
-
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+          className="absolute top-4 right-4 p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Bank & 3D Secure Header */}
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-9 h-9 rounded-xl bg-indigo-500/20 flex items-center justify-center text-cyan-300">
-            <CreditCard className="w-5 h-5" />
+        <div className="flex items-center gap-2.5 mb-4">
+          <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-800 font-bold">
+            <CreditCard className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-extrabold text-base text-white">{bankName || "Verified Bank Gateway"}</h3>
-            <p className="text-[10px] text-cyan-300 font-mono uppercase tracking-wider">
-              3D Secure 2.0 • Sandbox Authentication
+            <h3 className="font-extrabold text-base text-slate-900">{bankName || "HDFC Bank Gateway"}</h3>
+            <p className="text-xs text-slate-500">
+              Verified by Visa / Mastercard 3DS 2.0
             </p>
           </div>
         </div>
 
         {/* Order Details Banner */}
-        <div className="p-3.5 rounded-2xl bg-[#141b2c] border border-white/5 mb-4 space-y-1.5 text-xs">
-          <div className="flex justify-between text-slate-300">
+        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 mb-4 space-y-1.5 text-xs">
+          <div className="flex justify-between text-slate-600">
             <span>Merchant:</span>
-            <strong className="text-white">CartWise PLUS Groceries</strong>
+            <strong className="text-slate-900">CartWise Supermart</strong>
           </div>
-          <div className="flex justify-between text-slate-300">
+          <div className="flex justify-between text-slate-600">
             <span>Card ending in:</span>
-            <span className="font-mono text-cyan-300">•••• •••• •••• {last4 || "4242"}</span>
+            <span className="font-mono text-slate-900 font-bold">•••• •••• •••• {last4 || "4242"}</span>
           </div>
-          <div className="flex justify-between text-slate-300 pt-1 border-t border-white/5">
-            <span>Amount:</span>
-            <strong className="text-emerald-400 text-sm font-black">${amount.toFixed(2)}</strong>
+          <div className="flex justify-between text-slate-600 pt-1.5 border-t border-slate-200">
+            <span>Amount to Pay:</span>
+            <strong className="text-slate-900 text-sm font-black">₹{amount.toFixed(2)}</strong>
           </div>
         </div>
 
         {error && (
-          <div className="mb-3 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          <div className="mb-3 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleVerify} className="space-y-4">
           <div>
-            <label className="block text-[11px] font-semibold text-slate-300 mb-1 text-center">
-              One-Time Password (OTP)
+            <label className="block text-[11px] font-bold text-slate-700 mb-1">
+              Enter One-Time Password (OTP)
             </label>
             <input
               type="text"
-              maxLength={6}
               required
+              maxLength={6}
               value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ""))}
-              className="w-full text-center text-xl font-mono tracking-[0.4em] py-2.5 bg-[#151c2e] border border-white/15 rounded-2xl text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-400"
+              onChange={(e) => setOtp(e.target.value)}
+              placeholder="Enter 6-digit OTP"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2.5 px-3 text-center font-mono text-base tracking-widest text-slate-900 focus:outline-none focus:border-emerald-600"
             />
-            <p className="text-[10px] text-slate-400 text-center mt-1">
-              Sandbox test code auto-filled: <span className="text-cyan-300 font-mono font-bold">482910</span>
-            </p>
+            <span className="text-[10px] text-slate-500 block text-center mt-1">
+              Sent to mobile linked with this card
+            </span>
           </div>
 
           <button
             type="submit"
             disabled={isVerifying}
-            className="w-full py-3 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-500 hover:opacity-90 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full py-3 rounded-xl font-bold text-xs text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>{isVerifying ? "Authorizing with Bank…" : "Authorize Payment"}</span>
+            <Lock className="w-4 h-4" />
+            <span>{isVerifying ? "Authenticating with Bank…" : `Authorize Payment (₹${amount.toFixed(2)})`}</span>
           </button>
         </form>
 
-        <div className="mt-4 pt-2.5 border-t border-white/5 flex items-center justify-center gap-1.5 text-[10px] text-slate-400">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-          <span>256-Bit SSL End-to-End Encryption</span>
+        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
+          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <span>RBI Certified 2-Factor Authentication</span>
         </div>
       </div>
     </div>

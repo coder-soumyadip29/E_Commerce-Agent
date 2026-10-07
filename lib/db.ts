@@ -8,91 +8,92 @@ let betterSqliteFailed = false;
 
 export const CATEGORIES_DATA = [
   {
-    name: "Fruits & Vegetables",
-    slug: "fruits-vegetables",
+    name: "Mobiles & Tablets",
+    slug: "mobiles",
     sub_categories: [
-      { name: "Fresh Fruits", slug: "fresh-fruits" },
-      { name: "Fresh Vegetables", slug: "fresh-vegetables" },
-      { name: "Leafy Greens & Herbs", slug: "leafy-greens-herbs" }
+      { name: "Smartphones", slug: "smartphones" },
+      { name: "Tablets", slug: "tablets" },
+      { name: "Accessories", slug: "mobile-accessories" }
     ]
   },
   {
-    name: "Staples",
-    slug: "staples",
+    name: "Electronics",
+    slug: "electronics",
     sub_categories: [
-      { name: "Rice & Rice Products", slug: "rice-rice-products" },
-      { name: "Atta, Flours & Sooji", slug: "atta-flours-sooji" },
-      { name: "Pulses & Lentils", slug: "pulses-lentils" },
-      { name: "Millets & Oats", slug: "millets-oats" },
-      { name: "Salt, Sugar & Jaggery", slug: "salt-sugar-jaggery" }
+      { name: "Laptops", slug: "laptops" },
+      { name: "Televisions", slug: "televisions" },
+      { name: "Audio & Neckbands", slug: "audio" },
+      { name: "Wearables & Smartwatches", slug: "wearables" }
     ]
   },
   {
-    name: "Spices & Masalas",
-    slug: "spices-masalas",
+    name: "Appliances",
+    slug: "appliances",
     sub_categories: [
-      { name: "Whole Spices", slug: "whole-spices" },
-      { name: "Ground Spices", slug: "ground-spices" },
-      { name: "Masala Blends", slug: "masala-blends" }
+      { name: "Refrigerators", slug: "refrigerators" },
+      { name: "Air Conditioners", slug: "air-conditioners" },
+      { name: "Kitchen Appliances", slug: "kitchen-appliances" }
     ]
   },
   {
-    name: "Oils & Ghee",
-    slug: "oils-ghee",
+    name: "Fashion",
+    slug: "fashion",
     sub_categories: [
-      { name: "Cooking Oils", slug: "cooking-oils" },
-      { name: "Ghee", slug: "ghee" }
+      { name: "Men's Clothing", slug: "mens-clothing" },
+      { name: "Footwear", slug: "footwear" },
+      { name: "Watches", slug: "watches" }
     ]
   },
   {
-    name: "Dry Fruits & Nuts",
-    slug: "dry-fruits-nuts",
+    name: "Beauty & Grooming",
+    slug: "beauty",
     sub_categories: [
-      { name: "Nuts", slug: "nuts" },
-      { name: "Dried Fruits", slug: "dried-fruits" },
-      { name: "Seeds", slug: "seeds" }
+      { name: "Skincare", slug: "skincare" },
+      { name: "Makeup", slug: "makeup" },
+      { name: "Haircare & Grooming", slug: "haircare" }
     ]
   },
   {
-    name: "Dairy & Eggs",
-    slug: "dairy-eggs",
+    name: "Food & Health",
+    slug: "food-health",
     sub_categories: [
-      { name: "Milk, Curd & Beverages", slug: "milk-curd-beverages" },
-      { name: "Paneer, Butter & Cheese", slug: "paneer-butter-cheese" },
-      { name: "Eggs", slug: "eggs" }
+      { name: "Grocery Staples", slug: "grocery-staples" },
+      { name: "Oils & Ghee", slug: "oils-ghee" },
+      { name: "Dry Fruits", slug: "dry-fruits" },
+      { name: "Nutrition & Supplements", slug: "nutrition-supplements" }
     ]
   },
   {
-    name: "Meat & Fish",
-    slug: "meat-fish",
+    name: "Home & Kitchen",
+    slug: "home",
     sub_categories: [
-      { name: "Chicken", slug: "chicken" },
-      { name: "Mutton", slug: "mutton" },
-      { name: "Fish & Seafood", slug: "fish-seafood" }
+      { name: "Kitchen & Dining", slug: "kitchen-dining" },
+      { name: "Furniture", slug: "furniture" },
+      { name: "Bedding", slug: "bedding" }
     ]
   },
   {
-    name: "Beverages",
-    slug: "beverages",
+    name: "Toys & Baby Care",
+    slug: "toys-baby",
     sub_categories: [
-      { name: "Tea & Coffee", slug: "tea-coffee" },
-      { name: "Juices & Water", slug: "juices-water" }
+      { name: "Toys & Games", slug: "toys-games" },
+      { name: "Baby Care", slug: "baby-care" }
     ]
   },
   {
-    name: "Snacks & Packaged Foods",
-    slug: "snacks-packaged-foods",
+    name: "Auto Accessories",
+    slug: "auto-accessories",
     sub_categories: [
-      { name: "Biscuits & Snacks", slug: "biscuits-snacks" },
-      { name: "Noodles, Pasta & Cereals", slug: "noodles-pasta-cereals" },
-      { name: "Spreads, Sauces & Pickles", slug: "spreads-sauces-pickles" }
+      { name: "Helmets & Gear", slug: "helmets-gear" },
+      { name: "Car Electronics", slug: "car-electronics" }
     ]
   },
   {
-    name: "Bakery & Breads",
-    slug: "bakery-breads",
+    name: "Sports & Fitness",
+    slug: "sports-fitness",
     sub_categories: [
-      { name: "Breads & Buns", slug: "breads-buns" }
+      { name: "Badminton & Cricket", slug: "badminton" },
+      { name: "Fitness & Yoga", slug: "fitness-accessories" }
     ]
   }
 ];

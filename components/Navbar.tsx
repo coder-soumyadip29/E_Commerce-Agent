@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useRef, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
@@ -6,26 +8,29 @@ import {
   Camera,
   ShoppingCart,
   Heart,
-  Store,
   ChevronDown,
   Sparkles,
   Zap,
-  Apple,
-  Wheat,
+  Shirt,
+  Smartphone,
+  Laptop,
   Flame,
-  Droplets,
-  Nut,
-  Milk,
-  Coffee,
-  Cookie,
+  Home,
+  Tv,
+  Baby,
+  HeartPulse,
+  Car,
+  Trophy,
   Menu,
   X,
-  CheckCircle2,
   MapPin,
   User,
   Sliders,
   LogOut,
-  LogIn,
+  Package,
+  Clock,
+  ShieldCheck,
+  Phone,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -38,15 +43,17 @@ interface NavbarProps {
 }
 
 export const CATEGORIES_NAV = [
-  { id: "all", label: "Top Offers", icon: Zap, isSpecial: true },
-  { id: "fruits-vegetables", label: "Fruits & Veggies", icon: Apple },
-  { id: "staples", label: "Staples & Grains", icon: Wheat },
-  { id: "spices-masalas", label: "Spices & Masalas", icon: Flame },
-  { id: "oils-ghee", label: "Oils & Ghee", icon: Droplets },
-  { id: "dry-fruits-nuts", label: "Dry Fruits & Nuts", icon: Nut },
-  { id: "dairy-eggs", label: "Dairy & Eggs", icon: Milk },
-  { id: "beverages", label: "Beverages", icon: Coffee },
-  { id: "snacks-packaged-foods", label: "Snacks & Bakery", icon: Cookie },
+  { id: "all", label: "For You", icon: Sparkles, isSpecial: true },
+  { id: "fashion", label: "Fashion", icon: Shirt },
+  { id: "mobiles", label: "Mobiles", icon: Smartphone },
+  { id: "electronics", label: "Electronics", icon: Laptop },
+  { id: "beauty", label: "Beauty", icon: Flame },
+  { id: "home", label: "Home", icon: Home },
+  { id: "appliances", label: "Appliances", icon: Tv },
+  { id: "toys-baby", label: "Toys, baby..", icon: Baby },
+  { id: "food-health", label: "Food & Health", icon: HeartPulse },
+  { id: "auto-accessories", label: "Auto Access...", icon: Car },
+  { id: "sports-fitness", label: "Sports & Fitn...", icon: Trophy },
 ];
 
 export function Navbar({
@@ -72,7 +79,6 @@ export function Navbar({
   const [searchTerm, setSearchTerm] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [wishlistCount] = useState(4);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close profile dropdown on outside click
@@ -104,112 +110,121 @@ export function Navbar({
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0c1019]/90 backdrop-blur-md border-b border-white/10 transition-colors">
-      {/* Top Header Row */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3">
-        {/* Left: Brand / Logo & Delivery Address */}
-        <div className="flex items-center gap-4 flex-shrink-0">
+    <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-xs w-full">
+      {/* Top Value Ribbon - Sleek Onyx & Gold */}
+      <div className="bg-slate-950 text-slate-200 text-[11px] py-1 px-3 sm:px-6 border-b border-amber-500/20">
+        <div className="max-w-[1600px] w-full mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3 sm:gap-4 overflow-hidden text-ellipsis whitespace-nowrap">
+            <span className="flex items-center gap-1.5 font-bold text-amber-400 shrink-0">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Cartwise Plus Exclusive
+            </span>
+            <span className="hidden sm:inline text-slate-600">•</span>
+            <span className="hidden md:inline font-medium text-slate-300 truncate">
+              ⚡ Lowest Price Guarantee Across Mobiles, Tech &amp; Daily Essentials
+            </span>
+          </div>
+          <div className="flex items-center gap-3 sm:gap-4 text-[11px] shrink-0">
+            <span className="hidden sm:inline">Use coupon <strong className="text-slate-950 font-mono bg-gradient-to-r from-amber-400 to-yellow-400 px-2 py-0.5 rounded font-black">SAVE10</strong></span>
+            <button
+              onClick={() => setActiveTab("orders")}
+              className="text-amber-400 hover:text-amber-300 font-bold underline underline-offset-2 cursor-pointer"
+            >
+              Track Order
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Header Row */}
+      <div className="max-w-[1600px] w-full mx-auto px-3 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-4">
+        {/* Left: Cartwise Plus Brand Logo & Location */}
+        <div className="flex items-center gap-2.5 sm:gap-5 shrink-0">
           <button
             onClick={() => {
               setActiveTab("chat");
-              onSelectCategory?.("all");
+              onNewChat();
             }}
-            className="flex items-center gap-2.5 text-left group cursor-pointer"
+            className="flex items-center gap-2 group text-left cursor-pointer"
           >
-            <div className="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 p-[1px] shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform">
-              <div className="w-full h-full bg-[#0d121f] rounded-[11px] flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-cyan-300 animate-pulse" />
-              </div>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-slate-900 via-slate-950 to-black border border-amber-400/40 text-amber-400 font-black flex items-center justify-center text-base sm:text-lg shadow-sm group-hover:border-amber-400 transition-all shrink-0">
+              C
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-lg tracking-tight text-white font-sans">
-                  CartWise
+              <div className="flex items-center gap-1 sm:gap-1.5">
+                <span className="font-black text-base sm:text-xl tracking-tight text-slate-950">
+                  Cartwise
                 </span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 border border-cyan-400/30">
+                <span className="px-1.5 py-0.2 rounded text-[8px] sm:text-[9px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 shadow-xs">
                   PLUS
                 </span>
               </div>
-              <span className="block text-[9px] font-semibold tracking-widest text-slate-400 uppercase -mt-0.5">
-                EXPLORE AI UNIVERSE
+              <span className="text-[9px] sm:text-[10px] text-slate-500 font-medium block -mt-1 hidden xs:block">
+                Explore <span className="text-amber-600 font-bold">Cartwise Plus</span>
               </span>
             </div>
           </button>
 
-          {/* Delivery Location Pill */}
+          {/* Quick Location Selector */}
           <button
             onClick={() => setIsAddressModalOpen(true)}
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#131b2c] hover:bg-[#18233a] border border-white/10 hover:border-cyan-400/40 text-left transition-all cursor-pointer group"
-            title="Change Delivery Address"
+            className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition-colors cursor-pointer"
           >
-            <MapPin className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0 group-hover:animate-bounce" />
-            <div className="text-[11px] leading-tight max-w-[130px] md:max-w-[170px] truncate">
-              <span className="text-slate-400 font-medium">Deliver to: </span>
-              <span className="text-white font-bold">
-                {activeAddress ? `${activeAddress.label} (${activeAddress.city})` : "Select Address"}
+            <MapPin className="w-4 h-4 text-amber-600 shrink-0" />
+            <div className="text-xs leading-tight">
+              <span className="text-[10px] text-slate-500 block font-medium">Deliver to</span>
+              <span className="font-bold text-slate-800 truncate max-w-[130px] block">
+                {activeAddress ? `${activeAddress.city} ${activeAddress.zip_code}` : "Kolkata 700156"}
               </span>
             </div>
-            <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-cyan-300" />
           </button>
         </div>
 
-        {/* Center: Search Bar with Pill Aesthetics */}
-        <div className="hidden lg:flex flex-1 max-w-xl mx-4">
-          <form
-            onSubmit={handleSearchSubmit}
-            className="w-full relative flex items-center bg-[#141b2a] border border-white/10 rounded-full py-1 pl-4 pr-1.5 hover:border-white/20 focus-within:border-cyan-400/50 focus-within:ring-2 focus-within:ring-cyan-400/20 transition-all shadow-inner"
-          >
-            <Search className="w-4 h-4 text-slate-400 mr-2 flex-shrink-0" />
+        {/* Desktop Global Search Bar (Hidden on extra small mobile, shown on sm+) */}
+        <div className="hidden sm:flex flex-1 max-w-2xl mx-2 lg:mx-auto">
+          <form onSubmit={handleSearchSubmit} className="w-full relative flex items-center">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search organic raw honey, oats, cold-pressed oils..."
-              className="w-full bg-transparent border-none text-slate-100 placeholder:text-slate-500 text-xs sm:text-sm focus:outline-none"
+              placeholder="Search for Products, Brands and More"
+              className="w-full bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-amber-500 focus:bg-white rounded-xl py-2 pl-10 pr-24 text-xs sm:text-sm text-slate-900 placeholder:text-slate-500 transition-all focus:outline-none shadow-inner"
             />
-            <div className="flex items-center gap-1.5 flex-shrink-0">
+            <div className="absolute right-1.5 flex items-center gap-1">
               {onOpenPhotoModal && (
                 <button
                   type="button"
                   onClick={onOpenPhotoModal}
-                  className="p-1.5 rounded-full text-slate-400 hover:text-cyan-300 hover:bg-white/5 transition-colors cursor-pointer"
-                  title="Snap Search (Image Upload)"
+                  className="p-1.5 rounded-lg text-slate-500 hover:text-amber-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                  title="Snap Search (Photo lookup)"
                 >
                   <Camera className="w-4 h-4" />
                 </button>
               )}
               <button
                 type="submit"
-                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-md shadow-indigo-500/25 active:scale-95 transition-all cursor-pointer"
+                className="px-3.5 py-1.5 rounded-lg text-xs font-bold text-amber-400 bg-slate-950 hover:bg-slate-900 border border-amber-500/40 active:scale-95 transition-all shadow-xs cursor-pointer"
               >
-                Find
+                Search
               </button>
             </div>
           </form>
         </div>
 
-        {/* Right Action Cluster */}
+        {/* Right Header Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* User Profile / Auth Cluster with Interactive Dropdown */}
+          {/* Account Menu */}
           <div className="relative" ref={dropdownRef}>
             {user ? (
               <button
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#131927] border border-white/10 hover:border-cyan-400/40 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl hover:bg-slate-100 border border-slate-200 transition-colors cursor-pointer"
               >
-                <div className="relative w-7 h-7 rounded-full overflow-hidden ring-1 ring-emerald-400/50 bg-gradient-to-tr from-emerald-500 to-cyan-400 flex items-center justify-center font-bold text-white text-xs">
-                  {getInitials(user.name)}
-                </div>
-                <div className="hidden md:block text-left text-xs leading-tight">
-                  <div className="font-semibold text-slate-200 flex items-center gap-1">
-                    <span>{user.name}</span>
-                    <ChevronDown className="w-3 h-3 text-slate-400" />
-                  </div>
-                  <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
-                    <CheckCircle2 className="w-3 h-3" />
-                    <span>{user.vip_level}</span>
-                  </div>
-                </div>
+                <User className="w-4 h-4 text-amber-600" />
+                <span className="font-bold text-xs text-slate-800 hidden md:inline">
+                  {user.name.split(" ")[0]}
+                </span>
+                <ChevronDown className="w-3 h-3 text-slate-400" />
               </button>
             ) : (
               <button
@@ -217,21 +232,21 @@ export function Navbar({
                   setAuthModalTab("signin");
                   setIsAuthModalOpen(true);
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 transition-all cursor-pointer shadow-sm"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-900 hover:bg-amber-50 border border-slate-200 hover:border-amber-400 transition-all cursor-pointer"
               >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>Sign In</span>
+                <User className="w-4 h-4 text-amber-600" />
+                <span>Login</span>
               </button>
             )}
 
             {/* Profile Dropdown Menu */}
             {profileDropdownOpen && user && (
-              <div className="absolute right-0 mt-2 w-64 bg-[#0e1422] border border-white/15 rounded-2xl shadow-2xl p-2 z-50 text-white animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="p-2.5 border-b border-white/10 space-y-0.5">
-                  <div className="font-bold text-xs text-white">{user.name}</div>
-                  <div className="text-[11px] text-slate-400 truncate">{user.email}</div>
-                  <div className="inline-block mt-1 px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    {user.vip_level}
+              <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 text-slate-800 animate-fade-in">
+                <div className="p-3 border-b border-slate-100 space-y-0.5 bg-slate-50 rounded-xl mb-1">
+                  <div className="font-bold text-xs text-slate-900">{user.name}</div>
+                  <div className="text-[11px] text-slate-500 truncate">{user.email}</div>
+                  <div className="inline-block mt-1 px-2 py-0.5 rounded text-[9px] font-extrabold uppercase bg-amber-100 text-amber-900 border border-amber-300">
+                    {user.vip_level || "Cartwise Plus"}
                   </div>
                 </div>
 
@@ -239,12 +254,23 @@ export function Navbar({
                   <button
                     onClick={() => {
                       setProfileDropdownOpen(false);
+                      setActiveTab("orders");
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-amber-50/50 transition-colors text-left cursor-pointer font-medium"
+                  >
+                    <Package className="w-4 h-4 text-slate-500" />
+                    <span>My Orders &amp; Live Tracking</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
                       setIsAddressModalOpen(true);
                     }}
-                    className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-colors text-left cursor-pointer"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-amber-50/50 transition-colors text-left cursor-pointer font-medium"
                   >
-                    <MapPin className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>Delivery Addresses ({user.addresses?.length || 0})</span>
+                    <MapPin className="w-4 h-4 text-slate-500" />
+                    <span>Saved Delivery Addresses</span>
                   </button>
 
                   <button
@@ -252,34 +278,22 @@ export function Navbar({
                       setProfileDropdownOpen(false);
                       setIsPersonalisationModalOpen(true);
                     }}
-                    className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-colors text-left cursor-pointer"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-amber-50/50 transition-colors text-left cursor-pointer font-medium"
                   >
-                    <Sliders className="w-3.5 h-3.5 text-purple-400" />
-                    <span>AI Personalisation & Diet</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setProfileDropdownOpen(false);
-                      setAuthModalTab("signup");
-                      setIsAuthModalOpen(true);
-                    }}
-                    className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-colors text-left cursor-pointer"
-                  >
-                    <User className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Switch / Create Account</span>
+                    <Sliders className="w-4 h-4 text-slate-500" />
+                    <span>Dietary &amp; AI Preferences</span>
                   </button>
                 </div>
 
-                <div className="pt-1 border-t border-white/10">
+                <div className="pt-1 border-t border-slate-100">
                   <button
                     onClick={() => {
                       setProfileDropdownOpen(false);
                       logout();
                     }}
-                    className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-rose-400 hover:bg-rose-500/10 transition-colors text-left text-xs font-semibold cursor-pointer"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 transition-colors text-left text-xs font-semibold cursor-pointer"
                   >
-                    <LogOut className="w-3.5 h-3.5" />
+                    <LogOut className="w-4 h-4" />
                     <span>Sign Out</span>
                   </button>
                 </div>
@@ -287,180 +301,162 @@ export function Navbar({
             )}
           </div>
 
-          {/* Become a Seller */}
+          {/* Orders Quick Tab */}
           <button
-            onClick={() => alert("CartWise Seller Portal: AI Automated Inventory onboarding active.")}
-            className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-slate-300 hover:text-white hover:bg-white/5 border border-white/10 transition-colors cursor-pointer"
+            onClick={() => setActiveTab(activeTab === "orders" ? "chat" : "orders")}
+            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeTab === "orders"
+                ? "bg-slate-900 text-amber-400 border border-amber-500/40"
+                : "text-slate-700 hover:bg-slate-100 border border-slate-200"
+            }`}
           >
-            <Store className="w-3.5 h-3.5 text-purple-400" />
-            <span>Become a Seller</span>
+            <Package className="w-4 h-4 text-slate-500" />
+            <span className="hidden md:inline">Orders</span>
           </button>
 
-          {/* Wishlist Heart */}
-          <button
-            onClick={() => alert(`Your Wishlist has ${wishlistCount} saved organic items.`)}
-            className="relative p-2 rounded-full text-slate-300 hover:text-white hover:bg-white/5 border border-white/10 transition-colors cursor-pointer"
-            title="Wishlist"
-          >
-            <Heart className="w-4 h-4 text-slate-300" />
-            <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[17px] h-[17px] text-[10px] font-bold text-white bg-purple-600 rounded-full border border-[#0c1019]">
-              {wishlistCount}
-            </span>
-          </button>
-
-          {/* Cart Pill with Price */}
+          {/* Cart Pill with Badge */}
           <button
             onClick={() => setIsCartOpen(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#151d2e] hover:bg-[#1a2337] border border-white/10 hover:border-emerald-400/40 text-slate-200 transition-all cursor-pointer group"
+            className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-900 border border-amber-500/40 active:scale-95 text-white font-bold text-xs transition-all cursor-pointer shadow-xs shrink-0"
           >
-            <ShoppingCart className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-white">Cart</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[11px] font-black text-emerald-300 bg-emerald-500/20">
-              {cartCount}
-            </span>
-            <span className="hidden sm:inline text-xs font-semibold text-slate-300 border-l border-white/10 pl-2">
-              ${subtotal.toFixed(2)}
-            </span>
+            <div className="relative">
+              <ShoppingCart className="w-4 h-4 text-amber-400" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-[9px] flex items-center justify-center shadow-xs">
+                  {cartCount}
+                </span>
+              )}
+            </div>
+            <span className="hidden xs:inline text-slate-100">Cart</span>
+            {subtotal > 0 && (
+              <span className="text-[11px] font-black text-amber-400 border-l border-slate-700 pl-1.5">
+                ₹{subtotal.toFixed(0)}
+              </span>
+            )}
           </button>
 
-          {/* Live Agent Grid Badge */}
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-[11px] font-semibold">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span>Live 75/25 Agent Grid</span>
-          </div>
-
-          {/* Mobile hamburger */}
+          {/* Mobile menu trigger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 cursor-pointer"
+            className="sm:hidden p-1.5 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 cursor-pointer"
+            aria-label="Toggle Menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-white/10 bg-[#0c1019] px-4 py-3 space-y-3">
-          <form onSubmit={handleSearchSubmit} className="relative flex items-center">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search organic catalog..."
-              className="w-full bg-[#141b2a] border border-white/10 rounded-full py-2 pl-9 pr-20 text-xs text-white placeholder:text-slate-500 focus:outline-none"
-            />
+      {/* Mobile Search Row (< sm screens) */}
+      <div className="sm:hidden px-3 pb-2.5 pt-1 border-t border-slate-100">
+        <form onSubmit={handleSearchSubmit} className="relative flex items-center">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search Products, Brands..."
+            className="w-full bg-slate-50 border border-slate-200 focus:border-amber-500 focus:bg-white rounded-xl py-2 pl-9 pr-18 text-xs text-slate-900 placeholder:text-slate-500 transition-all focus:outline-none shadow-inner"
+          />
+          <div className="absolute right-1 flex items-center gap-1">
+            {onOpenPhotoModal && (
+              <button
+                type="button"
+                onClick={onOpenPhotoModal}
+                className="p-1 text-slate-500 hover:text-amber-600"
+              >
+                <Camera className="w-3.5 h-3.5" />
+              </button>
+            )}
             <button
               type="submit"
-              className="absolute right-1 px-3 py-1 text-xs font-bold text-white bg-indigo-600 rounded-full"
+              className="px-2.5 py-1 rounded-lg text-[11px] font-bold text-amber-400 bg-slate-950 border border-amber-500/40 shadow-xs"
             >
-              Search
-            </button>
-          </form>
-
-          {/* User Quick Actions on Mobile */}
-          <div className="p-2.5 rounded-2xl bg-[#141c2c] border border-white/5 space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-500 to-cyan-400 flex items-center justify-center font-bold text-white text-xs">
-                  {getInitials(user?.name)}
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-white">{user ? user.name : "Guest Shopper"}</div>
-                  <div className="text-[10px] text-cyan-300">{user ? user.vip_level : "Sign in for VIP perks"}</div>
-                </div>
-              </div>
-
-              {user ? (
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    logout();
-                  }}
-                  className="text-xs font-semibold text-rose-400 hover:underline"
-                >
-                  Sign Out
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setAuthModalTab("signin");
-                    setIsAuthModalOpen(true);
-                  }}
-                  className="px-2.5 py-1 rounded-lg text-xs font-bold text-white bg-indigo-600"
-                >
-                  Sign In
-                </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-white/5">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setIsAddressModalOpen(true);
-                }}
-                className="flex items-center gap-1.5 p-2 rounded-xl bg-[#1a2336] text-[11px] font-semibold text-slate-200"
-              >
-                <MapPin className="w-3.5 h-3.5 text-cyan-400" />
-                <span className="truncate">Addresses</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setIsPersonalisationModalOpen(true);
-                }}
-                className="flex items-center gap-1.5 p-2 rounded-xl bg-[#1a2336] text-[11px] font-semibold text-slate-200"
-              >
-                <Sliders className="w-3.5 h-3.5 text-purple-400" />
-                <span className="truncate">Diet & AI Prefs</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 pt-1">
-            <button
-              onClick={() => {
-                setActiveTab("chat");
-                setMobileMenuOpen(false);
-              }}
-              className={`p-2.5 rounded-xl text-xs font-semibold text-center ${
-                activeTab === "chat" ? "bg-indigo-600 text-white" : "bg-[#141b2a] text-slate-300"
-              }`}
-            >
-              Copilot Chat
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab("orders");
-                setMobileMenuOpen(false);
-              }}
-              className={`p-2.5 rounded-xl text-xs font-semibold text-center ${
-                activeTab === "orders" ? "bg-indigo-600 text-white" : "bg-[#141b2a] text-slate-300"
-              }`}
-            >
-              Past Orders
+              Go
             </button>
           </div>
+        </form>
+      </div>
 
-          <div className="pt-2 flex items-center justify-between border-t border-white/5 text-xs text-slate-400">
-            <span>Agent Status: Online</span>
-            <button
-              onClick={() => {
-                onOpenTrace?.();
-                setMobileMenuOpen(false);
-              }}
-              className="text-cyan-400 font-semibold underline"
-            >
-              Inspect Agent Trace
-            </button>
-          </div>
+      {/* Mobile Hamburger Drawer */}
+      {mobileMenuOpen && (
+        <div className="sm:hidden border-t border-slate-200 bg-white p-3 space-y-2 animate-fade-in text-xs font-medium text-slate-700">
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setIsAddressModalOpen(true);
+            }}
+            className="w-full flex items-center gap-2 p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-left"
+          >
+            <MapPin className="w-4 h-4 text-amber-600 shrink-0" />
+            <span className="truncate">
+              Deliver to: <strong>{activeAddress ? `${activeAddress.city} ${activeAddress.zip_code}` : "Kolkata 700156"}</strong>
+            </span>
+          </button>
+
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setActiveTab("orders");
+            }}
+            className="w-full flex items-center gap-2 p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-left"
+          >
+            <Package className="w-4 h-4 text-slate-600" />
+            <span>My Orders &amp; Track Deliveries</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setIsPersonalisationModalOpen(true);
+            }}
+            className="w-full flex items-center gap-2 p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-left"
+          >
+            <Sliders className="w-4 h-4 text-slate-600" />
+            <span>Dietary &amp; AI Copilot Preferences</span>
+          </button>
         </div>
       )}
+
+      {/* Category Navigation Icons Ribbon (Smooth Touch Horizontal Scroll) */}
+      <div className="border-t border-slate-200 bg-white overflow-x-auto scrollbar-none px-2 sm:px-6">
+        <div className="max-w-[1600px] w-full mx-auto flex items-center justify-start sm:justify-between gap-1.5 sm:gap-2 py-2">
+          {CATEGORIES_NAV.map((cat) => {
+            const Icon = cat.icon;
+            const isSelected = selectedCategory === cat.id;
+
+            return (
+              <button
+                key={cat.id}
+                onClick={() => {
+                  onSelectCategory?.(cat.id);
+                  if (activeTab !== "chat") setActiveTab("chat");
+                }}
+                className={`flex flex-col items-center gap-1 px-2.5 sm:px-3 py-1 rounded-xl transition-all cursor-pointer shrink-0 relative group ${
+                  isSelected
+                    ? "text-slate-950 font-bold"
+                    : "text-slate-600 hover:text-slate-950"
+                }`}
+              >
+                <div
+                  className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-colors ${
+                    isSelected
+                      ? "bg-slate-950 text-amber-400 shadow-xs"
+                      : "bg-slate-50 text-slate-600 group-hover:bg-amber-50 group-hover:text-amber-700"
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </div>
+                <span className="text-[10px] sm:text-[11px] font-semibold whitespace-nowrap">
+                  {cat.label}
+                </span>
+                {isSelected && (
+                  <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-amber-500 rounded-full" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </header>
   );
 }

@@ -624,7 +624,7 @@ function formatAssistantPayloadFromToolResult(params: {
     if (userText.toLowerCase().includes("compare") && collectedProducts.length >= 2) {
       const compProducts = collectedProducts.slice(0, 3);
       const compPoints: Record<string, string[]> = {
-        Price: compProducts.map((p) => `$${p.price.toFixed(2)}`),
+        Price: compProducts.map((p) => `₹${p.price.toFixed(2)}`),
         "Organic Certified": compProducts.map((p) =>
           p.is_organic ? "100% Organic" : "Standard Natural"
         ),
@@ -686,7 +686,7 @@ function formatAssistantPayloadFromToolResult(params: {
       if (!res.success) {
         fallbackText = res.message;
       } else {
-        fallbackText = `🧾 **Tax Invoice ${res.invoiceNumber} (Order #${res.orderId})**\n- **GSTIN:** ${res.storeGstin}\n- **Subtotal:** $${res.subtotal.toFixed(2)}\n- **GST (CGST 2.5% + SGST 2.5%):** $${res.gst.totalGst.toFixed(2)}\n- **Final Paid Total:** $${res.totalAmount.toFixed(2)}\n- **Billed To:** ${res.deliveryAddress}\n[Download PDF Receipt](${res.downloadPdfUrl})`;
+        fallbackText = `🧾 **Tax Invoice ${res.invoiceNumber} (Order #${res.orderId})**\n- **GSTIN:** ${res.storeGstin}\n- **Subtotal:** ₹${res.subtotal.toFixed(2)}\n- **GST (CGST 2.5% + SGST 2.5%):** ₹${res.gst.totalGst.toFixed(2)}\n- **Final Paid Total:** ₹${res.totalAmount.toFixed(2)}\n- **Billed To:** ${res.deliveryAddress}\n[Download PDF Receipt](${res.downloadPdfUrl})`;
       }
     } else {
       fallbackText = JSON.stringify(toolExec.result);
@@ -711,10 +711,10 @@ function formatDirectTextResponse(userText: string, directText: string): Assista
         type: "clarify",
         question: directText || "Which type of honey are you looking for?",
         options: [
-          "Organic Raw Honey ($14.99)",
-          "Manuka Honey ($29.99)",
-          "Wildflower Honey ($12.99)",
-          "Under $15 Options",
+          "Organic Raw Honey (₹14.99)",
+          "Manuka Honey (₹29.99)",
+          "Wildflower Honey (₹12.99)",
+          "Under ₹50 Options",
         ],
       };
     }
@@ -1137,7 +1137,7 @@ async function executeDeterministicAgent(messages: ChatMessage[]): Promise<Assis
     if (res.products.length >= 2) {
       const compProducts = res.products.slice(0, 3);
       const compPoints: Record<string, string[]> = {
-        Price: compProducts.map((p) => `$${p.price.toFixed(2)}`),
+        Price: compProducts.map((p) => `₹${p.price.toFixed(2)}`),
         "Organic Certified": compProducts.map((p) => (p.is_organic ? "100% Organic" : "Standard Natural")),
         "Customer Rating": compProducts.map((p) => `★ ${p.average_rating?.toFixed(1) || "5.0"} (${p.review_count || 0} reviews)`),
         Availability: compProducts.map((p) => (p.stock > 0 ? `In Stock (${p.stock} units)` : "Out of Stock")),
@@ -1152,13 +1152,15 @@ async function executeDeterministicAgent(messages: ChatMessage[]): Promise<Assis
 
   // 5. Product catalog search
   let maxPrice: number | undefined;
-  const priceMatch = userText.match(/under\s*\$?(\d+)/i) || userText.match(/below\s*\$?(\d+)/i);
+  const priceMatch =
+    userText.match(/(?:under|below|less than)\s*(?:₹|rs\.?|inr|\$)?\s*(\d+)/i) ||
+    userText.match(/(?:₹|rs\.?|inr|\$)\s*(\d+)/i);
   if (priceMatch) maxPrice = Number(priceMatch[1]);
 
   const isOrganic = lower.includes("organic") ? true : undefined;
   const cleanSearch = lower
-    .replace(/under\s*\$?\d+/gi, "")
-    .replace(/below\s*\$?\d+/gi, "")
+    .replace(/(?:under|below|less than)\s*(?:₹|rs\.?|inr|\$)?\s*\d+/gi, "")
+    .replace(/(?:₹|rs\.?|inr|\$)\s*\d+/gi, "")
     .replace(/show\s*me|i\s*want|looking\s*for|find|give\s*me|buy/gi, "")
     .trim();
 

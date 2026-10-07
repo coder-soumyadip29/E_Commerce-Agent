@@ -29,7 +29,7 @@ db.exec(`
   DROP TABLE IF EXISTS products;
 `);
 
-// Setup Tables with sub_category support
+// Setup Tables with category & sub_category support
 db.exec(`
   CREATE TABLE products (
       id INTEGER PRIMARY KEY,
@@ -37,11 +37,12 @@ db.exec(`
       category TEXT NOT NULL,
       sub_category TEXT,
       price REAL NOT NULL,
+      original_price REAL,
       description TEXT,
       is_organic INTEGER DEFAULT 0,
+      image_url TEXT,
       stock INTEGER NOT NULL DEFAULT 20
   );
-
 
   CREATE TABLE IF NOT EXISTS reviews (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -95,7 +96,7 @@ db.exec(`
       pincode TEXT NOT NULL,
       type TEXT CHECK(type IN ('Home', 'Work', 'Other')) DEFAULT 'Home',
       is_default INTEGER DEFAULT 0,
-      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      created_at DEFAULT CURRENT_TIMESTAMP
   );
 `);
 
@@ -104,9 +105,8 @@ const insertAddr = db.prepare(`
   INSERT INTO user_addresses (user_id, name, phone, street_address, landmark, city, pincode, type, is_default, created_at)
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
-insertAddr.run(1, "Maya Sterling", "+91 98765 43210", "Penthouse 4B, 742 Evergreen Terrace", "Near Pine Valley Tech Park", "Bangalore", "560103", "Home", 1, "2026-03-01 10:00:00");
-insertAddr.run(1, "Maya Sterling (Work)", "+91 98765 43210", "BioTech Innovation Hub, Tower C, Level 8", "Opposite Metro Pillar 184", "Bangalore", "560001", "Work", 0, "2026-03-02 14:30:00");
-
+insertAddr.run(1, "Rahul Sharma", "+91 98765 43210", "Flat 4B, Greenwood Park, Action Area 2", "Near City Center 2", "Kolkata", "700156", "Home", 1, "2026-03-01 10:00:00");
+insertAddr.run(1, "Rahul Sharma (Work)", "+91 98765 43210", "EcoSpace IT Park, Block 3A, Sector V", "Opposite Tata Medical Center", "Kolkata", "700160", "Work", 0, "2026-03-02 14:30:00");
 
 // Setup Views
 db.exec(`
@@ -129,290 +129,178 @@ db.exec(`
   DELETE FROM products;
 `);
 
-// Comprehensive Product Catalog matching user categories & sub-categories
-// [id, name, category, sub_category, price, description, is_organic, stock]
-const products: Array<[number, string, string, string, number, string, number, number]> = [
-  // 1. Fruits & Vegetables (fruits-vegetables)
-  // Fresh Fruits (fresh-fruits)
-  [1,  "Organic Alphonso Mangoes (1kg)",        "fruits-vegetables", "fresh-fruits",        12.99, "Naturally ripened sweet organic Alphonso mangoes from Ratnagiri", 1, 25],
-  [2,  "Shimla Royal Red Apples (1kg)",         "fruits-vegetables", "fresh-fruits",         5.99, "Crisp, sweet, and juicy handpicked royal red apples",             0, 30],
-  [3,  "Organic Cavendish Bananas (1 Dozen)",   "fruits-vegetables", "fresh-fruits",         3.49, "Farm fresh sweet organic bananas rich in potassium",              1, 40],
-  [4,  "Nagpur Sweet Oranges (1kg)",            "fruits-vegetables", "fresh-fruits",         4.99, "Juicy and tangy sweet oranges rich in Vitamin C",                 0, 25],
-  [5,  "Organic Pomegranate (500g)",            "fruits-vegetables", "fresh-fruits",         6.49, "Ruby-red antioxidant-rich organic pomegranate pearls",            1, 20],
-  [6,  "Fresh Strawberries (250g Box)",         "fruits-vegetables", "fresh-fruits",         4.99, "Sweet aromatic farm-picked fresh red strawberries",               1, 15],
-  [7,  "Organic Papaya (1 unit)",               "fruits-vegetables", "fresh-fruits",         3.99, "Sweet digestive-friendly ripe organic papaya",                    1, 20],
-  [8,  "Seedless Watermelon (Whole ~2.5kg)",    "fruits-vegetables", "fresh-fruits",         5.49, "Crisp, ultra-hydrating sweet red seedless watermelon",            0, 15],
+// Comprehensive Real-World Cartwise Plus Catalog across Categories
+// [id, name, category, sub_category, price, original_price, description, is_organic, image_url, stock]
+const products: Array<[number, string, string, string, number, number, string, number, string, number]> = [
+  // ==========================================
+  // 1. MOBILES (mobiles)
+  // ==========================================
+  [101, "Motorola edge 70 Fusion (12GB RAM, 256GB)", "mobiles", "smartphones", 29999, 34999, "144Hz 3D Curved pOLED Display, Sony LYTIA 700C Camera with OIS, IP68 Underwater Protection", 0, "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80", 40],
+  [102, "Apple iPhone 15 (Blue, 128GB)", "mobiles", "smartphones", 63999, 79900, "Dynamic Island, 48MP Main Camera, 2x Telephoto, All-Day Battery Life, USB-C Charging", 0, "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80", 25],
+  [103, "OnePlus 12R 5G (Cool Blue, 16GB, 256GB)", "mobiles", "smartphones", 39999, 45999, "Snapdragon 8 Gen 2, 4th Gen LTPO 120Hz ProXDR Display, 5500 mAh Battery, 100W SUPERVOOC", 0, "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80", 30],
+  [104, "Samsung Galaxy S24 5G (Onyx Black, 256GB)", "mobiles", "smartphones", 74999, 89999, "Galaxy AI, 50MP Dual Telephoto, Dynamic AMOLED 2X Display with Armor Aluminum 2.0", 0, "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=600&q=80", 18],
+  [105, "Realme K14 Plus 5G (Submarine Blue, 128GB)", "mobiles", "smartphones", 25999, 29999, "Periscope Portrait Camera, Luxury Watch Design, 120Hz Curved Vision OLED Display", 0, "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=600&q=80", 50],
+  [106, "POCO X6 Pro 5G (Racing Yellow, 512GB)", "mobiles", "smartphones", 26999, 31999, "Dimensity 8300 Ultra processor, 1.5K 120Hz AMOLED, 64MP OIS Triple Camera", 0, "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?auto=format&fit=crop&w=600&q=80", 35],
 
-  // Fresh Vegetables (fresh-vegetables)
-  [9,  "Farm Fresh Hybrid Tomatoes (1kg)",      "fruits-vegetables", "fresh-vegetables",     2.99, "Plump, ripe red tomatoes ideal for curries and salads",          0, 50],
-  [10, "Organic Red Onions (1kg)",              "fruits-vegetables", "fresh-vegetables",     3.29, "Crisp and pungent organic red onions, kitchen essential",         1, 45],
-  [11, "Russet Potatoes (1kg)",                 "fruits-vegetables", "fresh-vegetables",     2.49, "All-purpose fresh earthy potatoes for baking and cooking",        0, 60],
-  [12, "Organic Orange Carrots (500g)",         "fruits-vegetables", "fresh-vegetables",     2.99, "Sweet crunchy organic carrots rich in beta-carotene",             1, 35],
-  [13, "Green Bell Peppers (Capsicum 500g)",    "fruits-vegetables", "fresh-vegetables",     3.49, "Crisp vibrant green bell peppers, great for stir-fries",          0, 25],
-  [14, "Organic Broccoli Florets (400g)",       "fruits-vegetables", "fresh-vegetables",     4.49, "Nutrient-packed crisp organic green broccoli florets",            1, 20],
-  [15, "English Seedless Cucumbers (500g)",     "fruits-vegetables", "fresh-vegetables",     2.29, "Cool refreshing thin-skinned English cucumbers",                  0, 30],
+  // ==========================================
+  // 2. ELECTRONICS & LAPTOPS (electronics)
+  // ==========================================
+  [201, "ASUS Vivobook 15 OLED Laptop (Intel Core i5 13th Gen, 16GB, 512GB SSD)", "electronics", "laptops", 59990, 74990, "15.6-inch FHD OLED 600nits HDR display, Thin & Light 1.7kg, Windows 11 + MS Office 2024", 0, "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=600&q=80", 15],
+  [202, "TCL 43-inch 4K Ultra HD Smart QLED Google TV (43C645)", "electronics", "televisions", 25999, 39990, "QLED 4K with Dolby Vision & Atmos, 120Hz DLG Game Master, Hands-Free Voice Control", 0, "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=600&q=80", 20],
+  [203, "OnePlus Bullets Wireless Z2 Bluetooth Neckband (Acoustic Red)", "electronics", "audio", 1499, 2299, "12.4mm Bass Drivers, 30 Hours Playtime, Fast 10-Min Charge = 20 Hours Battery, IP55 Sweatproof", 0, "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80", 100],
+  [204, "Sony WH-1000XM5 Wireless Active Noise Cancelling Headphones", "electronics", "audio", 28990, 34990, "Industry Leading ANC with 8 Mics, Auto NC Optimizer, Hi-Res Audio LDAC, 30h Battery", 0, "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=600&q=80", 12],
+  [205, "Apple iPad Air M2 (11-inch, Wi-Fi, 128GB, Space Grey)", "electronics", "tablets", 57900, 59900, "Apple M2 chip, Liquid Retina display with P3 wide color, 12MP Center Stage Front Camera", 0, "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=600&q=80", 22],
+  [206, "Noise ColorFit Pulse 4 Smart Watch with Bluetooth Calling", "electronics", "wearables", 1799, 4999, "1.85-inch Advanced AMOLED display, 7-day battery, 100+ Sports Modes, Health Tracking", 0, "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80", 80],
 
-  // Leafy Greens & Herbs (leafy-greens-herbs)
-  [16, "Organic Baby Spinach (250g)",           "fruits-vegetables", "leafy-greens-herbs",   3.99, "Tender pesticide-free organic baby spinach leaves",               1, 25],
-  [17, "Fresh Organic Coriander (Bunch)",       "fruits-vegetables", "leafy-greens-herbs",   1.49, "Aromatic fresh green cilantro leaves for garnishing",             1, 40],
-  [18, "Fresh Garden Mint Leaves (Bunch)",      "fruits-vegetables", "leafy-greens-herbs",   1.49, "Cool invigorating fresh mint leaves for teas and chutneys",       0, 35],
-  [19, "Organic Tuscan Kale (200g)",            "fruits-vegetables", "leafy-greens-herbs",   4.29, "Hearty superfood dark green organic kale leaves",                 1, 20],
+  // ==========================================
+  // 3. APPLIANCES (appliances)
+  // ==========================================
+  [301, "LG 190L 4-Star Smart Inverter Direct Cool Single Door Refrigerator", "appliances", "refrigerators", 16990, 22499, "Smart Inverter Compressor, Fastest in Ice Making, Toughened Glass Shelves, Works without Stabilizer", 0, "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?auto=format&fit=crop&w=600&q=80", 15],
+  [302, "Voltas 1.5 Ton 5-Star Adjustable Inverter Split AC (185V Vectra Elite)", "appliances", "air-conditioners", 34990, 67990, "4-in-1 Adjustable Cooling Modes, 100% Copper Condenser, Anti-dust Filter, Stabilizer Free", 0, "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80", 10],
+  [303, "Philips Digital Air Fryer HD9252/90 (4.1 Liter, 1400W)", "appliances", "kitchen-appliances", 7499, 11995, "Rapid Air Technology for 90% Less Fat, Touch Screen with 7 Pre-set Menus, Dishwasher Safe", 0, "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80", 25],
+  [304, "Prestige Induction Cooktop PIC 20 (1600 Watt with Indian Menu Options)", "appliances", "kitchen-appliances", 2399, 3645, "Push Button Controls, Automatic Voltage Regulator, Anti-Magnetic Wall, Feather Touch Control", 0, "https://images.unsplash.com/photo-1588854337221-4cf9fa96059c?auto=format&fit=crop&w=600&q=80", 40],
 
-  // 2. Staples (staples)
-  // Rice & Rice Products (rice-rice-products)
-  [20, "Royal Aged Basmati Rice (5kg)",         "staples",           "rice-rice-products",  18.99, "Extra-long grain aromatic aged basmati rice for biryanis",        0, 30],
-  [21, "Organic Brown Rice (1kg)",              "staples",           "rice-rice-products",   7.99, "Nutritious whole grain long-grain organic brown rice",            1, 25],
-  [22, "Sona Masoori Raw Rice (5kg)",           "staples",           "rice-rice-products",  14.49, "Lightweight daily-use South Indian aromatic white rice",          0, 30],
-  [23, "Organic Thick Poha / Flattened Rice (500g)", "staples",      "rice-rice-products",   2.99, "Clean wholesome organic flattened rice for quick breakfast",      1, 25],
+  // ==========================================
+  // 4. FASHION (fashion)
+  // ==========================================
+  [401, "Levi's Men 511 Slim Fit Stretchable Denim Jeans (Dark Indigo)", "fashion", "mens-clothing", 2499, 3999, "Classic 5-pocket styling, Cotton-elastane blend for flexibility and premium everyday durability", 0, "https://images.unsplash.com/photo-1542272604-780c96856478?auto=format&fit=crop&w=600&q=80", 50],
+  [402, "Puma Flyer Runner Running & Training Shoes for Men (Black-White)", "fashion", "footwear", 2199, 3499, "SoftFoam+ comfort sockliner for instant step-in cushioning, breathable mesh upper", 0, "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80", 60],
+  [403, "Titan Neo Analog Dial Quartz Watch for Men (Stainless Steel Strap)", "fashion", "watches", 4295, 5995, "Midnight blue sunray dial, Mineral glass, 50m water resistance, 2-year manufacturer warranty", 0, "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=600&q=80", 30],
+  [404, "U.S. Polo Assn. Solid Slim Fit Pure Cotton Polo T-Shirt", "fashion", "mens-clothing", 999, 1799, "100% Pique Cotton, Signature brand embroidery, Ribbed collar and sleeve hems", 0, "https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=600&q=80", 75],
 
-  // Atta, Flours & Sooji (atta-flours-sooji)
-  [24, "Organic 100% Whole Wheat Atta (5kg)",   "staples",           "atta-flours-sooji",   12.99, "Stone-ground organic whole wheat flour for soft rotis",           1, 35],
-  [25, "Multigrain Super Flour (5kg)",          "staples",           "atta-flours-sooji",   14.99, "Enriched flour blend with ragi, oats, chana, and wheat",          1, 25],
-  [26, "Organic Besan / Gram Flour (1kg)",      "staples",           "atta-flours-sooji",    4.49, "Fine milled pure organic chickpea gram flour",                    1, 30],
-  [27, "Roasted Semolina / Sooji (1kg)",        "staples",           "atta-flours-sooji",    3.49, "Pre-roasted granulated wheat sooji for halwa and upma",           0, 25],
+  // ==========================================
+  // 5. BEAUTY & HEALTH (beauty)
+  // ==========================================
+  [501, "Minimalist 10% Niacinamide Face Serum with Zinc (30ml)", "beauty", "skincare", 599, 649, "Clinically tested for blemish marks reduction, sebum control, and pore refining", 1, "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80", 65],
+  [502, "Cetaphil Gentle Skin Cleanser for Sensitive & Dry Skin (250ml)", "beauty", "skincare", 499, 575, "Dermatologist recommended, Soap-free, Fragrance-free hydrating cleanser with Niacinamide", 0, "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80", 80],
+  [503, "Maybelline SuperStay Matte Ink Liquid Lipstick (Pioneer 20)", "beauty", "makeup", 549, 699, "Up to 16 Hours intense matte color payoff, smudge-proof, transfer-resistant precision applicator", 0, "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=600&q=80", 90],
 
-  // Pulses & Lentils (pulses-lentils)
-  [28, "Organic Toor / Arhar Dal (1kg)",        "staples",           "pulses-lentils",       5.49, "Unpolished protein-rich organic yellow pigeon peas",              1, 40],
-  [29, "Organic Yellow Moong Dal (1kg)",        "staples",           "pulses-lentils",       4.99, "Split yellow moong dal, easy to digest and nutritious",           1, 35],
-  [30, "Organic Chana Dal (1kg)",               "staples",           "pulses-lentils",       4.29, "High-fiber split Bengal gram lentils",                            1, 30],
-  [31, "Whole Black Urad Dal (1kg)",            "staples",           "pulses-lentils",       4.99, "Premium whole black gram for authentic Dal Makhani",              0, 25],
-  [32, "Organic Masoor Dal / Red Lentils (1kg)","staples",           "pulses-lentils",       3.99, "Quick-cooking organic split red lentils",                         1, 30],
+  // ==========================================
+  // 6. FOOD & HEALTH / GROCERY (food-health)
+  // ==========================================
+  [601, "Organic Raw Forest Honey (Cold-Extracted, 500g Jar)", "food-health", "grocery-staples", 349, 499, "Unheated, unfiltered wild forest honey directly extracted from certified natural reserves", 1, "/images/honey.png", 55],
+  [602, "Cold-Pressed Extra Virgin Olive Oil (1 Liter Glass Bottle)", "food-health", "oils-ghee", 999, 1450, "First cold-pressed Spanish olives, rich in healthy monounsaturated fats & Vitamin E", 1, "/images/avocado_oil.png", 40],
+  [603, "Optimum Nutrition (ON) Gold Standard 100% Whey Protein (Double Rich Chocolate 1kg)", "food-health", "nutrition-supplements", 3299, 3999, "24g Whey protein per scoop, 5.5g BCAAs, Primary source Whey Isolate, Instantized for easy mixing", 0, "https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?auto=format&fit=crop&w=600&q=80", 35],
+  [604, "Whole Grain Rolled Oats (High Fiber, 1kg Pouch)", "food-health", "grocery-staples", 289, 399, "100% whole grain gluten-free oats, rich in beta-glucan fiber for daily heart and gut wellness", 1, "/images/oats.png", 70],
+  [605, "California Jumbo Raw Almonds (500g Fresh Pack)", "food-health", "dry-fruits", 499, 699, "Vacuum packed premium crunchy California almonds rich in plant protein and healthy fats", 1, "https://images.unsplash.com/photo-1508061252445-b95013cb7c5b?auto=format&fit=crop&w=600&q=80", 50],
+  [606, "Aashirvaad Shudh Chakki Atta (100% Whole Wheat, 10kg)", "food-health", "grocery-staples", 445, 495, "Crafted from golden grains using traditional 4-step chakki process for soft, fluffy rotis", 1, "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80", 120],
+  [607, "Tata Sampann Unpolished Toor Dal / Arhar Dal (1kg)", "food-health", "grocery-staples", 189, 230, "Unpolished natural toor dal sourced from certified farms, rich in wholesome protein", 1, "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80", 90],
+  [608, "Amul Pure Cow Ghee (1 Liter Tin)", "food-health", "oils-ghee", 620, 675, "Traditional granular texture and authentic aroma, rich source of Vitamin A, D, E & K", 1, "https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=600&q=80", 60],
 
-  // Millets & Oats (millets-oats)
-  [33, "Organic Whole Grain Rolled Oats (1kg)", "staples",           "millets-oats",         5.49, "Heart-healthy 100% whole grain rolled oats for porridge",         1, 40],
-  [34, "Traditional Steel-Cut Oats (1kg)",      "staples",           "millets-oats",         6.99, "Coarse hearty steel-cut oats with low glycemic index",            0, 30],
-  [35, "Organic Foxtail Millet (1kg)",          "staples",           "millets-oats",         5.99, "Ancient gluten-free grain rich in minerals and fiber",            1, 25],
-  [36, "Organic Ragi / Finger Millet Flour (1kg)","staples",         "millets-oats",         4.49, "Calcium-rich sprouted organic finger millet flour",               1, 30],
+  // ==========================================
+  // 7. HOME & KITCHEN (home)
+  // ==========================================
+  [701, "Milton Thermosteel Flip Lid 1000ml Vacuum Insulated Flask", "home", "kitchen-dining", 949, 1320, "24 Hours Hot & Cold retention, 100% Food grade 304 Stainless steel with carry bag", 0, "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80", 60],
+  [702, "Wakefit Orthopedic Memory Foam King Size Mattress (78x72x6 Inch)", "home", "furniture", 13499, 18999, "Next-Gen memory foam with differential pressure zone support, breathable 100% cotton cover", 0, "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80", 15],
+  [703, "Solimo Microfiber Reversible Comforter / Blanket (Double Bed, Aqua Blue)", "home", "bedding", 1499, 2500, "200 GSM hollow siliconized polyester filling, lightweight warmth, hypoallergenic", 0, "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=600&q=80", 40],
 
-  // Salt, Sugar & Jaggery (salt-sugar-jaggery)
-  [37, "Himalayan Pink Salt (1kg)",             "staples",           "salt-sugar-jaggery",   3.99, "100% natural unrefined mineral-rich pink rock salt",              1, 50],
-  [38, "Organic Raw Cane Sugar (1kg)",          "staples",           "salt-sugar-jaggery",   4.49, "Unbleached organic granulated cane sugar",                        1, 40],
-  [39, "Pure Organic Jaggery Powder (1kg)",     "staples",           "salt-sugar-jaggery",   4.99, "Traditional unrefined organic gur powder sweetener",              1, 35],
+  // ==========================================
+  // 8. TOYS & BABY CARE (toys-baby)
+  // ==========================================
+  [801, "LEGO Classic Medium Creative Brick Box Building Set (484 Pieces)", "toys-baby", "toys-games", 2499, 3299, "Inspires open-ended creativity with 35 vibrant brick colors, windows, eyes, and tires", 0, "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?auto=format&fit=crop&w=600&q=80", 30],
+  [802, "Pampers All Round Protection Pants Diapers (Large, 74 Count)", "toys-baby", "baby-care", 1199, 1499, "Up to 12 hours absorption with magic gel technology and lotion with aloe vera", 0, "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=600&q=80", 50],
 
-  // 3. Spices & Masalas (spices-masalas)
-  // Whole Spices (whole-spices)
-  [40, "Green Cardamom / Elaichi (100g)",       "spices-masalas",    "whole-spices",         8.99, "Fragrant green cardamom pods from Kerala hills",                  1, 25],
-  [41, "Organic Whole Black Pepper (100g)",     "spices-masalas",    "whole-spices",         4.99, "Bold Malabar organic whole black peppercorns",                    1, 30],
-  [42, "Ceylon Cinnamon Sticks (100g)",         "spices-masalas",    "whole-spices",         5.49, "True sweet aromatic organic Ceylon cinnamon quills",              1, 25],
-  [43, "Organic Cumin Seeds / Jeera (200g)",    "spices-masalas",    "whole-spices",         3.99, "Sun-dried aromatic whole cumin seeds",                            1, 40],
-  [44, "Whole Cloves / Laung (100g)",           "spices-masalas",    "whole-spices",         4.49, "Handpicked premium whole aromatic cloves",                        0, 30],
+  // ==========================================
+  // 9. AUTO ACCESSORIES (auto-accessories)
+  // ==========================================
+  [901, "Steelbird SB-50 Adonis Full Face Helmet with Visor (Matte Black, L)", "auto-accessories", "helmets-gear", 1499, 2199, "ISI Certified (IS:4151), High impact ABS shell, breathable multi-pore interior padding", 0, "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=600&q=80", 40],
+  [902, "70mai Smart Dash Cam 1S (1080P Full HD, Night Vision, G-Sensor)", "auto-accessories", "car-electronics", 3999, 5499, "Sony IMX307 sensor, 130-degree wide angle, voice control and emergency auto-recording", 0, "https://images.unsplash.com/photo-1508974239320-0a029497e820?auto=format&fit=crop&w=600&q=80", 25],
 
-  // Ground Spices (ground-spices)
-  [45, "Organic Lakadong Turmeric Powder (200g)","spices-masalas",   "ground-spices",        4.99, "High-curcumin organic Meghalaya turmeric powder",                 1, 40],
-  [46, "Kashmiri Red Chilli Powder (200g)",     "spices-masalas",    "ground-spices",        4.49, "Vibrant natural red color with mild aromatic heat",               0, 35],
-  [47, "Organic Coriander Powder / Dhaniya (200g)","spices-masalas", "ground-spices",        3.49, "Freshly ground fragrant organic coriander seed powder",           1, 35],
-
-  // Masala Blends (masala-blends)
-  [48, "Royal Biryani Masala Blend (100g)",     "spices-masalas",    "masala-blends",        3.99, "Authentic blend of 15 royal spices for fragrant biryani",         0, 30],
-  [49, "Organic Garam Masala (100g)",           "spices-masalas",    "masala-blends",        4.29, "Traditional roasted whole spice blend for curries",               1, 30],
-  [50, "Madras Sambhar Masala (100g)",          "spices-masalas",    "masala-blends",        3.49, "Authentic South Indian aromatic roasted lentil & spice mix",      0, 25],
-
-  // 4. Oils & Ghee (oils-ghee)
-  // Cooking Oils (cooking-oils)
-  [51, "Organic Extra Virgin Olive Oil (500ml)","oils-ghee",         "cooking-oils",        16.99, "Cold-pressed unfiltered organic EVOO from Mediterranean olives",  1, 20],
-  [52, "Cold-Pressed Virgin Coconut Oil (500ml)","oils-ghee",        "cooking-oils",        12.49, "Pure raw cold-pressed organic coconut oil for cooking & skin",    1, 25],
-  [53, "Cold-Pressed Mustard Oil / Kachi Ghani (1L)","oils-ghee",    "cooking-oils",         6.99, "Pungent traditional cold-pressed mustard seed oil",              0, 30],
-  [54, "Organic Cold-Pressed Groundnut Oil (1L)","oils-ghee",        "cooking-oils",         8.99, "Pure wood-pressed peanut oil with high smoke point",              1, 20],
-  [55, "Cold-Pressed Avocado Oil (500ml)",      "oils-ghee",         "cooking-oils",        18.99, "Premium extra virgin avocado oil with 500°F smoke point",         0, 15],
-
-  // Ghee (ghee)
-  [56, "Pure Desi Cow Ghee (A2 Bilona 500ml)",  "oils-ghee",         "ghee",                19.99, "Traditional Vedic bilona churned A2 cow milk ghee, golden & nutty",1, 20],
-  [57, "Organic Cultured Grass-Fed Ghee (500ml)","oils-ghee",        "ghee",                17.49, "Clarified butter made from certified organic pasture-fed cream",   1, 25],
-
-  // 5. Dry Fruits & Nuts (dry-fruits-nuts)
-  // Nuts (nuts)
-  [58, "Organic California Almonds (500g)",     "dry-fruits-nuts",   "nuts",                11.99, "Raw, crunchy, unpasteurized premium organic almonds",            1, 35],
-  [59, "Whole Roasted Cashews (500g)",          "dry-fruits-nuts",   "nuts",                 9.99, "Lightly sea-salted dry-roasted jumbo cashew nuts",                0, 30],
-  [60, "Raw California Walnut Kernels (250g)",  "dry-fruits-nuts",   "nuts",                 7.99, "Omega-3 rich fresh halves and pieces of raw walnuts",             1, 25],
-  [61, "Roasted Salted Pistachios (250g)",      "dry-fruits-nuts",   "nuts",                 6.99, "In-shell lightly salted crunchy roasted pistachios",              0, 25],
-
-  // Dried Fruits (dried-fruits)
-  [62, "Premium Medjool Dates (500g)",          "dry-fruits-nuts",   "dried-fruits",         8.99, "Large, soft, and caramel-sweet organic Medjool dates",            1, 30],
-  [63, "Organic Dried Mango Slices (200g)",     "dry-fruits-nuts",   "dried-fruits",         7.99, "Unsweetened chewy organic dried mango slices, no sulfites",       1, 25],
-  [64, "Golden Afghani Raisins / Kishmish (250g)","dry-fruits-nuts", "dried-fruits",         4.49, "Seedless sweet sun-dried golden raisins",                         0, 30],
-  [65, "Organic Dried Turkish Figs / Anjeer (250g)","dry-fruits-nuts","dried-fruits",        8.49, "High-fiber soft and sweet organic sun-dried figs",                1, 20],
-
-  // Seeds (seeds)
-  [66, "Organic Black Chia Seeds (250g)",       "dry-fruits-nuts",   "seeds",                8.49, "Organic raw chia seeds packed with fiber and omega-3s",           1, 40],
-  [67, "Raw Pumpkin Seeds (250g)",              "dry-fruits-nuts",   "seeds",                5.99, "Zinc-rich unsalted raw green pumpkin seed kernels",               1, 30],
-  [68, "Roasted Sunflower Seeds (250g)",        "dry-fruits-nuts",   "seeds",                4.49, "Crisp lightly toasted sunflower seeds for snacks and salads",     0, 35],
-
-  // 6. Dairy & Eggs (dairy-eggs)
-  // Milk, Curd & Beverages (milk-curd-beverages)
-  [69, "Organic Whole Pasteurized Milk (1L)",   "dairy-eggs",        "milk-curd-beverages",  3.49, "Fresh pasture-raised organic whole milk with cream top",          1, 40],
-  [70, "Organic Almond Milk (Unsweetened 1L)",  "dairy-eggs",        "milk-curd-beverages",  4.99, "Fortified plant-based organic almond milk with zero added sugar", 1, 35],
-  [71, "Barista Style Oat Milk (1L)",           "dairy-eggs",        "milk-curd-beverages",  4.49, "Creamy foaming oat milk designed for lattes and smoothies",       0, 30],
-  [72, "Artisan Greek Yogurt / Dahi (400g)",    "dairy-eggs",        "milk-curd-beverages",  3.99, "Thick, protein-dense probiotic strained Greek yogurt",            1, 25],
-
-  // Paneer, Butter & Cheese (paneer-butter-cheese)
-  [73, "Fresh Malai Paneer (200g)",             "dairy-eggs",        "paneer-butter-cheese", 3.99, "Soft, melt-in-mouth cottage cheese paneer blocks",                 0, 30],
-  [74, "Organic Unsalted Grass-Fed Butter (250g)","dairy-eggs",      "paneer-butter-cheese", 4.99, "Rich golden butter churned from grass-fed organic cream",         1, 25],
-  [75, "Aged White Cheddar Cheese (200g)",      "dairy-eggs",        "paneer-butter-cheese", 5.99, "Sharp and tangy 12-month aged white cheddar cheese",             0, 20],
-
-  // Eggs (eggs)
-  [76, "Organic Free-Range Brown Eggs (Pack of 12)","dairy-eggs",    "eggs",                 5.99, "Certified humane pasture-raised organic brown eggs with golden yolks",1, 40],
-  [77, "Farm Fresh White Eggs (Pack of 6)",     "dairy-eggs",        "eggs",                 2.49, "Daily fresh farm-collected grade A white eggs",                   0, 50],
-
-  // 7. Meat & Fish (meat-fish)
-  // Chicken (chicken)
-  [78, "Fresh Boneless Chicken Breast (500g)",  "meat-fish",         "chicken",              6.99, "Antibiotic-free tender skinless chicken breast fillets",          0, 25],
-  [79, "Organic Free-Range Chicken Curry Cut (500g)","meat-fish",    "chicken",              7.49, "Freshly cut skinless organic chicken with bones for curries",     1, 20],
-
-  // Mutton (mutton)
-  [80, "Tender Goat Mutton Curry Cut (500g)",   "meat-fish",         "mutton",              11.99, "Freshly trimmed tender bone-in goat mutton pieces",               0, 15],
-  [81, "Fresh Lean Mutton Keema / Mince (500g)","meat-fish",         "mutton",              12.99, "Finely ground fresh mutton mince for kebabs and keema curry",     0, 15],
-
-  // Fish & Seafood (fish-seafood)
-  [82, "Fresh Atlantic Salmon Fillet (300g)",   "meat-fish",         "fish-seafood",        14.99, "Rich in omega-3 wild-caught fresh salmon fillet portion",        0, 15],
-  [83, "Cleaned & Deveined Tiger Prawns (250g)","meat-fish",         "fish-seafood",        10.99, "Fresh sweet jumbo tiger prawns ready to cook",                   0, 20],
-  [84, "Fresh Rohu Fish Steaks (500g)",         "meat-fish",         "fish-seafood",         7.99, "Freshwater clean-cut rohu fish steaks for traditional fish curry",0, 20],
-
-  // 8. Beverages (beverages)
-  // Tea & Coffee (tea-coffee)
-  [85, "Organic Japanese Sencha Green Tea (50 Bags)","beverages",    "tea-coffee",          12.99, "High-antioxidant steamed Japanese green tea bags",                1, 30],
-  [86, "Assam Golden CTC Black Tea (500g)",     "beverages",         "tea-coffee",           8.49, "Strong, brisk, full-bodied black tea for traditional Masala Chai",0, 35],
-  [87, "Organic Chamomile Herbal Tea (30 Bags)","beverages",         "tea-coffee",           8.99, "Calming caffeine-free whole chamomile flower infusion",           1, 25],
-  [88, "Single-Origin Ethiopian Arabica Beans (250g)","beverages",   "tea-coffee",          16.99, "Medium roast whole bean coffee with floral & citrus notes",       1, 20],
-  [89, "Dark Roast Italian Espresso Blend (250g)","beverages",       "tea-coffee",          14.49, "Bold ground espresso blend with notes of dark chocolate",         0, 25],
-
-  // Juices & Water (juices-water)
-  [90, "100% Cold-Pressed Valencia Orange Juice (1L)","beverages",   "juices-water",         5.99, "Pure raw squeezed orange juice with pulp, no added sugar",        1, 25],
-  [91, "Natural Sparkling Mineral Water (750ml)","beverages",        "juices-water",         2.99, "Effervescent mountain spring water in glass bottle",              0, 40],
-  [92, "Organic Tender Coconut Water (330ml)",  "beverages",         "juices-water",         3.29, "Electrolyte-rich pure organic coconut water",                     1, 35],
-
-  // 9. Snacks & Packaged Foods (snacks-packaged-foods)
-  // Biscuits & Snacks (biscuits-snacks)
-  [93, "Organic Oat & Honey Crunch Cookies (200g)","snacks-packaged-foods","biscuits-snacks",4.49,"Wholesome whole oat cookies sweetened with pure honey",          1, 30],
-  [94, "Roasted Multigrain Makhana / Foxnuts (100g)","snacks-packaged-foods","biscuits-snacks",3.99,"Light crunchy roasted lotus seeds with pink salt",             1, 35],
-  [95, "Gourmet Trail Mix with Nuts & Berries (250g)","snacks-packaged-foods","biscuits-snacks",8.49,"Premium mix of almonds, cranberries, pumpkin seeds, and M&Ms",0, 25],
-
-  // Noodles, Pasta & Cereals (noodles-pasta-cereals)
-  [96, "Organic Whole Wheat Fusilli Pasta (500g)","snacks-packaged-foods","noodles-pasta-cereals",4.99,"Italian bronze-cut durum whole wheat spiral pasta",          1, 30],
-  [97, "Multi-Millet Hakka Noodles (200g)",     "snacks-packaged-foods","noodles-pasta-cereals",3.49,"Air-dried non-fried noodles made from ragi, jowar and wheat",   1, 25],
-  [98, "Organic Honey Almond Granola (400g)",   "snacks-packaged-foods","noodles-pasta-cereals",9.99,"Toasted oat clusters with sliced almonds and raw wildflower honey",1, 25],
-
-  // Spreads, Sauces & Pickles (spreads-sauces-pickles)
-  [99, "Organic Raw Forest Honey (500g)",       "snacks-packaged-foods","spreads-sauces-pickles",14.99,"Unfiltered cold-extracted raw wild forest honey",            1, 30],
-  [100,"Organic Manuka Honey UMF 10+ (250g)",   "snacks-packaged-foods","spreads-sauces-pickles",29.99,"Medical-grade certified raw New Zealand Manuka honey",        1, 15],
-  [101,"All-Natural Crunchy Peanut Butter (500g)","snacks-packaged-foods","spreads-sauces-pickles",5.99,"100% roasted peanuts, zero palm oil or hydrogenated fats", 1, 35],
-  [102,"Traditional Mango Pickle in Mustard Oil (300g)","snacks-packaged-foods","spreads-sauces-pickles",3.99,"Authentic sun-cured spiced raw mango pickle",        0, 30],
-
-  // 10. Bakery & Breads (bakery-breads)
-  // Breads & Buns (breads-buns)
-  [103,"100% Whole Wheat Sourdough Loaf (450g)","bakery-breads",    "breads-buns",          5.49, "Naturally fermented artisan sourdough with crispy crust",         1, 20],
-  [104,"Artisan 7-Grain Multigrain Bread (400g)","bakery-breads",   "breads-buns",          4.99, "Soft sliced loaf crusted with flax, oats, and sunflower seeds",   1, 25],
-  [105,"Brioche Gourmet Burger Buns (Pack of 4)","bakery-breads",   "breads-buns",          3.99, "Buttery, golden, glossy French brioche hamburger buns",           0, 20],
+  // ==========================================
+  // 10. SPORTS & FITNESS (sports-fitness)
+  // ==========================================
+  [1001, "Yonex Muscle Power 29 Light Graphite Badminton Racquet", "sports-fitness", "badminton", 2199, 3490, "High modulus graphite frame, Isometric head shape with Muscle Power shock absorption", 0, "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=600&q=80", 45],
+  [1002, "Boldfit Anti-Skid Yoga Mat 6mm with Carrying Strap (Navy Blue)", "sports-fitness", "fitness-accessories", 799, 1499, "Eco-friendly TPE material, double-sided non-slip grip, sweat-resistant & easy to clean", 1, "https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80", 60],
 ];
 
-const insertProduct = db.prepare(
-  "INSERT INTO products (id, name, category, sub_category, price, description, is_organic, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-);
-
-db.transaction(() => {
-  for (const p of products) {
-    insertProduct.run(p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
-  }
-})();
-
-console.log(`Inserted ${products.length} products across all 10 categories and sub-categories.`);
-
-// Reviews Seeding
-const sampleReviews: Array<[number, number, string, string]> = [
-  [1,  5.0, "Priya S.",    "Best Alphonso mangoes I've ever ordered online! So sweet and aromatic."],
-  [1,  4.5, "Rahul K.",    "Very fresh and juicy. Delivered without any bruises."],
-  [3,  5.0, "Amit M.",     "Fresh sweet bananas, perfect for daily smoothies."],
-  [9,  4.5, "Anjali R.",   "Firm red tomatoes, lasted almost two weeks in the fridge."],
-  [16, 5.0, "Vikram N.",   "Very crisp and clean organic baby spinach."],
-  [20, 5.0, "Sunita D.",   "Incredible fragrance and long grains for my Sunday biryani."],
-  [24, 5.0, "Rohan G.",    "Rotis come out so soft and fluffy with this organic atta."],
-  [28, 4.5, "Meera T.",    "Authentic unpolished toor dal, cooks very fast."],
-  [33, 5.0, "Daniel B.",   "Great everyday breakfast oats, high fiber and very fresh."],
-  [40, 5.0, "Kavita S.",   "Super fragrant green cardamom pods, excellent quality."],
-  [45, 5.0, "Arun V.",     "High curcumin turmeric, beautiful vibrant golden color."],
-  [51, 5.0, "Elena M.",    "Best cold-pressed extra virgin olive oil for salad dressings."],
-  [56, 5.0, "Rajesh P.",   "Pure A2 Vedic desi cow ghee, amazing aroma and granular texture!"],
-  [58, 5.0, "Nate W.",     "Crunchy, fresh, and large size organic almonds."],
-  [62, 5.0, "Sarah H.",    "Soft, caramel-like sweet Medjool dates. Highest quality."],
-  [69, 4.5, "David C.",    "Tastes like real farm milk, so rich and fresh."],
-  [76, 5.0, "Jessica T.",  "Golden orange yolks, best organic pasture-raised eggs."],
-  [85, 5.0, "Taro K.",     "Very authentic Japanese sencha green tea flavor."],
-  [99, 5.0, "Alice M.",    "Amazing raw honey! Pure and unfiltered."],
-  [103,5.0, "Marcus L.",   "Perfect sourdough crust and airy texture, love this bakery bread."]
-];
-
-const insertReview = db.prepare(
-  "INSERT INTO reviews (product_id, rating, reviewer_name, review_text) VALUES (?, ?, ?, ?)"
-);
-
-db.transaction(() => {
-  for (const r of sampleReviews) {
-    insertReview.run(r[0], r[1], r[2], r[3]);
-  }
-})();
-
-// Historic orders seeding
-db.exec("UPDATE sqlite_sequence SET seq = 1038 WHERE name = 'orders'");
-db.exec("INSERT OR IGNORE INTO sqlite_sequence (name, seq) VALUES ('orders', 1038)");
-
-const insertOrder = db.prepare(`
-  INSERT INTO orders (
-    id, total, status, created_at, payment_id, payment_method, delivery_address_json, delivery_slot, tracking_status, estimated_delivery_time
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+// Insert Products
+const insertProduct = db.prepare(`
+  INSERT INTO products (id, name, category, sub_category, price, original_price, description, is_organic, image_url, stock)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
-const insertOrderItem = db.prepare(
-  "INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity) VALUES (?, ?, ?, ?, ?)"
+
+for (const p of products) {
+  insertProduct.run(...p);
+}
+
+// Insert Reviews
+const reviews: Array<[number, number, string, string]> = [
+  [101, 5.0, "Amit Chatterjee", "Motorola edge 70 Fusion has the best curved screen and camera in under ₹30,000! Super fast delivery."],
+  [102, 5.0, "Priya Nair", "iPhone 15 is worth every rupee. Brilliant camera and 15-minute quick delivery was unbelievable!"],
+  [103, 4.8, "Rohan Verma", "OnePlus 12R battery backup is immense. Charges in 25 mins with 100W SUPERVOOC."],
+  [201, 4.9, "Siddharth Roy", "ASUS Vivobook 15 OLED display is stunning for video editing and movies. Best laptop under 60k."],
+  [202, 4.8, "Kavita Rao", "TCL 43 inch QLED picture quality and Google TV UI is super smooth. Incredible value."],
+  [203, 4.7, "Vikas Gupta", "OnePlus Bullets Z2 has thunderous bass and battery lasts for almost a week on single charge."],
+  [301, 4.9, "Ananya Sen", "LG Smart Inverter fridge cools quickly, low power consumption and runs smoothly."],
+  [401, 4.8, "Deepak Joshi", "Original Levi's 511 fit is perfect with great stretch and comfort."],
+  [501, 4.9, "Sneha Mukherjee", "Minimalist Niacinamide serum cleared my acne marks within 3 weeks. Genuine product."],
+  [601, 5.0, "Vikram Malhotra", "Best organic raw honey I have tasted. 100% authentic and unadulterated."],
+  [603, 4.9, "Arjun Kapoor", "Optimum Nutrition Gold Standard Whey is 100% authentic with scratch verification code."],
+];
+
+const insertReview = db.prepare(`
+  INSERT INTO reviews (product_id, rating, reviewer_name, review_text)
+  VALUES (?, ?, ?, ?)
+`);
+
+for (const r of reviews) {
+  insertReview.run(...r);
+}
+
+// Seed initial orders
+const insertOrder = db.prepare(`
+  INSERT INTO orders (id, total, status, created_at, payment_id, payment_method, delivery_address_json, delivery_slot, tracking_status, estimated_delivery_time)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`);
+
+const insertOrderItem = db.prepare(`
+  INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity)
+  VALUES (?, ?, ?, ?, ?)
+`);
+
+insertOrder.run(
+  1040,
+  349.00,
+  "out_for_delivery",
+  "2026-03-07 11:30:00",
+  "pay_upi_gpay_1040",
+  "upi",
+  JSON.stringify({
+    name: "Rahul Sharma",
+    phone: "+91 98765 43210",
+    street_address: "Flat 4B, Greenwood Park, Action Area 2",
+    city: "Kolkata",
+    pincode: "700156",
+    type: "Home",
+  }),
+  "15-Min Express Delivery",
+  "out_for_delivery",
+  "12 mins"
 );
 
-db.transaction(() => {
-  // Order #1039: Completed / Delivered
-  insertOrder.run(
-    1039,
-    25.97,
-    "delivered",
-    "2024-09-20 14:30:00",
-    "pay_upi_seed_1039",
-    "upi",
-    JSON.stringify({ name: "Maya Sterling", street_address: "Penthouse 4B, 742 Evergreen Terrace", city: "Bangalore", pincode: "560103" }),
-    "⚡ Instant 30-Min Fast Delivery",
-    "delivered",
-    "Delivered"
-  );
-  insertOrderItem.run(1039, 99, "Organic Raw Forest Honey (500g)", 14.99, 1);
-  insertOrderItem.run(1039, 33, "Organic Whole Grain Rolled Oats (1kg)", 5.49, 2);
+insertOrderItem.run(1040, 601, "Organic Raw Forest Honey (Cold-Extracted, 500g Jar)", 349.00, 1);
 
-  // Order #1040: Out for Delivery (Rider assigned, live countdown)
-  insertOrder.run(
-    1040,
-    21.98,
-    "transit",
-    "2024-09-25 10:15:00",
-    "pay_card_seed_1040",
-    "card",
-    JSON.stringify({ name: "Maya Sterling", street_address: "Penthouse 4B, 742 Evergreen Terrace", city: "Bangalore", pincode: "560103" }),
-    "⚡ Instant 30-Min Fast Delivery",
-    "out_for_delivery",
-    "14 mins"
-  );
-  insertOrderItem.run(1040, 85, "Organic Japanese Sencha Green Tea (50 Bags)", 12.99, 1);
-  insertOrderItem.run(1040, 87, "Organic Chamomile Herbal Tea (30 Bags)", 8.99, 1);
+insertOrder.run(
+  1039,
+  1499.00,
+  "delivered",
+  "2026-03-05 09:15:00",
+  "pay_card_1039",
+  "card",
+  JSON.stringify({
+    name: "Rahul Sharma",
+    phone: "+91 98765 43210",
+    street_address: "Flat 4B, Greenwood Park, Action Area 2",
+    city: "Kolkata",
+    pincode: "700156",
+    type: "Home",
+  }),
+  "Morning Slot (7 AM - 10 AM)",
+  "delivered",
+  "Delivered"
+);
 
-  // Order #1041: Order Packed & Quality Checked
-  insertOrder.run(
-    1041,
-    20.48,
-    "packing",
-    "2024-09-28 09:45:00",
-    "pay_upi_seed_1041",
-    "upi",
-    JSON.stringify({ name: "Maya Sterling", street_address: "BioTech Innovation Hub, Tower 3", city: "Bangalore", pincode: "560103" }),
-    "🌅 Morning Slot (7:00 AM – 10:00 AM)",
-    "packing",
-    "35 mins"
-  );
-  insertOrderItem.run(1041, 58, "Organic California Almonds (500g)", 11.99, 1);
-  insertOrderItem.run(1041, 66, "Organic Black Chia Seeds (250g)", 8.49, 1);
-})();
+insertOrderItem.run(1039, 203, "OnePlus Bullets Wireless Z2 Bluetooth Neckband", 1499.00, 1);
 
-db.exec("UPDATE sqlite_sequence SET seq = 1041 WHERE name = 'orders'");
-
-console.log("Database seeded successfully with all 10 categories!");
+console.log(`Database seeded with ${products.length} products across 10 Cartwise Plus categories, ratings, reviews, and test orders.`);
+db.close();

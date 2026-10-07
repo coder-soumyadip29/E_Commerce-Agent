@@ -17,6 +17,8 @@ import {
   Volume2,
   Square,
   ShieldCheck,
+  Truck,
+  Star,
 } from "lucide-react";
 import { useVoice } from "@/context/VoiceContext";
 
@@ -54,7 +56,7 @@ export function ProductsMessage({
     } else {
       const speechSummary = `${text || "Verified matches found."} ${products
         .slice(0, 2)
-        .map((p) => `${p.name} for $${p.price}`)
+        .map((p) => `${p.name} for ₹${p.price}`)
         .join(". ")}`;
       speak(speechSummary);
       setIsPlayingAudio(true);
@@ -76,87 +78,100 @@ export function ProductsMessage({
 
   return (
     <div className="flex items-start gap-2.5 w-full animate-fade-in">
-      <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
-        <Bot className="w-4 h-4 text-cyan-300" />
+      <div className="w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+        <Bot className="w-4 h-4 text-white" />
       </div>
 
       <div className="flex-1 space-y-3 min-w-0">
         {/* Intro text if present */}
         {text && (
-          <div className="bg-[#131929] border border-white/10 rounded-2xl rounded-tl-xs p-3.5 text-slate-200 text-xs sm:text-sm">
+          <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-xs p-3.5 text-slate-800 text-xs sm:text-sm shadow-xs">
             <div className="flex items-center justify-between">
-              <p>{text}</p>
+              <p className="font-medium text-slate-800">{text}</p>
               <button
                 type="button"
                 onClick={handleToggleSpeak}
-                className="text-slate-400 hover:text-cyan-300 transition-colors p-1"
+                className="text-slate-400 hover:text-emerald-700 transition-colors p-1"
                 title="Listen to audio"
               >
                 {isPlayingAudio ? (
-                  <Square className="w-3.5 h-3.5 text-red-400 fill-current animate-pulse" />
+                  <Square className="w-3.5 h-3.5 text-red-500 fill-current animate-pulse" />
                 ) : (
-                  <Volume2 className="w-3.5 h-3.5" />
+                  <Volume2 className="w-3.5 h-3.5 text-slate-500" />
                 )}
               </button>
             </div>
           </div>
         )}
 
-        {/* 1. Verified Match Header */}
+        {/* 1. Verified Product Match Cards */}
         {products.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-cyan-400">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              <span>CartWise Agent Verified Match</span>
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Available in Store</span>
             </div>
 
-            {/* Product Card Styled Exactly Like Aura */}
             {products.map((product) => {
               const originalPrice = (product.price * 1.25).toFixed(2);
               return (
                 <div
                   key={product.id}
-                  className="bg-[#121827] border border-white/10 rounded-2xl p-3 sm:p-4 space-y-3 hover:border-cyan-500/30 transition-all shadow-md"
+                  className="bg-white border border-slate-200 rounded-2xl p-3.5 sm:p-4 space-y-3 hover:border-emerald-400 transition-all shadow-xs"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-xl bg-[#090d16] border border-white/5 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
+                    <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden shrink-0 flex items-center justify-center p-1.5">
                       <img
                         src={product.image_url || "/images/honey.png"}
                         alt={product.name}
-                        className="max-h-full max-w-full object-cover rounded-lg"
+                        className="max-h-full max-w-full object-contain rounded-lg"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = "/images/honey.png";
                         }}
                       />
+                      <span className="absolute top-1 left-1 px-1 py-0.2 rounded text-[8px] font-black uppercase bg-emerald-100 text-emerald-800">
+                        ⚡ 15 MINS
+                      </span>
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <div className="inline-block px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 mb-1">
-                        98% SPEC MATCH
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          {product.is_organic ? "🌿 100% Organic" : "Farm Fresh"}
+                        </span>
+                        <div className="flex items-center gap-0.5 text-[11px] text-amber-600 font-bold">
+                          <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                          <span>{product.average_rating || 4.9}</span>
+                        </div>
                       </div>
-                      <h4 className="font-bold text-xs sm:text-sm text-white break-words">
+
+                      <h4 className="font-bold text-xs sm:text-sm text-slate-900 break-words leading-tight">
                         {product.name}
                       </h4>
-                      <div className="flex items-baseline gap-2 mt-1">
-                        <span className="font-extrabold text-sm sm:text-base text-emerald-400">
-                          ${product.price.toFixed(2)}
+
+                      <div className="flex items-baseline gap-2 mt-1.5">
+                        <span className="font-black text-sm sm:text-base text-slate-900">
+                          ₹{product.price.toFixed(2)}
                         </span>
-                        <span className="text-xs text-slate-500 line-through">
-                          ${originalPrice}
+                        <span className="text-xs text-slate-400 line-through">
+                          ₹{originalPrice}
+                        </span>
+                        <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-1 rounded">
+                          20% OFF
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Actions: Add to Cart (purple) & Compare */}
-                  <div className="grid grid-cols-2 gap-2 pt-1">
+                  {/* Actions: Add to Cart (emerald green) & Compare */}
+                  <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
                     <button
                       onClick={() => handleAdd(product)}
-                      className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-md shadow-indigo-500/20 active:scale-95 transition-all cursor-pointer"
+                      className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer shadow-sm shadow-emerald-600/20"
                     >
                       {addedIds[product.id] ? (
                         <>
-                          <Check className="w-3.5 h-3.5 text-emerald-300" />
+                          <Check className="w-3.5 h-3.5 text-white" />
                           <span>Added!</span>
                         </>
                       ) : (
@@ -169,9 +184,9 @@ export function ProductsMessage({
 
                     <button
                       onClick={() => handleCompare(product)}
-                      className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-[#192236] hover:bg-[#202b44] border border-white/10 active:scale-95 transition-all cursor-pointer"
+                      className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 active:scale-95 transition-all cursor-pointer"
                     >
-                      <Scale className="w-3.5 h-3.5 text-slate-400" />
+                      <Scale className="w-3.5 h-3.5 text-slate-500" />
                       <span>Compare</span>
                     </button>
                   </div>
@@ -181,69 +196,70 @@ export function ProductsMessage({
           </div>
         )}
 
-        {/* 2. Order Tracking Card (Screenshot match) */}
+        {/* 2. Order Tracking Card */}
         {orderTracking && (
-          <div className="bg-[#121827] border border-white/10 rounded-2xl p-3.5 sm:p-4 space-y-3 shadow-md">
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-xs">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Package className="w-4 h-4 text-cyan-400" />
-                <span className="font-bold text-xs sm:text-sm text-white">
-                  Track {orderTracking.orderId}
+                <Package className="w-4 h-4 text-emerald-700" />
+                <span className="font-bold text-xs sm:text-sm text-slate-900">
+                  Track Package {orderTracking.orderId}
                 </span>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
                 {orderTracking.status}
               </span>
             </div>
 
-            <div className="text-xs text-slate-400">
-              <span className="text-slate-300 font-medium">{orderTracking.productName}</span> • Carrier:{" "}
+            <div className="text-xs text-slate-600">
+              <span className="text-slate-900 font-semibold">{orderTracking.productName}</span> • Carrier:{" "}
               {orderTracking.carrier}
             </div>
 
-            <div className="text-xs font-bold text-emerald-400">
-              Arriving {orderTracking.estimatedArrival}
+            <div className="text-xs font-bold text-emerald-700 flex items-center gap-1.5">
+              <Truck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Arriving {orderTracking.estimatedArrival}</span>
             </div>
 
             {/* Stepper Progress Bar */}
             <div className="space-y-1.5 pt-1">
-              <div className="relative w-full h-1.5 bg-[#1e293b] rounded-full overflow-hidden">
+              <div className="relative w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full"
-                  style={{ width: "90%" }}
+                  className="h-full bg-emerald-600 rounded-full"
+                  style={{ width: "85%" }}
                 />
               </div>
-              <div className="flex justify-between text-[10px] text-slate-400">
-                <span className="text-emerald-400 font-medium">Packed</span>
-                <span className="text-emerald-400 font-medium">Transit</span>
-                <span className="text-emerald-300 font-bold">Out for Delivery</span>
+              <div className="flex justify-between text-[10px] text-slate-500 font-medium">
+                <span className="text-emerald-700 font-bold">Packed</span>
+                <span className="text-emerald-700 font-bold">In Transit</span>
+                <span className="text-emerald-800 font-extrabold">Out for Delivery</span>
               </div>
             </div>
 
-            {/* Open Live Satellite GPS Feed button */}
+            {/* Live GPS feed button */}
             <button
               onClick={() => onOpenGpsFeed?.(orderTracking)}
-              className="w-full py-2 px-3 rounded-xl bg-[#172033] hover:bg-[#1d2940] border border-cyan-500/30 hover:border-cyan-400/60 text-cyan-300 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+              className="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-emerald-700 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
-              <Radio className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-              <span>Open Live Satellite GPS Feed</span>
+              <Radio className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+              <span>View Live Courier GPS Location</span>
             </button>
           </div>
         )}
 
-        {/* 3. Price Arbitrage Block & Instant Pay (Screenshot match) */}
+        {/* 3. Promo Arbitrage & Instant Pay */}
         {promoArbitrage && products[0] && (
-          <div className="bg-[#121827] border border-white/10 rounded-2xl p-3.5 space-y-2.5 shadow-md">
+          <div className="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-3.5 space-y-2.5 shadow-xs">
             <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
-                <Zap className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Price Arbitrage Applied</span>
+              <div className="flex items-center gap-1.5 text-emerald-800 font-bold">
+                <Zap className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Coupon Arbitrage Applied</span>
               </div>
-              <span className="text-[11px] text-slate-400 font-medium">Best net rate</span>
+              <span className="text-[11px] text-emerald-700 font-semibold">Best Price Guaranteed</span>
             </div>
 
-            <div className="text-xs text-slate-300">
-              Voucher <strong className="text-white font-mono">{promoArbitrage.code}</strong> (-${promoArbitrage.savings.toFixed(2)}) auto-negotiated.
+            <div className="text-xs text-slate-700">
+              Voucher <strong className="text-emerald-900 font-mono bg-white px-1.5 py-0.5 rounded border border-emerald-200">{promoArbitrage.code}</strong> (-₹{promoArbitrage.savings.toFixed(2)}) automatically applied.
             </div>
 
             <button
@@ -255,40 +271,40 @@ export function ProductsMessage({
                   setIsCartOpen(true);
                 }
               }}
-              className="w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-extrabold text-slate-950 bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 hover:opacity-95 shadow-lg shadow-cyan-500/20 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Zap className="w-4 h-4 fill-slate-950 text-slate-950" />
-              <span>Instant Pay ${promoArbitrage.finalTotal.toFixed(2)} with Agent</span>
+              <Zap className="w-4 h-4 fill-white" />
+              <span>Instant Buy ₹{promoArbitrage.finalTotal.toFixed(2)}</span>
             </button>
           </div>
         )}
 
-        {/* Agent Trace Accordion */}
+        {/* Reasoning Trace Accordion */}
         {trace && (
           <div className="pt-1">
             <button
               onClick={() => setShowTraceInline(!showTraceInline)}
-              className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-cyan-300 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 hover:text-emerald-700 transition-colors cursor-pointer"
             >
-              <Sparkles className="w-3 h-3 text-cyan-400" />
-              <span>Agent Reasoning Trace ({trace.steps.length} steps)</span>
+              <Sparkles className="w-3 h-3 text-emerald-600" />
+              <span>Search Reasoning Trail ({trace.steps.length} steps)</span>
               {showTraceInline ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </button>
 
             {showTraceInline && (
-              <div className="mt-2 p-3 rounded-xl bg-[#0d121f] border border-white/5 text-[11px] space-y-1.5 text-slate-300">
-                <div className="text-cyan-400 font-mono text-[10px]">INTENT: {trace.parsed_intent}</div>
+              <div className="mt-2 p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] space-y-1.5 text-slate-700">
+                <div className="text-emerald-800 font-mono text-[10px] font-bold">INTENT: {trace.parsed_intent}</div>
                 {trace.sql_query && (
-                  <div className="font-mono text-[10px] text-slate-400 bg-black/40 p-1.5 rounded">
+                  <div className="font-mono text-[10px] text-slate-600 bg-white p-2 rounded border border-slate-200">
                     {trace.sql_query}
                   </div>
                 )}
                 {onOpenTrace && (
                   <button
                     onClick={() => onOpenTrace(trace)}
-                    className="text-xs text-indigo-400 underline font-semibold block pt-1 cursor-pointer"
+                    className="text-xs text-emerald-700 underline font-semibold block pt-1 cursor-pointer"
                   >
-                    Open Full Agent Trace Modal
+                    Open Full Inspection Modal
                   </button>
                 )}
               </div>

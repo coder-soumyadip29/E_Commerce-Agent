@@ -47,7 +47,7 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
     });
     return {
       type: "text",
-      text: `🧾 **Tax Invoice ${inv.invoiceNumber} (Order #${inv.orderId})**\n- **GSTIN:** ${inv.storeGstin}\n- **Subtotal:** $${inv.subtotal.toFixed(2)}\n- **GST (CGST 2.5% + SGST 2.5%):** $${inv.gst.totalGst.toFixed(2)}\n- **Total Amount:** $${inv.finalTotal.toFixed(2)}\n- **Delivery Address:** ${inv.deliveryAddress?.street_address}, ${inv.deliveryAddress?.city} - ${inv.deliveryAddress?.pincode}\n[Download PDF Receipt](/api/orders/${order.id}/invoice)`,
+      text: `🧾 **Tax Invoice ${inv.invoiceNumber} (Order #${inv.orderId})**\n- **GSTIN:** ${inv.storeGstin}\n- **Subtotal:** ₹${inv.subtotal.toFixed(2)}\n- **GST (CGST 2.5% + SGST 2.5%):** ₹${inv.gst.totalGst.toFixed(2)}\n- **Total Amount:** ₹${inv.finalTotal.toFixed(2)}\n- **Delivery Address:** ${inv.deliveryAddress?.street_address}, ${inv.deliveryAddress?.city} - ${inv.deliveryAddress?.pincode}\n[Download PDF Receipt](/api/orders/${order.id}/invoice)`,
     };
   }
 
@@ -75,21 +75,21 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
 
     return {
       type: "products",
-      text: "Found top organic honey under $20 and synced your live shipment dispatch:",
+      text: "Found top organic honey under ₹500 and synced your live shipment dispatch:",
       products: honey ? [honey] : [],
       orderTracking: trackingInfo,
       promoArbitrage: promoInfo,
       trace: {
         query: lastUserMessage.content,
-        parsed_intent: "Find organic honey under $20 and track live order",
-        filters: { keyword: "honey", max_price: 20, is_organic: true },
-        sql_query: "SELECT * FROM products WHERE (name LIKE '%honey%' OR category = 'spreads-sauces-pickles') AND price <= 20",
+        parsed_intent: "Find organic honey under ₹500 and track live order",
+        filters: { keyword: "honey", max_price: 500, is_organic: true },
+        sql_query: "SELECT * FROM products WHERE (name LIKE '%honey%' OR category = 'spreads-sauces-pickles') AND price <= 500",
         results_count: 1,
         steps: [
           { title: "Query Parsing", detail: "Parsed dual intent: Product search + Live order dispatch lookup", status: "complete" },
           { title: "Database Query", detail: "Selected Organic Raw Forest Honey (ID: 99) in SQLite catalog", status: "complete" },
           { title: "Fleet Telemetry", detail: "Connected to FastFleet Satellite GPS for Order #1040", status: "complete" },
-          { title: "Price Arbitrage", detail: "Calculated SAVE10 voucher arbitrage with net price $13.49", status: "complete" },
+          { title: "Price Arbitrage", detail: "Calculated SAVE10 voucher arbitrage with net price ₹13.49", status: "complete" },
         ]
       }
     };
@@ -106,7 +106,7 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
       type: "compare",
       products: productsToCompare,
       comparisonPoints: {
-        "Price": productsToCompare.map(p => `$${p.price.toFixed(2)}`),
+        "Price": productsToCompare.map(p => `₹${p.price.toFixed(2)}`),
         "Rating": productsToCompare.map(p => `${p.average_rating} (${p.review_count} reviews)`),
         "Organic": productsToCompare.map(p => p.is_organic ? "Yes" : "No"),
         "Pros": productsToCompare.map(p => {
@@ -128,16 +128,16 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
      const { products, sql } = searchProducts({ category: "honey", maxPrice: 15 });
      return {
        type: "products",
-       text: `Found ${products.length} honeys under $15:`,
+       text: `Found ${products.length} honeys under ₹500:`,
        products,
        trace: {
          query: lastUserMessage.content,
          parsed_intent: "Find cheaper honey",
-         filters: { category: "honey", max_price: 15 },
+         filters: { category: "honey", max_price: 500 },
          sql_query: sql.trim(),
          results_count: products.length,
          steps: [
-           { title: "Price Cap Enforcement", detail: "Strictly filtered items under $15.00", status: "complete" }
+           { title: "Price Cap Enforcement", detail: "Strictly filtered items under ₹500.00", status: "complete" }
          ]
        }
      };
@@ -231,17 +231,17 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
 
     return {
       type: "products",
-      text: "Here are 4 wholesome breakfast staples under $15 in our pantry aisle:",
+      text: "Here are 4 wholesome breakfast staples under ₹500 in our pantry aisle:",
       products,
       trace: {
         query: lastUserMessage.content,
-        parsed_intent: "Retrieve healthy breakfast items under $15",
-        filters: { max_price: 15 },
-        sql_query: "SELECT * FROM products WHERE (category = 'grains' OR category = 'snacks') AND price <= 15",
+        parsed_intent: "Retrieve healthy breakfast items under ₹500",
+        filters: { max_price: 500 },
+        sql_query: "SELECT * FROM products WHERE (category = 'grains' OR category = 'snacks') AND price <= 500",
         results_count: products.length,
         steps: [
           { title: "Category Mapping", detail: "Scanned grains and snacks categories for morning items", status: "complete" },
-          { title: "Price Cap Enforcement", detail: "Strictly filtered items under $15.00", status: "complete" },
+          { title: "Price Cap Enforcement", detail: "Strictly filtered items under ₹500.00", status: "complete" },
           { title: "Nutritional Sort", detail: "Prioritized whole grain and organic staples", status: "complete" }
         ]
       }
@@ -262,7 +262,7 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
         options: [
           "Organic Raw Honey",
           "High Rating (4.5+ Stars)",
-          "Under $15 Budget",
+          "Under ₹500 Budget",
           "Light Floral Acacia Honey"
         ]
       };
@@ -279,13 +279,13 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
       return {
         type: "empty_state",
         reason: "No honeys matched your exact filters. Try adjusting price or rating criteria.",
-        suggestions: ["Organic Raw Honey ($14.99)", "Wildflower Honey ($12.99)", "Organic Acacia Honey ($17.99)"]
+        suggestions: ["Organic Raw Honey (₹14.99)", "Wildflower Honey (₹12.99)", "Organic Acacia Honey (₹17.99)"]
       };
     }
 
     return {
       type: "products",
-      text: `Found ${products.length} ${isOrganic ? "organic " : ""}honeys${minRating ? ` with ${minRating}+ rating` : ""}${maxPrice ? ` under $${maxPrice}` : ""}:`,
+      text: `Found ${products.length} ${isOrganic ? "organic " : ""}honeys${minRating ? ` with ${minRating}+ rating` : ""}${maxPrice ? ` under ₹${maxPrice}` : ""}:`,
       products,
       trace: {
         query: lastUserMessage.content,

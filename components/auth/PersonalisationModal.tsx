@@ -4,10 +4,8 @@ import React, { useState } from "react";
 import { useUser } from "@/context/UserContext";
 import {
   X,
-  Sparkles,
   Sliders,
   CheckCircle2,
-  DollarSign,
   Heart,
   Bot,
   Zap,
@@ -26,25 +24,25 @@ export function PersonalisationModal() {
     "Dairy-Free",
     "Non-GMO",
     "High-Protein",
-    "Halal Certified",
+    "Fresh Farm Harvest",
   ];
 
   const healthGoalsOptions = [
-    "Immunity & Longevity",
+    "Immunity & Wellness",
     "Clean Eating",
     "Sustained Energy",
     "Gut Health & Digestion",
-    "Cardio & Heart Health",
-    "Athletic Recovery",
+    "Heart Health",
+    "Daily Nutrition",
   ];
 
   const [dietaryTags, setDietaryTags] = useState<string[]>(
     user?.preferences?.dietary_tags || ["Certified Organic", "Clean Eating"]
   );
   const [healthGoals, setHealthGoals] = useState<string[]>(
-    user?.preferences?.health_goals || ["Immunity & Longevity", "Clean Eating"]
+    user?.preferences?.health_goals || ["Immunity & Wellness", "Clean Eating"]
   );
-  const [budget, setBudget] = useState<number>(user?.preferences?.max_spend_budget || 300);
+  const [budget, setBudget] = useState<number>(user?.preferences?.max_spend_budget || 2500);
   const [copilotTone, setCopilotTone] = useState<"wholesale-deal-finder" | "concise" | "detailed">(
     user?.preferences?.copilot_tone || "wholesale-deal-finder"
   );
@@ -91,31 +89,26 @@ export function PersonalisationModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
       <div
-        className="relative w-full max-w-lg bg-[#0e1422] border border-white/10 rounded-3xl p-5 sm:p-6 shadow-2xl text-white overflow-hidden max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-2xl text-slate-900 overflow-hidden max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Glow Header Accent */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-500" />
-
         {/* Top Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-white/10 flex-shrink-0">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 flex-shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-400 p-[1px]">
-              <div className="w-full h-full bg-[#0d121f] rounded-[11px] flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-emerald-300" />
-              </div>
+            <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+              <Sliders className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-extrabold text-base text-white">AI Personalisation & Diet</h3>
-              <p className="text-[10px] text-slate-400">Customise what CartWise Copilot recommends and prioritises</p>
+              <h3 className="font-extrabold text-base text-slate-900">Dietary & Shopping Preferences</h3>
+              <p className="text-xs text-slate-500">Personalize recommendations tailored for you</p>
             </div>
           </div>
 
           <button
             onClick={() => setIsPersonalisationModalOpen(false)}
-            className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -126,11 +119,11 @@ export function PersonalisationModal() {
           {/* 1. Dietary Standards */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Dietary Tags & Dietary Regimens</span>
+              <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <Zap className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Dietary Regimens & Preferences</span>
               </label>
-              <span className="text-[10px] text-slate-400">{dietaryTags.length} selected</span>
+              <span className="text-[10px] text-slate-500 font-medium">{dietaryTags.length} selected</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {dietaryOptions.map((tag) => {
@@ -142,11 +135,11 @@ export function PersonalisationModal() {
                     onClick={() => toggleDietary(tag)}
                     className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                       isSelected
-                        ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-300 border border-emerald-400/50 shadow-sm shadow-emerald-500/10"
-                        : "bg-[#141b2a] text-slate-400 border border-white/5 hover:text-white hover:border-white/15"
+                        ? "bg-emerald-50 text-emerald-800 border border-emerald-400 shadow-xs"
+                        : "bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100"
                     }`}
                   >
-                    {isSelected && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
+                    {isSelected && <CheckCircle2 className="w-3 h-3 text-emerald-600" />}
                     <span>{tag}</span>
                   </button>
                 );
@@ -157,11 +150,11 @@ export function PersonalisationModal() {
           {/* 2. Health & Wellness Goals */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                <Heart className="w-3.5 h-3.5 text-rose-400" />
-                <span>Health & Wellness Goals</span>
+              <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <Heart className="w-3.5 h-3.5 text-rose-500" />
+                <span>Health & Lifestyle Goals</span>
               </label>
-              <span className="text-[10px] text-slate-400">{healthGoals.length} selected</span>
+              <span className="text-[10px] text-slate-500 font-medium">{healthGoals.length} selected</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {healthGoalsOptions.map((goal) => {
@@ -173,11 +166,11 @@ export function PersonalisationModal() {
                     onClick={() => toggleGoal(goal)}
                     className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                       isSelected
-                        ? "bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-400/50 shadow-sm shadow-purple-500/10"
-                        : "bg-[#141b2a] text-slate-400 border border-white/5 hover:text-white hover:border-white/15"
+                        ? "bg-teal-50 text-teal-800 border border-teal-400 shadow-xs"
+                        : "bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100"
                     }`}
                   >
-                    {isSelected && <CheckCircle2 className="w-3 h-3 text-purple-400" />}
+                    {isSelected && <CheckCircle2 className="w-3 h-3 text-teal-600" />}
                     <span>{goal}</span>
                   </button>
                 );
@@ -185,17 +178,17 @@ export function PersonalisationModal() {
             </div>
           </div>
 
-          {/* 3. Copilot Tone */}
+          {/* 3. Assistant Recommendation Style */}
           <div>
-            <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5 mb-2">
-              <Bot className="w-3.5 h-3.5 text-indigo-400" />
-              <span>AI Copilot Reasoning Style</span>
+            <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5 mb-2">
+              <Bot className="w-3.5 h-3.5 text-emerald-600" />
+              <span>AI Assistant Recommendation Focus</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {[
-                { id: "wholesale-deal-finder", label: "Wholesale Deal Hunter", desc: "Maximizes promo & arbitrage" },
-                { id: "concise", label: "Fast & Concise", desc: "Brief, high-speed recommendations" },
-                { id: "detailed", label: "Nutritionist Deep-Dive", desc: "Detailed ingredient breakdowns" },
+                { id: "wholesale-deal-finder", label: "Best Value Deals", desc: "Maximizes savings & discounts" },
+                { id: "concise", label: "Fast & Concise", desc: "Quick top-3 choices" },
+                { id: "detailed", label: "Nutritionist Mode", desc: "Deep ingredients review" },
               ].map((style) => (
                 <button
                   type="button"
@@ -203,12 +196,12 @@ export function PersonalisationModal() {
                   onClick={() => setCopilotTone(style.id as any)}
                   className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer ${
                     copilotTone === style.id
-                      ? "bg-[#172238] border-cyan-400/50 text-white shadow-sm"
-                      : "bg-[#111726] border-white/5 text-slate-400 hover:text-slate-200"
+                      ? "bg-emerald-50 border-emerald-500 text-slate-900 shadow-xs"
+                      : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
                   }`}
                 >
-                  <div className="text-xs font-bold leading-tight">{style.label}</div>
-                  <div className="text-[10px] text-slate-400 mt-1">{style.desc}</div>
+                  <div className="text-xs font-bold leading-tight text-slate-900">{style.label}</div>
+                  <div className="text-[10px] text-slate-500 mt-1">{style.desc}</div>
                 </button>
               ))}
             </div>
@@ -217,25 +210,24 @@ export function PersonalisationModal() {
           {/* 4. Weekly Spend Target */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+              <label className="text-xs font-bold text-slate-900 flex items-center gap-1">
                 <span>Target Weekly Grocery Budget</span>
               </label>
-              <span className="font-extrabold text-sm text-emerald-400">${budget}</span>
+              <span className="font-extrabold text-sm text-slate-900">₹{budget}</span>
             </div>
             <input
               type="range"
-              min="50"
-              max="750"
-              step="25"
+              min="500"
+              max="10000"
+              step="250"
               value={budget}
               onChange={(e) => setBudget(Number(e.target.value))}
-              className="w-full accent-cyan-400 h-1.5 bg-[#151c2e] rounded-lg cursor-pointer"
+              className="w-full accent-emerald-600 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
             />
-            <div className="flex justify-between text-[10px] text-slate-500 mt-1">
-              <span>$50/wk</span>
-              <span>$350/wk</span>
-              <span>$750/wk</span>
+            <div className="flex justify-between text-[10px] text-slate-500 mt-1 font-medium">
+              <span>₹500/wk</span>
+              <span>₹5,000/wk</span>
+              <span>₹10,000/wk</span>
             </div>
           </div>
 
@@ -244,17 +236,17 @@ export function PersonalisationModal() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-500 hover:opacity-90 shadow-lg shadow-emerald-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {savedSuccess ? (
                 <>
                   <CheckCircle2 className="w-4 h-4 text-white" />
-                  <span>Preferences Synced!</span>
+                  <span>Preferences Saved!</span>
                 </>
               ) : (
                 <>
                   <Sliders className="w-4 h-4" />
-                  <span>{saving ? "Syncing with AI Engine…" : "Save Personalisation"}</span>
+                  <span>{saving ? "Saving…" : "Save Preferences"}</span>
                 </>
               )}
             </button>

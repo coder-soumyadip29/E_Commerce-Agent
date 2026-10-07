@@ -128,7 +128,7 @@ export async function sendOrderInvoiceEmail(
   console.log(`   To: ${invoice.customerName} <${toEmail}>`);
   console.log(`   Invoice No: [ ${invoice.invoiceNumber} ]`);
   console.log(`   Order ID: #${invoice.orderId} | Txn: ${invoice.paymentId}`);
-  console.log(`   Total Amount: $${invoice.finalTotal.toFixed(2)} (GST: $${invoice.gst.totalGst.toFixed(2)})`);
+  console.log(`   Total Amount: ₹${invoice.finalTotal.toFixed(2)} (GST: ₹${invoice.gst.totalGst.toFixed(2)})`);
   console.log(`   SMTP Active: ${isSmtpConfigured ? `Yes (${process.env.SMTP_HOST})` : "No (Dev Mode)"}`);
   console.log(`==================================================\n`);
 
@@ -156,8 +156,8 @@ export async function sendOrderInvoiceEmail(
               <div style="font-size: 10px; color: #94a3b8; font-family: monospace;">HSN: ${item.hsn_code}</div>
             </td>
             <td style="padding: 10px 8px; font-size: 13px; text-align: center; color: #cbd5e1;">${item.quantity}</td>
-            <td style="padding: 10px 8px; font-size: 13px; text-align: right; color: #cbd5e1;">$${item.unit_price.toFixed(2)}</td>
-            <td style="padding: 10px 8px; font-size: 13px; text-align: right; color: #34d399; font-weight: bold;">$${item.line_total.toFixed(2)}</td>
+            <td style="padding: 10px 8px; font-size: 13px; text-align: right; color: #cbd5e1;">₹${item.unit_price.toFixed(2)}</td>
+            <td style="padding: 10px 8px; font-size: 13px; text-align: right; color: #34d399; font-weight: bold;">₹${item.line_total.toFixed(2)}</td>
           </tr>
         `
         )
@@ -226,31 +226,31 @@ export async function sendOrderInvoiceEmail(
             <div style="background: #131b2e; border: 1px solid #1e293b; border-radius: 14px; padding: 16px; margin-bottom: 24px;">
               <div style="display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 6px;">
                 <span>Taxable Amount (Excl. Tax):</span>
-                <span>$${invoice.gst.taxableSubtotal.toFixed(2)}</span>
+                <span>₹${invoice.gst.taxableSubtotal.toFixed(2)}</span>
               </div>
               <div style="display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 6px;">
                 <span>CGST @ 2.5%:</span>
-                <span>$${invoice.gst.cgstAmount.toFixed(2)}</span>
+                <span>₹${invoice.gst.cgstAmount.toFixed(2)}</span>
               </div>
               <div style="display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 6px;">
                 <span>SGST @ 2.5%:</span>
-                <span>$${invoice.gst.sgstAmount.toFixed(2)}</span>
+                <span>₹${invoice.gst.sgstAmount.toFixed(2)}</span>
               </div>
               ${
                 invoice.discountAmount > 0
                   ? `<div style="display: flex; justify-content: space-between; font-size: 12px; color: #38bdf8; margin-bottom: 6px;">
                 <span>Discount Applied (${invoice.discountCode}):</span>
-                <span>-$${invoice.discountAmount.toFixed(2)}</span>
+                <span>-₹${invoice.discountAmount.toFixed(2)}</span>
               </div>`
                   : ""
               }
               <div style="display: flex; justify-content: space-between; font-size: 12px; color: #34d399; margin-bottom: 10px;">
                 <span>Fulfillment & Express Delivery:</span>
-                <span>FREE ($0.00)</span>
+                <span>FREE (₹0.00)</span>
               </div>
               <div style="border-top: 1px solid #1e293b; padding-top: 10px; display: flex; justify-content: space-between; font-size: 16px; font-weight: 900; color: #f8fafc;">
                 <span>Total Paid Amount:</span>
-                <span style="color: #34d399;">$${invoice.finalTotal.toFixed(2)}</span>
+                <span style="color: #34d399;">₹${invoice.finalTotal.toFixed(2)}</span>
               </div>
             </div>
 

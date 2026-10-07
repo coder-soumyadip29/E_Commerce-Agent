@@ -3,228 +3,147 @@ import { Product, Review, Order, UserProfile, UserAddress, UserAddressRecord } f
 export function getProductImageUrl(name: string, category: string, subCategory?: string): string {
   const lower = (name + " " + category + " " + (subCategory || "")).toLowerCase();
 
-  // Test local images priority
-  if (lower.includes("avocado") && lower.includes("oil")) return "/images/avocado_oil.png";
-  if (lower.includes("sunflower")) return "/images/sunflower_oil.png";
-  if (lower.includes("steel-cut") || lower.includes("steel cut")) return "/images/steel_cut_oats.png";
-  if (lower.includes("rolled oat") || lower.includes("rolled")) return "/images/rolled_oats.png";
-  if (lower.includes("wildflower honey")) return "/images/wildflower_honey.png";
-  if (lower.includes("orange blossom honey")) return "/images/orange_blossom_honey.png";
-  if (lower.includes("raw forest honey") || lower.includes("raw honey")) return "/images/honey.png";
-  if (lower.includes("olive oil") || (lower.includes("olive") && lower.includes("oil"))) return "/images/olive_oil.png";
+  // Mobiles & Smartphones
+  if (lower.includes("motorola") || lower.includes("edge 70")) return "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("iphone") || lower.includes("apple phone")) return "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("oneplus 12") || lower.includes("oneplus")) return "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("galaxy") || lower.includes("samsung")) return "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("k14") || lower.includes("realme") || lower.includes("poco")) return "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("smartphone") || lower.includes("mobile")) return "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?auto=format&fit=crop&w=600&q=80";
 
-  // Real food photography URLs matching specific organic products
-  if (lower.includes("mango") && !lower.includes("dried")) return "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("apple")) return "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("banana")) return "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("orange") && !lower.includes("honey")) return "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("pomegranate")) return "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("strawberr")) return "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("papaya")) return "https://images.unsplash.com/photo-1517282009859-f000ec3b26fe?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("watermelon")) return "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("tomato")) return "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("onion")) return "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("potato")) return "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("carrot")) return "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("bell pepper") || lower.includes("capsicum")) return "https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("broccoli")) return "https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("cucumber")) return "https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("spinach")) return "https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("coriander") || lower.includes("cilantro")) return "https://images.unsplash.com/photo-1628556270448-4d4e4148e1b1?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("mint")) return "https://images.unsplash.com/photo-1628556270448-4d4e4148e1b1?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("kale")) return "https://images.unsplash.com/photo-1524179091875-bf99a9a6fa57?auto=format&fit=crop&w=600&q=80";
+  // Electronics, Laptops, TV & Audio
+  if (lower.includes("vivobook") || lower.includes("asus") || lower.includes("laptop")) return "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("tcl") || lower.includes("qled") || lower.includes("tv") || lower.includes("television")) return "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("neckband") || lower.includes("bullets")) return "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("headphone") || lower.includes("wh-1000xm") || lower.includes("sony")) return "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("ipad") || lower.includes("tablet")) return "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("smart watch") || lower.includes("smartwatch") || lower.includes("noise")) return "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80";
 
-  // Staples & Grains
-  if (lower.includes("basmati") || lower.includes("sona masoori") || lower.includes("white rice")) return "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("brown rice")) return "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("poha") || lower.includes("flattened rice")) return "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("atta") || lower.includes("flour") || lower.includes("besan") || lower.includes("sooji") || lower.includes("semolina")) return "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("dal") || lower.includes("lentil") || lower.includes("urad") || lower.includes("chana") || lower.includes("moong") || lower.includes("toor")) return "https://images.unsplash.com/photo-1585994192701-f1a505c817ea?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("millet") || lower.includes("ragi")) return "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("oat")) return "/images/rolled_oats.png";
-  if (lower.includes("salt")) return "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("sugar") || lower.includes("jaggery")) return "https://images.unsplash.com/photo-1581441363689-1f3c3c414635?auto=format&fit=crop&w=600&q=80";
+  // Appliances
+  if (lower.includes("refrigerator") || lower.includes("fridge") || lower.includes("lg")) return "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("air conditioner") || lower.includes("ac") || lower.includes("voltas")) return "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("air fryer") || lower.includes("fryer") || lower.includes("philips")) return "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("induction") || lower.includes("cooktop") || lower.includes("prestige")) return "https://images.unsplash.com/photo-1588854337221-4cf9fa96059c?auto=format&fit=crop&w=600&q=80";
 
-  // Spices & Masalas
-  if (lower.includes("cardamom") || lower.includes("clove") || lower.includes("cinnamon") || lower.includes("cumin") || lower.includes("pepper")) return "https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("turmeric") || lower.includes("chilli") || lower.includes("dhaniya") || lower.includes("masala") || lower.includes("sambhar")) return "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80";
+  // Fashion & Apparel
+  if (lower.includes("jean") || lower.includes("levi")) return "https://images.unsplash.com/photo-1542272604-780c96856478?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("shoe") || lower.includes("sneaker") || lower.includes("puma")) return "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("watch") || lower.includes("titan")) return "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("shirt") || lower.includes("t-shirt") || lower.includes("polo")) return "https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=600&q=80";
 
-  // Oils & Ghee
-  if (lower.includes("coconut oil")) return "https://images.unsplash.com/photo-1526947425960-945c6e72858f?auto=format&fit=crop&w=600&q=80";
+  // Beauty & Personal Care
+  if (lower.includes("serum") || lower.includes("niacinamide") || lower.includes("minimalist")) return "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("cleanser") || lower.includes("cetaphil") || lower.includes("facewash")) return "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("lipstick") || lower.includes("maybelline")) return "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=600&q=80";
+
+  // Food & Grocery
+  if (lower.includes("honey")) return "/images/honey.png";
+  if (lower.includes("olive oil") || lower.includes("avocado")) return "/images/avocado_oil.png";
+  if (lower.includes("oat")) return "/images/oats.png";
+  if (lower.includes("whey") || lower.includes("protein")) return "https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("almond") || lower.includes("cashew") || lower.includes("nut")) return "https://images.unsplash.com/photo-1508061252445-b95013cb7c5b?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("atta") || lower.includes("flour") || lower.includes("rice") || lower.includes("dal")) return "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("ghee")) return "https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("oil")) return "/images/olive_oil.png";
 
-  // Dry Fruits & Nuts
-  if (lower.includes("almond")) return "https://images.unsplash.com/photo-1508061252445-5350f31934b0?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("cashew")) return "https://images.unsplash.com/photo-1536591375315-1b83681498b8?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("walnut")) return "https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("pistachio")) return "https://images.unsplash.com/photo-1577003833619-76bbd7f82948?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("date")) return "https://images.unsplash.com/photo-1562080340-9759c5d18d45?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("dried mango") || lower.includes("raisin") || lower.includes("fig") || lower.includes("chia") || lower.includes("pumpkin") || lower.includes("sunflower seed")) return "https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=600&q=80";
+  // Home & Kitchen
+  if (lower.includes("flask") || lower.includes("bottle") || lower.includes("milton")) return "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("mattress") || lower.includes("wakefit")) return "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("comforter") || lower.includes("blanket")) return "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=600&q=80";
 
-  // Dairy & Eggs
-  if (lower.includes("milk")) return "https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("yogurt") || lower.includes("curd") || lower.includes("paneer")) return "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("butter")) return "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("cheese") || lower.includes("cheddar")) return "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("egg")) return "https://images.unsplash.com/photo-1506976785307-8732e854ad03?auto=format&fit=crop&w=600&q=80";
+  // Toys & Baby
+  if (lower.includes("lego") || lower.includes("toy")) return "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("diaper") || lower.includes("pampers") || lower.includes("baby")) return "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=600&q=80";
 
-  // Meat & Fish
-  if (lower.includes("chicken")) return "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("mutton") || lower.includes("goat") || lower.includes("meat")) return "https://images.unsplash.com/photo-1603048588665-791ca8aea617?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("salmon") || lower.includes("fish") || lower.includes("prawn")) return "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=600&q=80";
+  // Auto & Sports
+  if (lower.includes("helmet") || lower.includes("steelbird")) return "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("dash cam") || lower.includes("camera")) return "https://images.unsplash.com/photo-1508974239320-0a029497e820?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("badminton") || lower.includes("yonex") || lower.includes("racquet")) return "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("yoga") || lower.includes("mat")) return "https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80";
 
-  // Beverages
-  if (lower.includes("tea")) return "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("coffee") || lower.includes("espresso") || lower.includes("arabica")) return "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("juice") || lower.includes("coconut water") || lower.includes("water")) return "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=600&q=80";
-
-  // Snacks & Bakery
-  if (lower.includes("cookie") || lower.includes("biscuit") || lower.includes("makhana") || lower.includes("trail mix")) return "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("pasta") || lower.includes("noodle") || lower.includes("granola")) return "https://images.unsplash.com/photo-1551462147-ff29053bfc14?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("manuka honey") || lower.includes("honey")) return "/images/honey.png";
-  if (lower.includes("peanut butter")) return "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("pickle")) return "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("sourdough") || lower.includes("bread") || lower.includes("bun") || lower.includes("brioche")) return "https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=600&q=80";
-
-  // Category-level fallback with distinct high-definition photography
-  if (category.includes("fruit") || category.includes("veg")) {
-    return "https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=600&q=80";
-  }
-  if (category.includes("staple") || category.includes("grain")) {
-    return "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80";
-  }
-  if (category.includes("spice") || category.includes("masala")) {
-    return "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80";
-  }
-  if (category.includes("oil") || category.includes("ghee")) {
-    return "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80";
-  }
-  if (category.includes("nut") || category.includes("dry-fruit")) {
-    return "https://images.unsplash.com/photo-1508061252445-5350f31934b0?auto=format&fit=crop&w=600&q=80";
-  }
-  if (category.includes("dairy") || category.includes("egg")) {
-    return "https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=600&q=80";
-  }
-  if (category.includes("meat") || category.includes("fish")) {
-    return "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=600&q=80";
-  }
-  if (category.includes("beverage") || category.includes("tea") || category.includes("coffee")) {
-    return "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80";
-  }
-  if (category.includes("baker") || category.includes("bread")) {
-    return "https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=600&q=80";
-  }
   return "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80";
 }
 
 export const SEED_PRODUCTS_RAW: Array<[number, string, string, string, number, string, number, number, number, number]> = [
   // id, name, category, sub_category, price, description, is_organic, stock, average_rating, review_count
-  [1,  "Organic Alphonso Mangoes (1kg)",        "fruits-vegetables", "fresh-fruits",        12.99, "Naturally ripened sweet organic Alphonso mangoes from Ratnagiri", 1, 25, 4.75, 2],
-  [2,  "Shimla Royal Red Apples (1kg)",         "fruits-vegetables", "fresh-fruits",         5.99, "Crisp, sweet, and juicy handpicked royal red apples",             0, 30, 4.3, 1],
-  [3,  "Organic Cavendish Bananas (1 Dozen)",   "fruits-vegetables", "fresh-fruits",         3.49, "Farm fresh sweet organic bananas rich in potassium",              1, 40, 5.0, 1],
-  [4,  "Nagpur Sweet Oranges (1kg)",            "fruits-vegetables", "fresh-fruits",         4.99, "Juicy and tangy sweet oranges rich in Vitamin C",                 0, 25, 4.2, 1],
-  [5,  "Organic Pomegranate (500g)",            "fruits-vegetables", "fresh-fruits",         6.49, "Ruby-red antioxidant-rich organic pomegranate pearls",            1, 20, 4.6, 1],
-  [6,  "Fresh Strawberries (250g Box)",         "fruits-vegetables", "fresh-fruits",         4.99, "Sweet aromatic farm-picked fresh red strawberries",               1, 0, 4.5, 1],
-  [7,  "Organic Papaya (1 unit)",               "fruits-vegetables", "fresh-fruits",         3.99, "Sweet digestive-friendly ripe organic papaya",                    1, 20, 4.4, 1],
-  [8,  "Seedless Watermelon (Whole ~2.5kg)",    "fruits-vegetables", "fresh-fruits",         5.49, "Crisp, ultra-hydrating sweet red seedless watermelon",            0, 15, 4.1, 1],
-  [9,  "Farm Fresh Hybrid Tomatoes (1kg)",      "fruits-vegetables", "fresh-vegetables",     2.99, "Plump, ripe red tomatoes ideal for curries and salads",          0, 50, 4.5, 1],
-  [10, "Organic Red Onions (1kg)",              "fruits-vegetables", "fresh-vegetables",     3.29, "Crisp and pungent organic red onions, kitchen essential",         1, 45, 4.3, 1],
-  [11, "Russet Potatoes (1kg)",                 "fruits-vegetables", "fresh-vegetables",     2.49, "All-purpose fresh earthy potatoes for baking and cooking",        0, 60, 4.0, 1],
-  [12, "Organic Orange Carrots (500g)",         "fruits-vegetables", "fresh-vegetables",     2.99, "Sweet crunchy organic carrots rich in beta-carotene",             1, 35, 4.4, 1],
-  [13, "Green Bell Peppers (Capsicum 500g)",    "fruits-vegetables", "fresh-vegetables",     3.49, "Crisp vibrant green bell peppers, great for stir-fries",          0, 25, 4.2, 1],
-  [14, "Organic Broccoli Florets (400g)",       "fruits-vegetables", "fresh-vegetables",     4.49, "Nutrient-packed crisp organic green broccoli florets",            1, 20, 4.6, 1],
-  [15, "English Seedless Cucumbers (500g)",     "fruits-vegetables", "fresh-vegetables",     2.29, "Cool refreshing thin-skinned English cucumbers",                  0, 30, 4.3, 1],
-  [16, "Organic Baby Spinach (250g)",           "fruits-vegetables", "leafy-greens-herbs",   3.99, "Tender pesticide-free organic baby spinach leaves",               1, 25, 5.0, 1],
-  [17, "Fresh Organic Coriander (Bunch)",       "fruits-vegetables", "leafy-greens-herbs",   1.49, "Aromatic fresh green cilantro leaves for garnishing",             1, 40, 4.5, 1],
-  [18, "Fresh Garden Mint Leaves (Bunch)",      "fruits-vegetables", "leafy-greens-herbs",   1.49, "Cool invigorating fresh mint leaves for teas and chutneys",       0, 35, 4.4, 1],
-  [19, "Organic Tuscan Kale (200g)",            "fruits-vegetables", "leafy-greens-herbs",   4.29, "Hearty superfood dark green organic kale leaves",                 1, 20, 4.7, 1],
-  [20, "Royal Aged Basmati Rice (5kg)",         "staples",           "rice-rice-products",  18.99, "Extra-long grain aromatic aged basmati rice for biryanis",        0, 30, 5.0, 1],
-  [21, "Organic Brown Rice (1kg)",              "staples",           "rice-rice-products",   7.99, "Nutritious whole grain long-grain organic brown rice",            1, 25, 4.6, 1],
-  [22, "Sona Masoori Raw Rice (5kg)",           "staples",           "rice-rice-products",  14.49, "Lightweight daily-use South Indian aromatic white rice",          0, 30, 4.4, 1],
-  [23, "Organic Thick Poha / Flattened Rice (500g)", "staples",      "rice-rice-products",   2.99, "Clean wholesome organic flattened rice for quick breakfast",      1, 25, 4.5, 1],
-  [24, "Organic 100% Whole Wheat Atta (5kg)",   "staples",           "atta-flours-sooji",   12.99, "Stone-ground organic whole wheat flour for soft rotis",           1, 35, 5.0, 1],
-  [25, "Multigrain Super Flour (5kg)",          "staples",           "atta-flours-sooji",   14.99, "Enriched flour blend with ragi, oats, chana, and wheat",          1, 25, 4.6, 1],
-  [26, "Organic Besan / Gram Flour (1kg)",      "staples",           "atta-flours-sooji",    4.49, "Fine milled pure organic chickpea gram flour",                    1, 30, 4.5, 1],
-  [27, "Roasted Semolina / Sooji (1kg)",        "staples",           "atta-flours-sooji",    3.49, "Pre-roasted granulated wheat sooji for halwa and upma",           0, 25, 4.2, 1],
-  [28, "Organic Toor / Arhar Dal (1kg)",        "staples",           "pulses-lentils",       5.49, "Unpolished protein-rich organic yellow pigeon peas",              1, 40, 4.5, 1],
-  [29, "Organic Yellow Moong Dal (1kg)",        "staples",           "pulses-lentils",       4.99, "Split yellow moong dal, easy to digest and nutritious",           1, 35, 4.7, 1],
-  [30, "Organic Chana Dal (1kg)",               "staples",           "pulses-lentils",       4.29, "High-fiber split Bengal gram lentils",                            1, 30, 4.4, 1],
-  [31, "Whole Black Urad Dal (1kg)",            "staples",           "pulses-lentils",       4.99, "Premium whole black gram for authentic Dal Makhani",              0, 25, 4.5, 1],
-  [32, "Organic Masoor Dal / Red Lentils (1kg)","staples",           "pulses-lentils",       3.99, "Quick-cooking organic split red lentils",                         1, 30, 4.6, 1],
-  [33, "Organic Whole Grain Rolled Oats (1kg)", "staples",           "millets-oats",         5.49, "Heart-healthy 100% whole grain rolled oats for porridge",         1, 40, 5.0, 1],
-  [34, "Traditional Steel-Cut Oats (1kg)",      "staples",           "millets-oats",         6.99, "Coarse hearty steel-cut oats with low glycemic index",            0, 30, 4.8, 1],
-  [35, "Organic Foxtail Millet (1kg)",          "staples",           "millets-oats",         5.99, "Ancient gluten-free grain rich in minerals and fiber",            1, 25, 4.4, 1],
-  [36, "Organic Ragi / Finger Millet Flour (1kg)","staples",         "millets-oats",         4.49, "Calcium-rich sprouted organic finger millet flour",               1, 30, 4.6, 1],
-  [37, "Himalayan Pink Salt (1kg)",             "staples",           "salt-sugar-jaggery",   3.99, "100% natural unrefined mineral-rich pink rock salt",              1, 50, 4.9, 1],
-  [38, "Organic Raw Cane Sugar (1kg)",          "staples",           "salt-sugar-jaggery",   4.49, "Unbleached organic granulated cane sugar",                        1, 40, 4.5, 1],
-  [39, "Pure Organic Jaggery Powder (1kg)",     "staples",           "salt-sugar-jaggery",   4.99, "Traditional unrefined organic gur powder sweetener",              1, 35, 4.7, 1],
-  [40, "Green Cardamom / Elaichi (100g)",       "spices-masalas",    "whole-spices",         8.99, "Fragrant green cardamom pods from Kerala hills",                  1, 25, 5.0, 1],
-  [41, "Organic Whole Black Pepper (100g)",     "spices-masalas",    "whole-spices",         4.99, "Bold Malabar organic whole black peppercorns",                    1, 30, 4.8, 1],
-  [42, "Ceylon Cinnamon Sticks (100g)",         "spices-masalas",    "whole-spices",         5.49, "True sweet aromatic organic Ceylon cinnamon quills",              1, 25, 4.7, 1],
-  [43, "Organic Cumin Seeds / Jeera (200g)",    "spices-masalas",    "whole-spices",         3.99, "Sun-dried aromatic whole cumin seeds",                            1, 40, 4.5, 1],
-  [44, "Whole Cloves / Laung (100g)",           "spices-masalas",    "whole-spices",         4.49, "Handpicked premium whole aromatic cloves",                        0, 30, 4.6, 1],
-  [45, "Organic Lakadong Turmeric Powder (200g)","spices-masalas",   "ground-spices",        4.99, "High-curcumin organic Meghalaya turmeric powder",                 1, 40, 5.0, 1],
-  [46, "Kashmiri Red Chilli Powder (200g)",     "spices-masalas",    "ground-spices",        4.49, "Vibrant natural red color with mild aromatic heat",               0, 35, 4.6, 1],
-  [47, "Organic Coriander Powder / Dhaniya (200g)","spices-masalas", "ground-spices",        3.49, "Freshly ground fragrant organic coriander seed powder",           1, 35, 4.5, 1],
-  [48, "Royal Biryani Masala Blend (100g)",     "spices-masalas",    "masala-blends",        3.99, "Authentic blend of 15 royal spices for fragrant biryani",         0, 30, 4.8, 1],
-  [49, "Organic Garam Masala (100g)",           "spices-masalas",    "masala-blends",        4.29, "Traditional roasted whole spice blend for curries",               1, 30, 4.7, 1],
-  [50, "Madras Sambhar Masala (100g)",          "spices-masalas",    "masala-blends",        3.49, "Authentic South Indian aromatic roasted lentil & spice mix",      0, 25, 4.4, 1],
-  [51, "Organic Extra Virgin Olive Oil (500ml)","oils-ghee",         "cooking-oils",        16.99, "Cold-pressed unfiltered organic EVOO from Mediterranean olives",  1, 20, 5.0, 1],
-  [52, "Cold-Pressed Virgin Coconut Oil (500ml)","oils-ghee",        "cooking-oils",        12.49, "Pure raw cold-pressed organic coconut oil for cooking & skin",    1, 25, 4.8, 1],
-  [53, "Cold-Pressed Mustard Oil / Kachi Ghani (1L)","oils-ghee",    "cooking-oils",         6.99, "Pungent traditional cold-pressed mustard seed oil",              0, 30, 4.5, 1],
-  [54, "Organic Cold-Pressed Groundnut Oil (1L)","oils-ghee",        "cooking-oils",         8.99, "Pure wood-pressed peanut oil with high smoke point",              1, 20, 4.7, 1],
-  [55, "Cold-Pressed Avocado Oil (500ml)",      "oils-ghee",         "cooking-oils",        18.99, "Premium extra virgin avocado oil with 500°F smoke point",         0, 15, 4.9, 1],
-  [56, "Pure Desi Cow Ghee (A2 Bilona 500ml)",  "oils-ghee",         "ghee",                19.99, "Traditional Vedic bilona churned A2 cow milk ghee, golden & nutty",1, 20, 5.0, 1],
-  [57, "Organic Cultured Grass-Fed Ghee (500ml)","oils-ghee",        "ghee",                17.49, "Clarified butter made from certified organic pasture-fed cream",   1, 25, 4.8, 1],
-  [58, "Organic California Almonds (500g)",     "dry-fruits-nuts",   "nuts",                11.99, "Raw, crunchy, unpasteurized premium organic almonds",            1, 35, 5.0, 1],
-  [59, "Whole Roasted Cashews (500g)",          "dry-fruits-nuts",   "nuts",                 9.99, "Lightly sea-salted dry-roasted jumbo cashew nuts",                0, 30, 4.6, 1],
-  [60, "Raw California Walnut Kernels (250g)",  "dry-fruits-nuts",   "nuts",                 7.99, "Omega-3 rich fresh halves and pieces of raw walnuts",             1, 25, 4.7, 1],
-  [61, "Roasted Salted Pistachios (250g)",      "dry-fruits-nuts",   "nuts",                 6.99, "In-shell lightly salted crunchy roasted pistachios",              0, 25, 4.5, 1],
-  [62, "Premium Medjool Dates (500g)",          "dry-fruits-nuts",   "dried-fruits",         8.99, "Large, soft, and caramel-sweet organic Medjool dates",            1, 30, 5.0, 1],
-  [63, "Organic Dried Mango Slices (200g)",     "dry-fruits-nuts",   "dried-fruits",         7.99, "Unsweetened chewy organic dried mango slices, no sulfites",       1, 25, 4.6, 1],
-  [64, "Golden Afghani Raisins / Kishmish (250g)","dry-fruits-nuts", "dried-fruits",         4.49, "Seedless sweet sun-dried golden raisins",                         0, 30, 4.4, 1],
-  [65, "Organic Dried Turkish Figs / Anjeer (250g)","dry-fruits-nuts","dried-fruits",        8.49, "High-fiber soft and sweet organic sun-dried figs",                1, 20, 4.7, 1],
-  [66, "Organic Black Chia Seeds (250g)",       "dry-fruits-nuts",   "seeds",                8.49, "Organic raw chia seeds packed with fiber and omega-3s",           1, 40, 4.9, 1],
-  [67, "Raw Pumpkin Seeds (250g)",              "dry-fruits-nuts",   "seeds",                5.99, "Zinc-rich unsalted raw green pumpkin seed kernels",               1, 30, 4.6, 1],
-  [68, "Roasted Sunflower Seeds (250g)",        "dry-fruits-nuts",   "seeds",                4.49, "Crisp lightly toasted sunflower seeds for snacks and salads",     0, 35, 4.5, 1],
-  [69, "Organic Whole Pasteurized Milk (1L)",   "dairy-eggs",        "milk-curd-beverages",  3.49, "Fresh pasture-raised organic whole milk with cream top",          1, 40, 4.5, 1],
-  [70, "Organic Almond Milk (Unsweetened 1L)",  "dairy-eggs",        "milk-curd-beverages",  4.99, "Fortified plant-based organic almond milk with zero added sugar", 1, 35, 4.6, 1],
-  [71, "Barista Style Oat Milk (1L)",           "dairy-eggs",        "milk-curd-beverages",  4.49, "Creamy foaming oat milk designed for lattes and smoothies",       0, 30, 4.8, 1],
-  [72, "Artisan Greek Yogurt / Dahi (400g)",    "dairy-eggs",        "milk-curd-beverages",  3.99, "Thick, protein-dense probiotic strained Greek yogurt",            1, 25, 4.7, 1],
-  [73, "Fresh Malai Paneer (200g)",             "dairy-eggs",        "paneer-butter-cheese", 3.99, "Soft, melt-in-mouth cottage cheese paneer blocks",                 0, 30, 4.8, 1],
-  [74, "Organic Unsalted Grass-Fed Butter (250g)","dairy-eggs",      "paneer-butter-cheese", 4.99, "Rich golden butter churned from grass-fed organic cream",         1, 25, 4.9, 1],
-  [75, "Aged White Cheddar Cheese (200g)",      "dairy-eggs",        "paneer-butter-cheese", 5.99, "Sharp and tangy 12-month aged white cheddar cheese",             0, 20, 4.7, 1],
-  [76, "Organic Free-Range Brown Eggs (Pack of 12)","dairy-eggs",    "eggs",                 5.99, "Certified humane pasture-raised organic brown eggs with golden yolks",1, 40, 5.0, 1],
-  [77, "Farm Fresh White Eggs (Pack of 6)",     "dairy-eggs",        "eggs",                 2.49, "Daily fresh farm-collected grade A white eggs",                   0, 50, 4.2, 1],
-  [78, "Fresh Boneless Chicken Breast (500g)",  "meat-fish",         "chicken",              6.99, "Antibiotic-free tender skinless chicken breast fillets",          0, 25, 4.5, 1],
-  [79, "Organic Free-Range Chicken Curry Cut (500g)","meat-fish",    "chicken",              7.49, "Freshly cut skinless organic chicken with bones for curries",     1, 20, 4.7, 1],
-  [80, "Tender Goat Mutton Curry Cut (500g)",   "meat-fish",         "mutton",              11.99, "Freshly trimmed tender bone-in goat mutton pieces",               0, 15, 4.6, 1],
-  [81, "Fresh Lean Mutton Keema / Mince (500g)","meat-fish",         "mutton",              12.99, "Finely ground fresh mutton mince for kebabs and keema curry",     0, 15, 4.8, 1],
-  [82, "Fresh Atlantic Salmon Fillet (300g)",   "meat-fish",         "fish-seafood",        14.99, "Rich in omega-3 wild-caught fresh salmon fillet portion",        0, 15, 4.9, 1],
-  [83, "Cleaned & Deveined Tiger Prawns (250g)","meat-fish",         "fish-seafood",        10.99, "Fresh sweet jumbo tiger prawns ready to cook",                   0, 20, 4.7, 1],
-  [84, "Fresh Rohu Fish Steaks (500g)",         "meat-fish",         "fish-seafood",         7.99, "Freshwater clean-cut rohu fish steaks for traditional fish curry",0, 20, 4.4, 1],
-  [85, "Organic Japanese Sencha Green Tea (50 Bags)","beverages",    "tea-coffee",          12.99, "High-antioxidant steamed Japanese green tea bags",                1, 30, 5.0, 1],
-  [86, "Assam Golden CTC Black Tea (500g)",     "beverages",         "tea-coffee",           8.49, "Strong, brisk, full-bodied black tea for traditional Masala Chai",0, 35, 4.8, 1],
-  [87, "Organic Chamomile Herbal Tea (30 Bags)","beverages",         "tea-coffee",           8.99, "Calming caffeine-free whole chamomile flower infusion",           1, 25, 4.7, 1],
-  [88, "Single-Origin Ethiopian Arabica Beans (250g)","beverages",   "tea-coffee",          16.99, "Medium roast whole bean coffee with floral & citrus notes",       1, 20, 4.9, 1],
-  [89, "Dark Roast Italian Espresso Blend (250g)","beverages",       "tea-coffee",          14.49, "Bold ground espresso blend with notes of dark chocolate",         0, 25, 4.6, 1],
-  [90, "100% Cold-Pressed Valencia Orange Juice (1L)","beverages",   "juices-water",         5.99, "Pure raw squeezed orange juice with pulp, no added sugar",        1, 25, 4.7, 1],
-  [91, "Natural Sparkling Mineral Water (750ml)","beverages",        "juices-water",         2.99, "Effervescent mountain spring water in glass bottle",              0, 40, 4.5, 1],
-  [92, "Organic Tender Coconut Water (330ml)",  "beverages",         "juices-water",         3.29, "Electrolyte-rich pure organic coconut water",                     1, 35, 4.8, 1],
-  [93, "Organic Oat & Honey Crunch Cookies (200g)","snacks-packaged-foods","biscuits-snacks",4.49,"Wholesome whole oat cookies sweetened with pure honey",          1, 30, 4.6, 1],
-  [94, "Roasted Multigrain Makhana / Foxnuts (100g)","snacks-packaged-foods","biscuits-snacks",3.99,"Light crunchy roasted lotus seeds with pink salt",             1, 35, 4.5, 1],
-  [95, "Gourmet Trail Mix with Nuts & Berries (250g)","snacks-packaged-foods","biscuits-snacks",8.49,"Premium mix of almonds, cranberries, pumpkin seeds, and M&Ms",0, 25, 4.7, 1],
-  [96, "Organic Whole Wheat Fusilli Pasta (500g)","snacks-packaged-foods","noodles-pasta-cereals",4.99,"Italian bronze-cut durum whole wheat spiral pasta",          1, 30, 4.6, 1],
-  [97, "Multi-Millet Hakka Noodles (200g)",     "snacks-packaged-foods","noodles-pasta-cereals",3.49,"Air-dried non-fried noodles made from ragi, jowar and wheat",   1, 25, 4.4, 1],
-  [98, "Organic Honey Almond Granola (400g)",   "snacks-packaged-foods","noodles-pasta-cereals",9.99,"Toasted oat clusters with sliced almonds and raw wildflower honey",1, 25, 4.8, 1],
-  [99, "Organic Raw Forest Honey (500g)",       "snacks-packaged-foods","spreads-sauces-pickles",14.99,"Unfiltered cold-extracted raw wild forest honey",            1, 30, 5.0, 1],
-  [100,"Organic Manuka Honey UMF 10+ (250g)",   "snacks-packaged-foods","spreads-sauces-pickles",29.99,"Medical-grade certified raw New Zealand Manuka honey",        1, 15, 4.9, 1],
-  [101,"All-Natural Crunchy Peanut Butter (500g)","snacks-packaged-foods","spreads-sauces-pickles",5.99,"100% roasted peanuts, zero palm oil or hydrogenated fats", 1, 35, 4.7, 1],
-  [102,"Traditional Mango Pickle in Mustard Oil (300g)","snacks-packaged-foods","spreads-sauces-pickles",3.99,"Authentic sun-cured spiced raw mango pickle",        0, 30, 4.5, 1],
-  [103,"100% Whole Wheat Sourdough Loaf (450g)","bakery-breads",    "breads-buns",          5.49, "Naturally fermented artisan sourdough with crispy crust",         1, 20, 5.0, 1],
-  [104,"Artisan 7-Grain Multigrain Bread (400g)","bakery-breads",   "breads-buns",          4.99, "Soft sliced loaf crusted with flax, oats, and sunflower seeds",   1, 25, 4.8, 1],
-  [105,"Brioche Gourmet Burger Buns (Pack of 4)","bakery-breads",   "breads-buns",          3.99, "Buttery, golden, glossy French brioche hamburger buns",           0, 20, 4.6, 1],
+  // ==========================================
+  // 1. MOBILES (mobiles)
+  // ==========================================
+  [101, "Motorola edge 70 Fusion (12GB RAM, 256GB)", "mobiles", "smartphones", 29999, "144Hz 3D Curved pOLED Display, Sony LYTIA 700C Camera with OIS, IP68 Protection", 0, 40, 4.9, 1420],
+  [102, "Apple iPhone 15 (Blue, 128GB)", "mobiles", "smartphones", 63999, "Dynamic Island, 48MP Main Camera, 2x Telephoto, All-Day Battery Life, USB-C Charging", 0, 25, 4.9, 3890],
+  [103, "OnePlus 12R 5G (Cool Blue, 16GB, 256GB)", "mobiles", "smartphones", 39999, "Snapdragon 8 Gen 2, 4th Gen LTPO 120Hz ProXDR Display, 5500 mAh Battery, 100W SUPERVOOC", 0, 30, 4.8, 980],
+  [104, "Samsung Galaxy S24 5G (Onyx Black, 256GB)", "mobiles", "smartphones", 74999, "Galaxy AI, 50MP Dual Telephoto, Dynamic AMOLED 2X Display with Armor Aluminum 2.0", 0, 18, 4.9, 560],
+  [105, "Realme K14 Plus 5G (Submarine Blue, 128GB)", "mobiles", "smartphones", 25999, "Periscope Portrait Camera, Luxury Watch Design, 120Hz Curved Vision OLED Display", 0, 50, 4.7, 720],
+  [106, "POCO X6 Pro 5G (Racing Yellow, 512GB)", "mobiles", "smartphones", 26999, "Dimensity 8300 Ultra processor, 1.5K 120Hz AMOLED, 64MP OIS Triple Camera", 0, 35, 4.8, 640],
+
+  // ==========================================
+  // 2. ELECTRONICS & LAPTOPS (electronics)
+  // ==========================================
+  [201, "ASUS Vivobook 15 OLED Laptop (Intel Core i5 13th Gen, 16GB, 512GB SSD)", "electronics", "laptops", 59990, "15.6-inch FHD OLED 600nits HDR display, Thin & Light 1.7kg, Windows 11 + MS Office 2024", 0, 15, 4.9, 310],
+  [202, "TCL 43-inch 4K Ultra HD Smart QLED Google TV (43C645)", "electronics", "televisions", 25999, "QLED 4K with Dolby Vision & Atmos, 120Hz DLG Game Master, Hands-Free Voice Control", 0, 20, 4.8, 420],
+  [203, "OnePlus Bullets Wireless Z2 Bluetooth Neckband (Acoustic Red)", "electronics", "audio", 1499, "12.4mm Bass Drivers, 30 Hours Playtime, Fast 10-Min Charge = 20 Hours Battery, IP55", 0, 100, 4.7, 2150],
+  [204, "Sony WH-1000XM5 Wireless Active Noise Cancelling Headphones", "electronics", "audio", 28990, "Industry Leading ANC with 8 Mics, Auto NC Optimizer, Hi-Res Audio LDAC, 30h Battery", 0, 12, 5.0, 180],
+  [205, "Apple iPad Air M2 (11-inch, Wi-Fi, 128GB, Space Grey)", "electronics", "tablets", 57900, "Apple M2 chip, Liquid Retina display with P3 wide color, 12MP Center Stage Camera", 0, 22, 4.9, 140],
+  [206, "Noise ColorFit Pulse 4 Smart Watch with Bluetooth Calling", "electronics", "wearables", 1799, "1.85-inch Advanced AMOLED display, 7-day battery, 100+ Sports Modes, Health Tracking", 0, 80, 4.6, 920],
+
+  // ==========================================
+  // 3. APPLIANCES (appliances)
+  // ==========================================
+  [301, "LG 190L 4-Star Smart Inverter Direct Cool Single Door Refrigerator", "appliances", "refrigerators", 16990, "Smart Inverter Compressor, Fastest in Ice Making, Toughened Glass Shelves, Works without Stabilizer", 0, 15, 4.9, 580],
+  [302, "Voltas 1.5 Ton 5-Star Adjustable Inverter Split AC (185V Vectra Elite)", "appliances", "air-conditioners", 34990, "4-in-1 Adjustable Cooling Modes, 100% Copper Condenser, Anti-dust Filter, Stabilizer Free", 0, 10, 4.8, 290],
+  [303, "Philips Digital Air Fryer HD9252/90 (4.1 Liter, 1400W)", "appliances", "kitchen-appliances", 7499, "Rapid Air Technology for 90% Less Fat, Touch Screen with 7 Pre-set Menus, Dishwasher Safe", 0, 25, 4.8, 340],
+  [304, "Prestige Induction Cooktop PIC 20 (1600 Watt with Indian Menu Options)", "appliances", "kitchen-appliances", 2399, "Push Button Controls, Automatic Voltage Regulator, Anti-Magnetic Wall, Feather Touch Control", 0, 40, 4.7, 480],
+
+  // ==========================================
+  // 4. FASHION (fashion)
+  // ==========================================
+  [401, "Levi's Men 511 Slim Fit Stretchable Denim Jeans (Dark Indigo)", "fashion", "mens-clothing", 2499, "Classic 5-pocket styling, Cotton-elastane blend for flexibility and premium everyday durability", 0, 50, 4.8, 620],
+  [402, "Puma Flyer Runner Running & Training Shoes for Men (Black-White)", "fashion", "footwear", 2199, "SoftFoam+ comfort sockliner for instant step-in cushioning, breathable mesh upper", 0, 60, 4.7, 850],
+  [403, "Titan Neo Analog Dial Quartz Watch for Men (Stainless Steel Strap)", "fashion", "watches", 4295, "Midnight blue sunray dial, Mineral glass, 50m water resistance, 2-year warranty", 0, 30, 4.8, 290],
+  [404, "U.S. Polo Assn. Solid Slim Fit Pure Cotton Polo T-Shirt", "fashion", "mens-clothing", 999, "100% Pique Cotton, Signature brand embroidery, Ribbed collar and sleeve hems", 0, 75, 4.6, 410],
+
+  // ==========================================
+  // 5. BEAUTY & HEALTH (beauty)
+  // ==========================================
+  [501, "Minimalist 10% Niacinamide Face Serum with Zinc (30ml)", "beauty", "skincare", 599, "Clinically tested for blemish marks reduction, sebum control, and pore refining", 1, 65, 4.9, 1200],
+  [502, "Cetaphil Gentle Skin Cleanser for Sensitive & Dry Skin (250ml)", "beauty", "skincare", 499, "Dermatologist recommended, Soap-free, Fragrance-free hydrating cleanser with Niacinamide", 0, 80, 4.8, 980],
+  [503, "Maybelline SuperStay Matte Ink Liquid Lipstick (Pioneer 20)", "beauty", "makeup", 549, "Up to 16 Hours intense matte color payoff, smudge-proof, transfer-resistant precision applicator", 0, 90, 4.7, 760],
+
+  // ==========================================
+  // 6. FOOD & HEALTH (food-health)
+  // ==========================================
+  [601, "Organic Raw Forest Honey (Cold-Extracted, 500g Jar)", "food-health", "grocery-staples", 349, "Unheated, unfiltered wild forest honey directly extracted from certified natural reserves", 1, 55, 5.0, 342],
+  [602, "Cold-Pressed Extra Virgin Olive Oil (1 Liter Glass Bottle)", "food-health", "oils-ghee", 999, "First cold-pressed Spanish olives, rich in healthy monounsaturated fats & Vitamin E", 1, 40, 4.9, 210],
+  [603, "Optimum Nutrition (ON) Gold Standard 100% Whey Protein (Double Rich Chocolate 1kg)", "food-health", "nutrition-supplements", 3299, "24g Whey protein per scoop, 5.5g BCAAs, Primary source Whey Isolate, Instantized for easy mixing", 0, 35, 4.9, 1540],
+  [604, "Whole Grain Rolled Oats (High Fiber, 1kg Pouch)", "food-health", "grocery-staples", 289, "100% whole grain gluten-free oats, rich in beta-glucan fiber for daily heart and gut wellness", 1, 70, 4.8, 480],
+  [605, "California Jumbo Raw Almonds (500g Fresh Pack)", "food-health", "dry-fruits", 499, "Vacuum packed premium crunchy California almonds rich in plant protein and healthy fats", 1, 50, 4.9, 520],
+  [606, "Aashirvaad Shudh Chakki Atta (100% Whole Wheat, 10kg)", "food-health", "grocery-staples", 445, "Crafted from golden grains using traditional 4-step chakki process for soft, fluffy rotis", 1, 120, 4.9, 2100],
+  [607, "Tata Sampann Unpolished Toor Dal / Arhar Dal (1kg)", "food-health", "grocery-staples", 189, "Unpolished natural toor dal sourced from certified farms, rich in wholesome protein", 1, 90, 4.8, 890],
+  [608, "Amul Pure Cow Ghee (1 Liter Tin)", "food-health", "oils-ghee", 620, "Traditional granular texture and authentic aroma, rich source of Vitamin A, D, E & K", 1, 60, 4.9, 1780],
+
+  // ==========================================
+  // 7. HOME & KITCHEN (home)
+  // ==========================================
+  [701, "Milton Thermosteel Flip Lid 1000ml Vacuum Insulated Flask", "home", "kitchen-dining", 949, "24 Hours Hot & Cold retention, 100% Food grade 304 Stainless steel with carry bag", 0, 60, 4.8, 640],
+  [702, "Wakefit Orthopedic Memory Foam King Size Mattress (78x72x6 Inch)", "home", "furniture", 13499, "Next-Gen memory foam with differential pressure zone support, breathable 100% cotton cover", 0, 15, 4.9, 410],
+  [703, "Solimo Microfiber Reversible Comforter / Blanket (Double Bed, Aqua Blue)", "home", "bedding", 1499, "200 GSM hollow siliconized polyester filling, lightweight warmth, hypoallergenic", 0, 40, 4.7, 320],
+
+  // ==========================================
+  // 8. TOYS & BABY CARE (toys-baby)
+  // ==========================================
+  [801, "LEGO Classic Medium Creative Brick Box Building Set (484 Pieces)", "toys-baby", "toys-games", 2499, "Inspires open-ended creativity with 35 vibrant brick colors, windows, eyes, and tires", 0, 30, 4.9, 290],
+  [802, "Pampers All Round Protection Pants Diapers (Large, 74 Count)", "toys-baby", "baby-care", 1199, "Up to 12 hours absorption with magic gel technology and lotion with aloe vera", 0, 50, 4.8, 840],
+
+  // ==========================================
+  // 9. AUTO ACCESSORIES (auto-accessories)
+  // ==========================================
+  [901, "Steelbird SB-50 Adonis Full Face Helmet with Visor (Matte Black, L)", "auto-accessories", "helmets-gear", 1499, "ISI Certified (IS:4151), High impact ABS shell, breathable multi-pore interior padding", 0, 40, 4.8, 510],
+  [902, "70mai Smart Dash Cam 1S (1080P Full HD, Night Vision, G-Sensor)", "auto-accessories", "car-electronics", 3999, "Sony IMX307 sensor, 130-degree wide angle, voice control and emergency auto-recording", 0, 25, 4.7, 180],
+
+  // ==========================================
+  // 10. SPORTS & FITNESS (sports-fitness)
+  // ==========================================
+  [1001, "Yonex Muscle Power 29 Light Graphite Badminton Racquet", "sports-fitness", "badminton", 2199, "High modulus graphite frame, Isometric head shape with Muscle Power shock absorption", 0, 45, 4.8, 380],
+  [1002, "Boldfit Anti-Skid Yoga Mat 6mm with Carrying Strap (Navy Blue)", "sports-fitness", "fitness-accessories", 799, "Eco-friendly TPE material, double-sided non-slip grip, sweat-resistant & easy to clean", 1, 60, 4.7, 490],
 ];
 
 export const INITIAL_PRODUCTS: Product[] = SEED_PRODUCTS_RAW.map(p => ({
@@ -244,117 +163,108 @@ export const INITIAL_PRODUCTS: Product[] = SEED_PRODUCTS_RAW.map(p => ({
 export const INITIAL_USERS: UserProfile[] = [
   {
     id: 1,
-    name: "Maya Sterling",
-    email: "maya.sterling@aura.ai",
+    name: "Rahul Sharma",
+    email: "rahul.sharma@example.com",
     avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
-    vip_level: "Verified VIP Buyer",
-    default_address_id: 1,
+    vip_level: "Cartwise Plus Member",
     preferences: {
-      dietary_tags: ["Certified Organic", "Raw & Cold-Pressed", "Gluten-Free", "Zero Preservatives"],
-      health_goals: ["Immunity & Longevity", "Clean Eating", "Sustained Energy"],
+      dietary_tags: ["100% Genuine", "Certified Organic", "Best Value"],
+      health_goals: ["Top Tech Deals", "Immunity & Wellness", "Daily Essentials"],
+      max_spend_budget: 25000,
       copilot_tone: "wholesale-deal-finder",
-      max_spend_budget: 300,
     },
     addresses: [
       {
         id: 1,
         user_id: 1,
-        label: "Home Penthouse",
-        recipient_name: "Maya Sterling",
-        phone: "+1 (415) 890-4122",
-        street: "742 Evergreen Terrace, Apt 14B",
-        city: "San Francisco",
-        state: "CA",
-        zip_code: "94107",
-        country: "United States",
+        label: "Home",
+        recipient_name: "Rahul Sharma",
+        phone: "+91 98765 43210",
+        street: "Flat 4B, Greenwood Park, Action Area 2",
+        city: "Kolkata",
+        state: "West Bengal",
+        zip_code: "700156",
+        country: "India",
         is_default: true,
       },
-      {
-        id: 2,
-        user_id: 1,
-        label: "Aura AI Lab",
-        recipient_name: "Maya Sterling",
-        phone: "+1 (415) 890-9941",
-        street: "500 Howard Street, Suite 800",
-        city: "San Francisco",
-        state: "CA",
-        zip_code: "94105",
-        country: "United States",
-        is_default: false,
-      },
     ],
+  },
+];
+
+export const INITIAL_REVIEWS: Review[] = [
+  {
+    id: 1,
+    product_id: 101,
+    rating: 5,
+    reviewer_name: "Amit Chatterjee",
+    review_text: "Motorola edge 70 Fusion has the best curved screen and camera in under ₹30,000! Super fast delivery.",
+  },
+  {
+    id: 2,
+    product_id: 102,
+    rating: 5,
+    reviewer_name: "Priya Nair",
+    review_text: "iPhone 15 is worth every rupee. Brilliant camera and 15-minute delivery was unbelievable!",
+  },
+  {
+    id: 3,
+    product_id: 201,
+    rating: 5,
+    reviewer_name: "Siddharth Roy",
+    review_text: "ASUS Vivobook 15 OLED display is stunning for video editing and movies. Best laptop under 60k.",
+  },
+  {
+    id: 4,
+    product_id: 601,
+    rating: 5,
+    reviewer_name: "Vikram Malhotra",
+    review_text: "Best organic raw honey I have tasted. 100% authentic and unadulterated.",
   },
 ];
 
 export const INITIAL_ORDERS: Order[] = [
   {
     id: 1040,
-    total: 21.98,
-    status: "transit",
-    created_at: "2024-09-25 10:15:00",
-    items: [
-      { id: 1, order_id: 1040, product_id: 85, product_name: "Organic Japanese Sencha Green Tea (50 Bags)", unit_price: 12.99, quantity: 1 },
-      { id: 2, order_id: 1040, product_id: 87, product_name: "Organic Chamomile Herbal Tea (30 Bags)", unit_price: 8.99, quantity: 1 }
-    ]
-  },
-  {
-    id: 1039,
-    total: 25.97,
+    total: 349.0,
     status: "delivered",
-    created_at: "2024-09-20 14:30:00",
+    tracking_status: "out_for_delivery",
+    created_at: "2026-03-07 11:30:00",
+    payment_id: "pay_upi_gpay_1040",
+    payment_method: "upi",
+    delivery_slot: "15-Min Express Delivery",
+    estimated_delivery_time: "12 mins",
+    delivery_partner: {
+      name: "Ramesh Kumar",
+      phone: "+91 98451 22890",
+      vehicle: "Ather 450X EV (WB-02-HA-8821)",
+      badge: "CartWise Delivery Partner",
+      rating: 4.9,
+    },
     items: [
-      { id: 3, order_id: 1039, product_id: 99, product_name: "Organic Raw Forest Honey (500g)", unit_price: 14.99, quantity: 1 },
-      { id: 4, order_id: 1039, product_id: 33, product_name: "Organic Whole Grain Rolled Oats (1kg)", unit_price: 5.49, quantity: 2 }
-    ]
+      {
+        id: 1,
+        order_id: 1040,
+        product_id: 601,
+        product_name: "Organic Raw Forest Honey (Cold-Extracted, 500g Jar)",
+        unit_price: 349.0,
+        quantity: 1,
+      },
+    ],
   },
-  {
-    id: 1041,
-    total: 20.48,
-    status: "delivered",
-    created_at: "2024-09-28 09:45:00",
-    items: [
-      { id: 5, order_id: 1041, product_id: 58, product_name: "Organic California Almonds (500g)", unit_price: 11.99, quantity: 1 },
-      { id: 6, order_id: 1041, product_id: 66, product_name: "Organic Black Chia Seeds (250g)", unit_price: 8.49, quantity: 1 }
-    ]
-  }
-];
-
-export const INITIAL_REVIEWS: Review[] = [
-  { id: 1, product_id: 1, rating: 5.0, reviewer_name: "Priya S.", review_text: "Best Alphonso mangoes I've ever ordered online! So sweet and aromatic." },
-  { id: 2, product_id: 1, rating: 4.5, reviewer_name: "Rahul K.", review_text: "Very fresh and juicy. Delivered without any bruises." },
-  { id: 3, product_id: 3, rating: 5.0, reviewer_name: "Amit M.", review_text: "Fresh sweet bananas, perfect for daily smoothies." },
-  { id: 4, product_id: 99, rating: 5.0, reviewer_name: "Alice M.", review_text: "Amazing raw honey! Pure and unfiltered." },
-  { id: 5, product_id: 33, rating: 5.0, reviewer_name: "Daniel B.", review_text: "Great everyday breakfast oats, high fiber and very fresh." },
-  { id: 6, product_id: 51, rating: 5.0, reviewer_name: "Elena M.", review_text: "Best cold-pressed extra virgin olive oil for salad dressings." },
-  { id: 7, product_id: 56, rating: 5.0, reviewer_name: "Rajesh P.", review_text: "Pure A2 Vedic desi cow ghee, amazing aroma and granular texture!" },
-  { id: 8, product_id: 85, rating: 5.0, reviewer_name: "Taro K.", review_text: "Very authentic Japanese sencha green tea flavor." }
 ];
 
 export const INITIAL_USER_ADDRESSES: UserAddressRecord[] = [
   {
     id: 1,
     user_id: 1,
-    name: "Maya Sterling",
+    name: "Rahul Sharma",
     phone: "+91 98765 43210",
-    street_address: "Penthouse 4B, 742 Evergreen Terrace",
-    landmark: "Near Pine Valley Tech Park",
-    city: "Bangalore",
-    pincode: "560103",
+    street_address: "Flat 4B, Greenwood Park, Action Area 2",
+    landmark: "Near City Center 2",
+    city: "Kolkata",
+    pincode: "700156",
     type: "Home",
     is_default: true,
     created_at: "2026-03-01 10:00:00",
-  },
-  {
-    id: 2,
-    user_id: 1,
-    name: "Maya Sterling (Work)",
-    phone: "+91 98765 43210",
-    street_address: "BioTech Innovation Hub, Tower C, Level 8",
-    landmark: "Opposite Metro Pillar 184",
-    city: "Bangalore",
-    pincode: "560001",
-    type: "Work",
-    is_default: false,
-    created_at: "2026-03-02 14:30:00",
   },
 ];

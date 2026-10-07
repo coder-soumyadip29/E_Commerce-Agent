@@ -51,7 +51,7 @@ const PaymentRecordSchema = new Schema<IPaymentRecord>(
     subtotal: { type: Number, required: true },
     discountAmount: { type: Number, default: 0 },
     discountCode: { type: String },
-    currency: { type: String, default: "USD" },
+    currency: { type: String, default: "INR" },
     status: {
       type: String,
       enum: ["created", "paid", "failed", "cod_pending"],

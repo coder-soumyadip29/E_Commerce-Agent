@@ -54,9 +54,9 @@ export async function POST(req: NextRequest) {
       success: true,
       orderId: gatewayOrderId,
       keyId: process.env.RAZORPAY_KEY_ID || "rzp_test_cartwise_sandbox",
-      currency: "USD",
+      currency: "INR",
       amount: verified.finalTotal,
-      amountInCents: Math.round(verified.finalTotal * 100),
+      amountInPaise: Math.round(verified.finalTotal * 100),
       paymentMethod,
       verifiedSummary: {
         itemsCount: verified.items.reduce((s, i) => s + i.quantity, 0),
