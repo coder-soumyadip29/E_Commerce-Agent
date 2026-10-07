@@ -1,4 +1,12 @@
-import { searchProducts, getProductById, getProductReviews, getOrderById, cancelOrderDb, getOrders, SearchProductsOptions } from "../db";
+import {
+  searchProducts,
+  getProductById,
+  getProductReviews,
+  getOrderById,
+  cancelOrderDb,
+  getOrders,
+  calculatePromoDiscount,
+} from "../db";
 import { generateInvoiceData } from "../invoice";
 import { AssistantMessage, ChatMessage, Product, AgentTrace } from "../types";
 
@@ -8,33 +16,34 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
   if (!lastUserMessage) {
     return {
       type: "empty_state",
-      reason: "No query provided.",
-      suggestions: ["Organic Raw Honey", "Extra Virgin Olive Oil", "Steel-Cut Oats"],
+      reason: "No query provided. Ask for any product across Mobiles, Electronics, Fashion, or Groceries.",
+      suggestions: ["Motorola edge 70 Fusion", "Apple iPhone 15", "ASUS Vivobook 15 OLED", "Organic Raw Forest Honey"],
     };
   }
 
-  const query = lastUserMessage.content.toLowerCase().trim();
+  const rawQuery = lastUserMessage.content.trim();
+  const lowerQuery = rawQuery.toLowerCase();
 
-  // Check for Order Cancellation intent
-  if (query.includes("cancel")) {
-    const idMatch = query.match(/\b(\d+)\b/);
-    const orderId = idMatch ? Number(idMatch[1]) : (getOrders()[0]?.id || 1042);
-    const cancelRes = cancelOrderDb(orderId, "Customer requested cancellation via chat");
+  // 1. Order Cancellation intent
+  if (lowerQuery.includes("cancel")) {
+    const idMatch = lowerQuery.match(/\b(\d+)\b/);
+    const orderId = idMatch ? Number(idMatch[1]) : (getOrders()[0]?.id || 1040);
+    const cancelRes = cancelOrderDb(orderId, "Customer requested cancellation via Cartwise AI Copilot");
     return {
       type: "text",
       text: cancelRes.message,
     };
   }
 
-  // Check for Invoice / Receipt generation intent
-  if (query.includes("invoice") || query.includes("receipt") || query.includes("bill")) {
-    const idMatch = query.match(/\b(\d+)\b/);
-    const orderId = idMatch ? Number(idMatch[1]) : (getOrders()[0]?.id || 1042);
+  // 2. Invoice / Tax Receipt generation intent
+  if (lowerQuery.includes("invoice") || lowerQuery.includes("receipt") || lowerQuery.includes("bill") || lowerQuery.includes("gst")) {
+    const idMatch = lowerQuery.match(/\b(\d+)\b/);
+    const orderId = idMatch ? Number(idMatch[1]) : (getOrders()[0]?.id || 1040);
     const order = getOrderById(orderId);
     if (!order) {
       return {
         type: "text",
-        text: `Order #${orderId} was not found in database records.`,
+        text: `Order #${orderId} was not found in our store database records.`,
       };
     }
     const inv = generateInvoiceData({
@@ -47,393 +56,286 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
     });
     return {
       type: "text",
-      text: `🧾 **Tax Invoice ${inv.invoiceNumber} (Order #${inv.orderId})**\n- **GSTIN:** ${inv.storeGstin}\n- **Subtotal:** ₹${inv.subtotal.toFixed(2)}\n- **GST (CGST 2.5% + SGST 2.5%):** ₹${inv.gst.totalGst.toFixed(2)}\n- **Total Amount:** ₹${inv.finalTotal.toFixed(2)}\n- **Delivery Address:** ${inv.deliveryAddress?.street_address}, ${inv.deliveryAddress?.city} - ${inv.deliveryAddress?.pincode}\n[Download PDF Receipt](/api/orders/${order.id}/invoice)`,
+      text: `🧾 **Tax Invoice ${inv.invoiceNumber} (Order #${inv.orderId})**\n- **GSTIN:** ${inv.storeGstin}\n- **Subtotal:** ₹${inv.subtotal.toFixed(2)}\n- **GST (CGST 9% + SGST 9%):** ₹${inv.gst.totalGst.toFixed(2)}\n- **Total Amount:** ₹${inv.finalTotal.toFixed(2)}\n- **Delivery Address:** ${inv.deliveryAddress?.street_address}, ${inv.deliveryAddress?.city} - ${inv.deliveryAddress?.pincode}\n[Download PDF Receipt](/api/orders/${order.id}/invoice)`,
     };
   }
 
-  // 0. Check for dual intent: Product search + Order tracking (Screenshot match)
+  // 3. Live Order Tracking intent
   if (
-    query.includes("track") ||
-    query.includes("1040") ||
-    query.includes("9421") ||
-    query.includes("package")
+    lowerQuery.includes("track") ||
+    lowerQuery.includes("where is my order") ||
+    lowerQuery.includes("delivery status") ||
+    lowerQuery.includes("1040") ||
+    lowerQuery.includes("rider")
   ) {
-    const honey = getProductById(99) || getProductById(1);
+    const order = getOrderById(1040) || getOrders()[0];
+    const honey = getProductById(601) || getProductById(101);
+
     const trackingInfo = {
-      orderId: query.includes("9421") ? "#AU-9421" : "#1040",
-      productName: "Organic Japanese Sencha Green Tea",
-      carrier: "CartWise FastFleet",
+      orderId: "#1040",
+      productName: order?.items?.[0]?.product_name || "Organic Raw Forest Honey (Cold-Extracted, 500g Jar)",
+      carrier: "Cartwise Express Rider (Ramesh Kumar - Ather 450X EV)",
       status: "OUT FOR DELIVERY" as const,
-      estimatedArrival: "Today by 3:45 PM",
+      estimatedArrival: "Today in 12 mins (by 3:45 PM)",
       step: "out_for_delivery" as const,
     };
+
     const promoInfo = {
       code: "SAVE10",
-      savings: 1.5,
-      finalTotal: 13.49,
+      savings: 34.9,
+      finalTotal: 314.1,
     };
 
     return {
       type: "products",
-      text: "Found top organic honey under ₹500 and synced your live shipment dispatch:",
+      text: "Synced your live 15-minute dispatch status with Satellite Rider telemetry:",
       products: honey ? [honey] : [],
       orderTracking: trackingInfo,
       promoArbitrage: promoInfo,
       trace: {
-        query: lastUserMessage.content,
-        parsed_intent: "Find organic honey under ₹500 and track live order",
-        filters: { keyword: "honey", max_price: 500, is_organic: true },
-        sql_query: "SELECT * FROM products WHERE (name LIKE '%honey%' OR category = 'spreads-sauces-pickles') AND price <= 500",
+        query: rawQuery,
+        parsed_intent: "Query live order dispatch and Satellite GPS location for Order #1040",
+        filters: { order_id: 1040, tracking_stage: "out_for_delivery" },
+        sql_query: "SELECT * FROM orders WHERE id = 1040",
         results_count: 1,
         steps: [
-          { title: "Query Parsing", detail: "Parsed dual intent: Product search + Live order dispatch lookup", status: "complete" },
-          { title: "Database Query", detail: "Selected Organic Raw Forest Honey (ID: 99) in SQLite catalog", status: "complete" },
-          { title: "Fleet Telemetry", detail: "Connected to FastFleet Satellite GPS for Order #1040", status: "complete" },
-          { title: "Price Arbitrage", detail: "Calculated SAVE10 voucher arbitrage with net price ₹13.49", status: "complete" },
-        ]
-      }
+          { title: "Intent Parsing", detail: "Parsed tracking request for active delivery order #1040", status: "complete" },
+          { title: "Database Query", detail: "Fetched order details from SQLite orders table", status: "complete" },
+          { title: "Rider Telemetry", detail: "Connected to Ather 450X EV GPS feed (Rider: Ramesh Kumar)", status: "complete" },
+          { title: "ETA Calculation", detail: "Computed doorstep delivery time: 12 minutes", status: "complete" },
+        ],
+      },
     };
   }
 
-  // 1a. Mock Chips Logic
-  if (query === "compare these") {
-    const p1 = getProductById(1);
-    const p5 = getProductById(5);
-    const p7 = getProductById(7);
-    const productsToCompare = [p1, p5, p7].filter(Boolean) as Product[];
-
+  // 4. Promo / Voucher calculation intent
+  if (lowerQuery.includes("save10") || lowerQuery.includes("coupon") || lowerQuery.includes("promo") || lowerQuery.includes("discount")) {
+    const discountRes = calculatePromoDiscount("SAVE10", 29999);
     return {
-      type: "compare",
-      products: productsToCompare,
-      comparisonPoints: {
-        "Price": productsToCompare.map(p => `₹${p.price.toFixed(2)}`),
-        "Rating": productsToCompare.map(p => `${p.average_rating} (${p.review_count} reviews)`),
-        "Organic": productsToCompare.map(p => p.is_organic ? "Yes" : "No"),
-        "Pros": productsToCompare.map(p => {
-          const reviews = getProductReviews(p.id);
-          const topReview = reviews.find(r => r.rating >= 4);
-          return topReview ? `"${topReview.review_text}"` : "No positive reviews";
-        }),
-        "Cons": productsToCompare.map(p => {
-          const reviews = getProductReviews(p.id);
-          const lowReview = [...reviews].sort((a,b) => a.rating - b.rating)[0];
-          if (!lowReview || lowReview.rating >= 4) return `No complaints in ${p.review_count} reviews`;
-          return `"${lowReview.review_text}"`;
-        }),
-      }
+      type: "text",
+      text: `🎉 **Cartwise Plus Promo Validated: SAVE10**\n- **Discount Applied:** Flat 10% Instant Savings\n- **Estimated Savings:** ₹${discountRes.savings.toLocaleString("en-IN")}\n- **Bank Offers:** Applicable across SBI, HDFC & Axis Bank credit/debit cards.\nUse code **SAVE10** at checkout to claim your discount!`,
     };
   }
 
-  if (query === "show cheaper") {
-     const { products, sql } = searchProducts({ category: "honey", maxPrice: 15 });
-     return {
-       type: "products",
-       text: `Found ${products.length} honeys under ₹500:`,
-       products,
-       trace: {
-         query: lastUserMessage.content,
-         parsed_intent: "Find cheaper honey",
-         filters: { category: "honey", max_price: 500 },
-         sql_query: sql.trim(),
-         results_count: products.length,
-         steps: [
-           { title: "Price Cap Enforcement", detail: "Strictly filtered items under ₹500.00", status: "complete" }
-         ]
-       }
-     };
-  }
+  // 5. Comparison Intent
+  if (lowerQuery.includes("compare") || lowerQuery.includes("vs") || lowerQuery.includes("difference")) {
+    let compProducts: Product[] = [];
 
-  if (query.includes("only 4.7")) {
-     const { products, sql } = searchProducts({ category: "honey", minRating: 4.7 });
-     return {
-       type: "products",
-       text: `Found ${products.length} top-rated honeys (4.7+ stars):`,
-       products,
-       trace: {
-         query: lastUserMessage.content,
-         parsed_intent: "Filter by 4.7+ rating",
-         filters: { category: "honey", min_rating: 4.7 },
-         sql_query: sql.trim(),
-         results_count: products.length,
-         steps: [
-           { title: "Rating Aggregation", detail: "Calculated average reviews with HAVING average_rating >= 4.7", status: "complete" }
-         ]
-       }
-     };
-  }
+    if (lowerQuery.includes("iphone") || lowerQuery.includes("apple") || lowerQuery.includes("motorola") || lowerQuery.includes("edge 70") || lowerQuery.includes("phone") || lowerQuery.includes("mobile")) {
+      const p1 = getProductById(101); // Motorola edge 70
+      const p2 = getProductById(102); // iPhone 15
+      const p3 = getProductById(103); // OnePlus 12R
+      compProducts = [p1, p2, p3].filter(Boolean) as Product[];
+    } else if (lowerQuery.includes("laptop") || lowerQuery.includes("vivobook") || lowerQuery.includes("tv")) {
+      const p1 = getProductById(201); // Vivobook 15
+      const p2 = getProductById(202); // TCL 43" QLED
+      const p3 = getProductById(205); // iPad Air
+      compProducts = [p1, p2, p3].filter(Boolean) as Product[];
+    } else {
+      const { products } = searchProducts({ limit: 3 });
+      compProducts = products.slice(0, 3);
+    }
 
-  // 1. Check for Comparison query
-  if (
-    query.includes("compare") ||
-    (query.includes("steel-cut") && query.includes("rolled")) ||
-    (query.includes("difference between") && query.includes("oats"))
-  ) {
-    const rolledOats = getProductById(18); // Rolled Oats
-    const steelCutOats = getProductById(20); // Steel-Cut Oats
-
-    if (rolledOats && steelCutOats) {
-      const productsToCompare = [rolledOats, steelCutOats];
+    if (compProducts.length >= 2) {
       return {
         type: "compare",
-        products: productsToCompare,
+        products: compProducts,
         comparisonPoints: {
-          "Price": productsToCompare.map(p => `${p.price.toFixed(2)}`),
-          "Rating": productsToCompare.map(p => `${p.average_rating} (${p.review_count} reviews)`),
-          "Organic": productsToCompare.map(p => p.is_organic ? "Yes" : "No"),
-          "Pros": productsToCompare.map(p => {
-            const reviews = getProductReviews(p.id);
-            const topReview = reviews.find(r => r.rating >= 4);
-            return topReview ? `"${topReview.review_text}"` : "No positive reviews";
-          }),
-          "Cons": productsToCompare.map(p => {
-            const reviews = getProductReviews(p.id);
-            const lowReview = [...reviews].sort((a,b) => a.rating - b.rating)[0];
-            if (!lowReview || lowReview.rating >= 4) return `No complaints in ${p.review_count} reviews`;
-            return `"${lowReview.review_text}"`;
-          }),
-        }
+          Price: compProducts.map((p) => `₹${p.price.toLocaleString("en-IN")}`),
+          Rating: compProducts.map((p) => `★ ${p.average_rating || 4.8} (${p.review_count || 300} reviews)`),
+          Category: compProducts.map((p) => `${p.category} (${p.sub_category || "Standard"})`),
+          Stock: compProducts.map((p) => (p.stock > 0 ? `In Stock (${p.stock} units)` : "Out of Stock")),
+          Highlight: compProducts.map((p) => p.description.slice(0, 75) + "..."),
+        },
       };
     }
   }
 
-  // 2. Check for Sleep / Tea recommendation
-  if (query.includes("sleep") || (query.includes("tea") && query.includes("night"))) {
-    const chamomile = getProductById(22);
-    if (chamomile) {
-      return {
-        type: "products",
-        text: "For restful sleep, Chamomile Tea is our top recommendation — it is naturally caffeine-free and made from whole dried chamomile flowers.",
-        products: [chamomile],
-        trace: {
-          query: lastUserMessage.content,
-          parsed_intent: "Find natural sleep aid or caffeine-free herbal tea",
-          filters: { keyword: "chamomile", is_organic: false },
-          sql_query: "SELECT * FROM products WHERE name LIKE '%chamomile%'",
-          results_count: 1,
-          steps: [
-            { title: "Query Analysis", detail: "Parsed intent: sleep-supporting herbal infusions", status: "complete" },
-            { title: "Database Query", detail: "Matched Chamomile Tea (ID: 22) in tea category", status: "complete" },
-            { title: "Review Aggregation", detail: "Verified 4.17 average rating across customer reviews", status: "complete" },
-          ]
-        }
-      };
-    }
+  // 6. Natural Language Filters Extraction (Price, Rating, Category, Organic)
+  let maxPrice: number | undefined = undefined;
+  const priceMatch = lowerQuery.match(/(?:under|below|less than|within|budget)\s*(?:rs\.?|inr|₹)?\s*(\d+[\d,]*)/i);
+  if (priceMatch) {
+    maxPrice = Number(priceMatch[1].replace(/,/g, ""));
   }
 
-  // 3. Check for Breakfast bundle / healthy breakfast
-  if (query.includes("breakfast") || (query.includes("healthy") && query.includes("morning"))) {
-    const oats1 = getProductById(18); // Rolled Oats
-    const oats2 = getProductById(20); // Steel-Cut Oats
-    const granola = getProductById(25); // Organic Granola
-    const quinoa = getProductById(17); // Organic Quinoa
-
-    const products = [granola, oats1, oats2, quinoa].filter(Boolean) as Product[];
-
-    return {
-      type: "products",
-      text: "Here are 4 wholesome breakfast staples under ₹500 in our pantry aisle:",
-      products,
-      trace: {
-        query: lastUserMessage.content,
-        parsed_intent: "Retrieve healthy breakfast items under ₹500",
-        filters: { max_price: 500 },
-        sql_query: "SELECT * FROM products WHERE (category = 'grains' OR category = 'snacks') AND price <= 500",
-        results_count: products.length,
-        steps: [
-          { title: "Category Mapping", detail: "Scanned grains and snacks categories for morning items", status: "complete" },
-          { title: "Price Cap Enforcement", detail: "Strictly filtered items under ₹500.00", status: "complete" },
-          { title: "Nutritional Sort", detail: "Prioritized whole grain and organic staples", status: "complete" }
-        ]
-      }
-    };
+  let minRating: number | undefined = undefined;
+  if (lowerQuery.includes("top rated") || lowerQuery.includes("best rated") || lowerQuery.includes("highest rated") || lowerQuery.includes("4.8") || lowerQuery.includes("5 star")) {
+    minRating = 4.8;
+  } else if (lowerQuery.includes("4.5") || lowerQuery.includes("4 star")) {
+    minRating = 4.5;
   }
 
-  // 4. Check for Honey specific search (e.g. "organic honey with 4.5+ rating under $20" or "under 20")
-  if (query.includes("honey")) {
-    const isOrganic = query.includes("organic");
-    const minRating = query.includes("4.7") ? 4.7 : query.includes("4.5") ? 4.5 : query.includes("4") ? 4.0 : undefined;
-    const maxPrice = query.includes("20") ? 20 : query.includes("15") ? 15 : undefined;
+  const isOrganic = lowerQuery.includes("organic") ? true : undefined;
 
-    // If query is just vague "honey", return clarify message
-    if (!isOrganic && minRating === undefined && maxPrice === undefined && query.length < 15) {
-      return {
-        type: "clarify",
-        question: "We carry 8 honeys in store! What kind of honey are you looking for?",
-        options: [
-          "Organic Raw Honey",
-          "High Rating (4.5+ Stars)",
-          "Under ₹500 Budget",
-          "Light Floral Acacia Honey"
-        ]
-      };
-    }
-
-    const { products, sql } = searchProducts({
-      category: "honey",
-      isOrganic: isOrganic ? true : undefined,
-      minRating,
-      maxPrice
-    });
-
-    if (products.length === 0) {
-      return {
-        type: "empty_state",
-        reason: "No honeys matched your exact filters. Try adjusting price or rating criteria.",
-        suggestions: ["Organic Raw Honey (₹14.99)", "Wildflower Honey (₹12.99)", "Organic Acacia Honey (₹17.99)"]
-      };
-    }
-
-    return {
-      type: "products",
-      text: `Found ${products.length} ${isOrganic ? "organic " : ""}honeys${minRating ? ` with ${minRating}+ rating` : ""}${maxPrice ? ` under ₹${maxPrice}` : ""}:`,
-      products,
-      trace: {
-        query: lastUserMessage.content,
-        parsed_intent: "Search honey catalog with organic and price filters",
-        filters: { keyword: "honey", is_organic: isOrganic, min_rating: minRating, max_price: maxPrice },
-        sql_query: sql.trim(),
-        results_count: products.length,
-        steps: [
-          { title: "Keyword Match", detail: "Matched category 'honey' and query term 'honey'", status: "complete" },
-          { title: "Organic Filtering", detail: isOrganic ? "Applied is_organic = 1 constraint" : "Included all production types", status: "complete" },
-          { title: "Rating Aggregation", detail: `Calculated average reviews with HAVING average_rating >= ${minRating || 0}`, status: "complete" }
-        ]
-      }
-    };
+  // Category Detection
+  let detectedCategory: string | undefined = undefined;
+  if (/\b(mobile|phone|smartphone|5g|iphone|motorola|samsung|oneplus|realme|poco)\b/i.test(lowerQuery)) {
+    detectedCategory = "mobiles";
+  } else if (/\b(laptop|electronic|tv|television|headphone|earphone|neckband|tablet|ipad|smartwatch)\b/i.test(lowerQuery)) {
+    detectedCategory = "electronics";
+  } else if (/\b(appliance|fridge|refrigerator|ac|air conditioner|air fryer|induction|cooktop)\b/i.test(lowerQuery)) {
+    detectedCategory = "appliances";
+  } else if (/\b(serum|skincare|cleanser|facewash|lipstick|makeup|beauty)\b/i.test(lowerQuery)) {
+    detectedCategory = "beauty";
+  } else if (/\b(honey|ghee|oil|olive|oat|oats|almond|nut|atta|dal|wheat|flour|whey|protein|grocery|food)\b/i.test(lowerQuery)) {
+    detectedCategory = "food-health";
+  } else if (/\b(fashion|jeans|jean|denim|shoes|shoe|sneaker|sneakers|shirt|t-shirt|polo|clothing)\b/i.test(lowerQuery)) {
+    detectedCategory = "fashion";
+  } else if (/\b(flask|bottle|milton|mattress|bedding|comforter|blanket|furniture|home)\b/i.test(lowerQuery)) {
+    detectedCategory = "home";
+  } else if (/\b(toy|lego|diaper|diapers|pampers|baby)\b/i.test(lowerQuery)) {
+    detectedCategory = "toys-baby";
+  } else if (/\b(helmet|dash cam|dashcam|auto|car)\b/i.test(lowerQuery)) {
+    detectedCategory = "auto-accessories";
+  } else if (/\b(badminton|racquet|yoga|mat|fitness|sport|sports)\b/i.test(lowerQuery)) {
+    detectedCategory = "sports-fitness";
   }
 
-  // 5. Check for Oils search
-  if (query.includes("oil") || query.includes("olive") || query.includes("avocado")) {
-    const isOrganic = query.includes("organic");
-    const { products, sql } = searchProducts({
-      category: "oil",
-      isOrganic: isOrganic ? true : undefined
-    });
+  // Clean Search Term
+  let searchTerm = rawQuery
+    .replace(/(?:find|show|search|give|get|i want|looking for|best|top|cheap|cheaper|deals on|items|products|please|me)\s+/gi, "")
+    .replace(/(?:under|below|less than|within|budget)\s*(?:rs\.?|inr|₹)?\s*\d+[\d,]*/gi, "")
+    .replace(/(?:top rated|best rated|4\.8\+|4\.5\+|5 star|organic)/gi, "")
+    .trim();
 
-    return {
-      type: "products",
-      text: `Here are the cold-pressed culinary oils available in our store:`,
-      products,
-      trace: {
-        query: lastUserMessage.content,
-        parsed_intent: "Retrieve cooking and culinary oils",
-        filters: { keyword: "oil" },
-        sql_query: sql.trim(),
-        results_count: products.length,
-        steps: [
-          { title: "Category Search", detail: "Selected items where category = 'oil'", status: "complete" },
-          { title: "Purity Check", detail: "Verified cold-pressed certifications and origin details", status: "complete" }
-        ]
-      }
-    };
-  }
+  // Multilingual keyword translation
+  if (lowerQuery.includes("মধু") || lowerQuery.includes("शहद")) searchTerm = "honey";
+  if (lowerQuery.includes("ঘি") || lowerQuery.includes("घी")) searchTerm = "ghee";
+  if (lowerQuery.includes("চাল") || lowerQuery.includes("चावल") || lowerQuery.includes("আটা") || lowerQuery.includes("आटा")) searchTerm = "atta";
+  if (lowerQuery.includes("ফোন") || lowerQuery.includes("फोन")) searchTerm = "phone";
+  if (lowerQuery.includes("ল্যাপটপ") || lowerQuery.includes("लैपटॉप")) searchTerm = "laptop";
+  if (lowerQuery.includes("জুতো") || lowerQuery.includes("जूते")) searchTerm = "shoes";
 
-  // 6. Generic database search fallback
-  const { products, sql } = searchProducts({ query });
+  // Execute Dynamic Search against SQLite Catalog
+  const { products, sql } = searchProducts({
+    query: searchTerm.length > 1 ? searchTerm : undefined,
+    category: detectedCategory,
+    maxPrice,
+    minRating,
+    isOrganic,
+    limit: 6,
+  });
 
+  // If products found, format exact response
   if (products.length > 0) {
+    const primaryItem = products[0];
+    const discount = primaryItem.price * 0.1;
+    const finalPrice = primaryItem.price - discount;
+
+    const promoInfo = {
+      code: "SAVE10",
+      savings: Number(discount.toFixed(0)),
+      finalTotal: Number(finalPrice.toFixed(0)),
+    };
+
     return {
       type: "products",
-      text: `Found ${products.length} item${products.length > 1 ? "s" : ""} matching "${lastUserMessage.content}":`,
+      text: `Found ${products.length} exact matching item${products.length > 1 ? "s" : ""} in Cartwise Plus inventory:`,
       products,
+      promoArbitrage: promoInfo,
       trace: {
-        query: lastUserMessage.content,
-        parsed_intent: "General keyword search",
-        filters: { keyword: query },
+        query: rawQuery,
+        parsed_intent: `Search ${detectedCategory || "all catalog"} for '${searchTerm || rawQuery}' with budget & rating constraints`,
+        filters: {
+          keyword: searchTerm || undefined,
+          category: detectedCategory,
+          max_price: maxPrice,
+          min_rating: minRating,
+          is_organic: isOrganic,
+        },
         sql_query: sql.trim(),
         results_count: products.length,
         steps: [
-          { title: "Text Search", detail: `Queried name, description, and category for '${query}'`, status: "complete" }
-        ]
-      }
+          { title: "Semantic Parsing", detail: `Extracted intent: category=${detectedCategory || "all"}, search='${searchTerm}', maxPrice=₹${maxPrice || "Any"}`, status: "complete" },
+          { title: "SQLite Catalog Scan", detail: `Retrieved ${products.length} verified products matching database indexes`, status: "complete" },
+          { title: "Live Inventory & Pricing", detail: `Confirmed in-stock inventory and calculated instant SAVE10 promo arbitrage`, status: "complete" },
+        ],
+      },
     };
   }
 
-  // 7. No results empty state
+  // Fallback: If strict query gave no result, try broad search across all products
+  const broadSearch = searchProducts({ query: searchTerm.split(" ")[0] || rawQuery.split(" ")[0], limit: 4 });
+  if (broadSearch.products.length > 0) {
+    return {
+      type: "products",
+      text: `Here are the closest items found for "${rawQuery}":`,
+      products: broadSearch.products,
+      trace: {
+        query: rawQuery,
+        parsed_intent: "Fuzzy keyword recovery search",
+        filters: { keyword: searchTerm },
+        sql_query: broadSearch.sql.trim(),
+        results_count: broadSearch.products.length,
+        steps: [
+          { title: "Fuzzy Fallback", detail: `Executed broad keyword search across all 11 Cartwise Plus categories`, status: "complete" },
+        ],
+      },
+    };
+  }
+
+  // Clean empty state with real store suggestions
   return {
     type: "empty_state",
-    reason: `We couldn't find any products in our catalog matching "${lastUserMessage.content}".`,
+    reason: `We couldn't find any products matching "${rawQuery}" in store inventory. Try exploring popular flagship categories:`,
     suggestions: [
-      "Organic Raw Honey",
-      "Organic Extra Virgin Olive Oil",
-      "Rolled Oats",
-      "Organic Almonds",
-      "Chamomile Tea"
-    ]
+      "Motorola edge 70 Fusion",
+      "Apple iPhone 15",
+      "ASUS Vivobook 15 OLED",
+      "Organic Raw Forest Honey",
+      "Levi's 511 Denim Jeans",
+      "Puma Running Shoes",
+    ],
   };
 }
 
-export async function handleMockImage(imageInput: string | Buffer | File): Promise<AssistantMessage> {
-  const imageName = typeof imageInput === "string" ? imageInput.toLowerCase() : "";
+export async function handleMockImage(file: string | Buffer | File): Promise<AssistantMessage> {
+  const fileName = typeof file === "string" ? file.toLowerCase() : "";
 
-  // 1. Non-product image detection (elephant)
-  if (imageName.includes("elephant") || imageName.includes("savannah") || imageName.includes("animal")) {
+  if (fileName.includes("honey")) {
+    const honey = getProductById(601) || getProductById(101);
     return {
       type: "image_analysis",
-      tags: ["Wildlife", "African Elephant", "Savannah Grassland", "Non-Product"],
-      description: "I couldn't identify any grocery product in this image. It appears to be an elephant walking across a savannah! Please upload a photo of a pantry staple, package, or grocery label.",
-      matchedProducts: [],
-      uploadedImage: typeof imageInput === "string" ? imageInput : "/images/elephant.png"
+      tags: ["Organic Raw Honey", "Cold-Extracted", "Pure Forest Harvest", "100% Genuine"],
+      description: "Identified premium Raw Forest Honey. Cold-extracted unheated wild honey with rich natural antioxidants.",
+      matchedProducts: honey ? [honey] : [],
+      uploadedImage: "/images/honey.png",
+      onOpenTrace: undefined,
     };
   }
 
-  // 2. Honey image detection
-  if (imageName.includes("honey")) {
-    const rawHoney = getProductById(1);
-    const wildflowerHoney = getProductById(2);
-    const orangeHoney = getProductById(6);
-
-    const matches = [rawHoney, wildflowerHoney, orangeHoney].filter(Boolean) as Product[];
-
+  if (fileName.includes("oat")) {
+    const oats = getProductById(604) || getProductById(601);
     return {
       type: "image_analysis",
-      tags: ["Organic Raw Honey", "Glass Jar", "Unfiltered"],
-      description: "Visual analysis identified a glass jar of artisanal organic raw honey. 3 matching items found in the honey aisle.",
-      matchedProducts: matches,
-      uploadedImage: typeof imageInput === "string" ? imageInput : "/images/honey.png"
+      tags: ["Whole Grain Oats", "Gluten-Free", "High Fiber", "Breakfast Staple"],
+      description: "Identified Whole Grain Rolled Oats. High in beta-glucan soluble fiber for heart and metabolic wellness.",
+      matchedProducts: oats ? [oats] : [],
+      uploadedImage: "/images/oats.png",
+      onOpenTrace: undefined,
     };
   }
 
-  // 3. Oats image detection
-  if (imageName.includes("oat") || imageName.includes("grain")) {
-    const rolledOats = getProductById(18);
-    const steelCutOats = getProductById(20);
-    const granola = getProductById(25);
-
-    const matches = [rolledOats, steelCutOats, granola].filter(Boolean) as Product[];
-
+  if (fileName.includes("oil") || fileName.includes("avocado")) {
+    const oil = getProductById(602) || getProductById(608);
     return {
       type: "image_analysis",
-      tags: ["Whole Grain Oats", "Pantry Jar", "Fiber Rich", "Breakfast Grains"],
-      description: "Visual analysis detected whole grain oat cereals. Matched with 3 grain products in our store catalog.",
-      matchedProducts: matches,
-      uploadedImage: typeof imageInput === "string" ? imageInput : "/images/oats.png"
+      tags: ["Extra Virgin Olive Oil", "Cold-Pressed", "Heart Healthy", "Spanish Olives"],
+      description: "Identified Cold-Pressed Extra Virgin Olive Oil. Rich in healthy monounsaturated fatty acids and Vitamin E.",
+      matchedProducts: oil ? [oil] : [],
+      uploadedImage: "/images/avocado_oil.png",
+      onOpenTrace: undefined,
     };
   }
 
-  // 4. Oil image detection
-  if (imageName.includes("oil") || imageName.includes("avocado") || imageName.includes("olive")) {
-    const avocadoOil = getProductById(12);
-    const oliveOil = getProductById(9);
-
-    const matches = [avocadoOil, oliveOil].filter(Boolean) as Product[];
-
-    return {
-      type: "image_analysis",
-      tags: ["Cold-Pressed Cooking Oil", "Glass Bottle", "Culinary Oil"],
-      description: "Visual match identified culinary bottle of cold-pressed oil. Found 2 matching premium oils in stock.",
-      matchedProducts: matches,
-      uploadedImage: typeof imageInput === "string" ? imageInput : "/images/avocado_oil.png"
-    };
-  }
-
-  // Generic product detection fallback
-  const rawHoney = getProductById(1);
+  // Generic image analysis fallback
+  const { products } = searchProducts({ limit: 2 });
   return {
     type: "image_analysis",
-    tags: ["Pantry Product", "Grocery Item", "Organic label: not visible"],
-    description: "Visual match identified a grocery product. Showing top recommendations from our catalog.",
-    matchedProducts: rawHoney ? [rawHoney] : [],
-    uploadedImage: typeof imageInput === "string" ? imageInput : "/images/honey.png"
+    tags: ["Verified Product", "Cartwise Plus Assured", "In Stock"],
+    description: "Visual analysis complete. Matched with store catalog records.",
+    matchedProducts: products,
+    uploadedImage: "/images/honey.png",
+    onOpenTrace: undefined,
   };
 }

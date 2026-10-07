@@ -37,31 +37,32 @@ function getApiKey(): string {
 }
 
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // Tool Definitions for Gemini Function Calling
 // ---------------------------------------------------------------------------
 const TOOLS_DECLARATION = [
   {
     name: "search_catalog",
     description:
-      "Search the organic e-commerce grocery catalog in SQLite database with optional filters. Returns matching products grounded in store inventory.",
+      "Search the Cartwise Plus product catalog across Mobiles, Electronics, Fashion, Beauty, Home, Appliances, Grocery, Toys, Auto, and Sports. Returns matching products grounded in store inventory.",
     parameters: {
       type: "OBJECT",
       properties: {
         query: {
           type: "STRING",
-          description: "Search keyword for product name or description, e.g. 'raw honey', 'oats', 'olive oil', 'tea', 'almonds'",
+          description: "Search keyword for product name, brand, or description, e.g. 'edge 70', 'iphone', 'samsung', 'vivobook', 'qled tv', 'headphones', 'denim', 'shoes', 'watch', 'serum', 'raw honey', 'ghee', 'whey protein', 'oats', 'helmet', 'yoga mat'",
         },
         category: {
           type: "STRING",
-          description: "Category filter: 'fruits-vegetables', 'staples', 'spices-masalas', 'oils-ghee', 'dry-fruits-nuts', 'dairy-eggs', 'meat-fish', 'beverages', 'snacks-packaged-foods', 'bakery-breads'",
+          description: "Category filter: 'mobiles', 'electronics', 'appliances', 'fashion', 'beauty', 'food-health', 'home', 'toys-baby', 'auto-accessories', 'sports-fitness'",
         },
         subCategory: {
           type: "STRING",
-          description: "Subcategory filter, e.g. 'fresh-fruits', 'fresh-vegetables', 'leafy-greens-herbs', 'rice-rice-products', 'atta-flours-sooji', 'pulses-lentils', 'millets-oats', 'whole-spices', 'ground-spices', 'cooking-oils', 'ghee', 'nuts', 'seeds', 'milk-curd-beverages', 'eggs', 'chicken', 'fish-seafood', 'tea-coffee', 'breads-buns', etc.",
+          description: "Subcategory filter, e.g. 'smartphones', 'laptops', 'televisions', 'audio', 'wearables', 'refrigerators', 'air-conditioners', 'kitchen-appliances', 'mens-clothing', 'footwear', 'watches', 'skincare', 'makeup', 'grocery-staples', 'oils-ghee', 'dry-fruits', 'furniture', 'bedding', 'toys-games', 'helmets-gear', 'badminton', 'fitness-accessories'",
         },
         maxPrice: {
           type: "NUMBER",
-          description: "Maximum budget or price in USD",
+          description: "Maximum budget or price in Indian Rupees (₹ / INR)",
         },
         isOrganic: {
           type: "BOOLEAN",
@@ -69,7 +70,7 @@ const TOOLS_DECLARATION = [
         },
         minRating: {
           type: "NUMBER",
-          description: "Minimum average customer star rating (e.g., 4.0 or 4.5)",
+          description: "Minimum average customer star rating (e.g., 4.0, 4.5, 4.8)",
         },
         limit: {
           type: "INTEGER",
@@ -87,7 +88,7 @@ const TOOLS_DECLARATION = [
       properties: {
         productId: {
           type: "INTEGER",
-          description: "The unique numeric ID of the product",
+          description: "The unique numeric ID of the product (e.g. 101, 102, 201, 601)",
         },
       },
       required: ["productId"],
@@ -95,7 +96,7 @@ const TOOLS_DECLARATION = [
   },
   {
     name: "get_user_orders",
-    description: "Retrieve all past orders placed by the user, including order IDs, line items, totals, dates, and live delivery statuses ('delivered' or 'transit').",
+    description: "Retrieve all past orders placed by the user, including order IDs, line items, totals in INR, dates, and live delivery statuses.",
     parameters: {
       type: "OBJECT",
       properties: {},
@@ -121,17 +122,17 @@ const TOOLS_DECLARATION = [
   },
   {
     name: "calculate_discount",
-    description: "Validate a promotional discount coupon code (e.g. 'SAVE10', 'ORGANIC20', 'WELCOME5') against a cart subtotal and calculate the discounted total.",
+    description: "Validate a promotional discount coupon code (e.g. 'SAVE10', 'WELCOME5') against a cart subtotal and calculate the discounted total in INR.",
     parameters: {
       type: "OBJECT",
       properties: {
         promoCode: {
           type: "STRING",
-          description: "The discount coupon code",
+          description: "The discount coupon code (e.g. SAVE10)",
         },
         cartSubtotal: {
           type: "NUMBER",
-          description: "Subtotal dollar amount of items in the cart",
+          description: "Subtotal amount in Indian Rupees (₹)",
         },
       },
       required: ["promoCode", "cartSubtotal"],
@@ -140,13 +141,13 @@ const TOOLS_DECLARATION = [
   {
     name: "track_specific_order",
     description:
-      "Get live dispatch status, delivery agent details, vehicle coordinates, and accurate ETA for a specific order by its order ID.",
+      "Get live 15-minute dispatch status, delivery partner details, vehicle coordinates, and accurate ETA for a specific order by its order ID.",
     parameters: {
       type: "OBJECT",
       properties: {
         order_id: {
           type: "INTEGER",
-          description: "The unique numeric ID of the order to track (e.g. 1040, 1042)",
+          description: "The unique numeric ID of the order to track (e.g. 1040)",
         },
       },
       required: ["order_id"],
@@ -188,26 +189,27 @@ const TOOLS_DECLARATION = [
   },
 ];
 
-const SYSTEM_INSTRUCTION = `You are CartWise, an intelligent, friendly, multilingual, and transparent AI shopping assistant for an organic grocery e-commerce store.
-Your goal is to help users discover products, check nutrition & allergen attributes, track orders, cancel eligible orders, generate tax invoices, manage their cart, and calculate discount promos.
+const SYSTEM_INSTRUCTION = `You are Cartwise AI Assistant, an elite, highly accurate, and transparent e-commerce shopping copilot for Cartwise Plus.
+Your goal is to help users discover real products across Mobiles, Electronics, Appliances, Fashion, Beauty, Grocery, Home, Toys, Auto, and Sports, check technical specs, compare devices, track live 15-minute deliveries, generate tax invoices, manage their cart, and apply discount promo codes (like SAVE10 for flat 10% instant discount).
 
 MULTILINGUAL & VOICE CAPABILITIES:
 - You fluently support English, Hindi (हिन्दी / Hinglish), and Bengali (বাংলা / Banglish).
-- If the user speaks or writes in Hindi (e.g., "मुझे शहद चाहिए", "A2 desi ghee dikhao", "mere purane orders", "order cancel karo"), respond in natural Hindi / Hinglish.
-- If the user speaks or writes in Bengali (e.g., "আমায় মধু দেখাও", "valo cha pata ache?", "mach ar murgi er dam koto?", "order ta kothay ache?"), respond in natural Bengali / Banglish.
+- If the user speaks or writes in Hindi (e.g., "मुझे 5G फोन दिखाओ", "A2 desi ghee dikhao", "mere purane orders", "order cancel karo"), respond in natural Hindi / Hinglish.
+- If the user speaks or writes in Bengali (e.g., "আমায় সেরা স্মার্টফোন দেখাও", "valo laptop ache?", "order ta kothay ache?"), respond in natural Bengali / Banglish.
 - If the user speaks or writes in English, respond in English.
-- Regardless of user language, ALWAYS translate search terms to relevant English keywords when calling database tools (e.g. 'শহদ' / 'মধু' -> 'honey', 'ঘি' -> 'ghee', 'চাল' -> 'rice', 'চা' -> 'tea', 'ডাল' -> 'dal / lentils', 'মাছ' -> 'fish', 'আম' -> 'mango').
+- Always translate user keywords to English search terms when calling database tools (e.g. 'फोन' -> 'phone / mobile', 'ল্যাপটপ' -> 'laptop', 'জুতো' -> 'shoes', 'মধু' -> 'honey', 'ঘি' -> 'ghee').
 
 CORE RULES:
-1. ALWAYS use the provided tools to query store data (products, orders, reviews, discounts). NEVER invent or hallucinate products, prices, or stock numbers that are not returned by the database tools.
+1. ALWAYS use the provided tools to query store data (products, orders, reviews, discounts). NEVER invent or hallucinate products, prices, or specs that are not returned by the database tools.
 2. When the user asks to find, search, compare, recommend, or filter products, call 'search_catalog' or 'get_product_details'.
-3. When the user asks about past orders generally, call 'get_user_orders'.
-4. When the user asks to track a specific order (e.g. "Where is order 1040?", "Track #1042"), call 'track_specific_order'.
-5. When the user asks to cancel an order, call 'cancel_order'.
-6. When the user requests a receipt, bill, GST breakdown, or invoice for an order, call 'generate_invoice'.
-7. When the user wants to add an item to their cart, call 'add_to_cart'.
-8. When the user asks about discounts, coupons, or promo codes, call 'calculate_discount'.
-9. Keep your spoken explanations conversational, helpful, and concise with clear benefits so they sound natural when read aloud.`;
+3. All prices and discounts are in Indian Rupees (₹ / INR).
+4. When the user asks about past orders generally, call 'get_user_orders'.
+5. When the user asks to track an order (e.g. "Where is order 1040?", "Track delivery"), call 'track_specific_order'.
+6. When the user asks to cancel an order, call 'cancel_order'.
+7. When the user requests a receipt, bill, GST breakdown, or invoice for an order, call 'generate_invoice'.
+8. When the user wants to add an item to their cart, call 'add_to_cart'.
+9. When the user asks about discounts, coupons, or promo codes, call 'calculate_discount'.
+10. Keep your spoken explanations conversational, direct, and concise with clear benefits so they sound natural when read aloud.`;
 
 
 // ---------------------------------------------------------------------------

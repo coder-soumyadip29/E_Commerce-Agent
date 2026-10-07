@@ -219,9 +219,20 @@ export function searchProducts(options: SearchProductsOptions = {}): {
   if (db) {
     const params: (string | number)[] = [];
     if (options.query) {
-      sql += ` AND (p.name LIKE ? OR p.description LIKE ? OR p.category LIKE ? OR p.sub_category LIKE ?)`;
-      const like = `%${options.query}%`;
-      params.push(like, like, like, like);
+      const words = options.query
+        .trim()
+        .split(/\s+/)
+        .map((w) => w.replace(/[^a-zA-Z0-9]/g, ""))
+        .filter((w) => w.length > 0);
+
+      if (words.length > 0) {
+        const wordClauses = words.map(() => `(p.name LIKE ? OR p.description LIKE ? OR p.category LIKE ? OR p.sub_category LIKE ?)`);
+        sql += ` AND (${wordClauses.join(" AND ")})`;
+        for (const w of words) {
+          const like = `%${w}%`;
+          params.push(like, like, like, like);
+        }
+      }
     }
     if (options.category) {
       sql += ` AND (p.category = ? OR p.category LIKE ?)`;
@@ -251,7 +262,55 @@ export function searchProducts(options: SearchProductsOptions = {}): {
 
     try {
       const stmt = db.prepare(sql);
-      const rows = stmt.all(...params) as Array<any>;
+      let rows = stmt.all(...params) as Array<any>;
+
+      // If strict AND multi-word search produced 0 results, retry with OR fallback
+      if (rows.length === 0 && options.query) {
+        const words = options.query
+          .trim()
+          .split(/\s+/)
+          .map((w) => w.replace(/[^a-zA-Z0-9]/g, ""))
+          .filter((w) => w.length > 1);
+
+        if (words.length > 1) {
+          let orSql = `
+            SELECT p.id, p.name, p.category, p.sub_category, p.price, p.description, p.is_organic, p.stock,
+                   rs.average_rating, rs.review_count
+            FROM products p
+            LEFT JOIN ratings_summary rs ON p.id = rs.product_id
+            WHERE 1=1
+          `;
+          const orParams: (string | number)[] = [];
+          const orClauses = words.map(() => `(p.name LIKE ? OR p.description LIKE ? OR p.category LIKE ? OR p.sub_category LIKE ?)`);
+          orSql += ` AND (${orClauses.join(" OR ")})`;
+          for (const w of words) {
+            const like = `%${w}%`;
+            orParams.push(like, like, like, like);
+          }
+          if (options.category) {
+            orSql += ` AND (p.category = ? OR p.category LIKE ?)`;
+            orParams.push(options.category, `%${options.category}%`);
+          }
+          if (options.maxPrice !== undefined) {
+            orSql += ` AND p.price <= ?`;
+            orParams.push(options.maxPrice);
+          }
+
+          const scoreClauses = words.map(() => `(CASE WHEN p.name LIKE ? THEN 3 WHEN p.description LIKE ? THEN 1 ELSE 0 END)`);
+          orSql += ` ORDER BY (${scoreClauses.join(" + ")}) DESC, p.id ASC LIMIT ?`;
+          for (const w of words) {
+            const like = `%${w}%`;
+            orParams.push(like, like);
+          }
+          orParams.push(options.limit !== undefined ? options.limit : 8);
+
+          try {
+            rows = db.prepare(orSql).all(...orParams) as Array<any>;
+            sql = orSql;
+          } catch (e) {}
+        }
+      }
+
       const products: Product[] = rows.map((r) => ({
         id: r.id,
         name: r.name,
@@ -275,15 +334,20 @@ export function searchProducts(options: SearchProductsOptions = {}): {
   let results = [...memoryProducts];
 
   if (options.query) {
-    const q = options.query.toLowerCase();
-    sql += ` AND (p.name LIKE '%${options.query}%' OR p.description LIKE '%${options.query}%')`;
-    results = results.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q) ||
-        (p.sub_category && p.sub_category.toLowerCase().includes(q))
-    );
+    const words = options.query
+      .toLowerCase()
+      .trim()
+      .split(/\s+/)
+      .map((w) => w.replace(/[^a-zA-Z0-9]/g, ""))
+      .filter((w) => w.length > 0);
+
+    if (words.length > 0) {
+      sql += ` AND (multi-word match: ${words.join(", ")})`;
+      results = results.filter((p) => {
+        const text = `${p.name} ${p.description} ${p.category} ${p.sub_category || ""}`.toLowerCase();
+        return words.every((w) => text.includes(w));
+      });
+    }
   }
 
   if (options.category) {
