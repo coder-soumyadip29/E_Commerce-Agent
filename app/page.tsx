@@ -47,10 +47,78 @@ import {
   Mic,
   Plus,
   Tag,
-  ArrowRight,
-  Filter,
-  Eye,
-} from "lucide-react";
+// Dynamic Subcategory & Filter Presets for Each Category (Flipkart / Amazon style)
+const CATEGORY_CHIP_PRESETS: Record<string, Array<{ id: string; label: string; isRating?: boolean }>> = {
+  all: [
+    { id: "all", label: "All Items" },
+    { id: "top-rated", label: "Top Rated (4.8★+)", isRating: true },
+    { id: "under-2k", label: "Under ₹2,000" },
+    { id: "under-30k", label: "Under ₹30,000" },
+    { id: "organic", label: "100% Organic" },
+  ],
+  mobiles: [
+    { id: "all", label: "All Mobiles" },
+    { id: "smartphones", label: "Smartphones" },
+    { id: "under-30k", label: "Under ₹30,000" },
+    { id: "top-rated", label: "Top Rated (4.8★+)", isRating: true },
+  ],
+  electronics: [
+    { id: "all", label: "All Electronics" },
+    { id: "laptops", label: "Laptops" },
+    { id: "televisions", label: "Smart TVs" },
+    { id: "audio", label: "Audio & Headphones" },
+    { id: "tablets", label: "Tablets" },
+    { id: "wearables", label: "Smartwatches" },
+  ],
+  appliances: [
+    { id: "all", label: "All Appliances" },
+    { id: "refrigerators", label: "Refrigerators" },
+    { id: "air-conditioners", label: "Air Conditioners" },
+    { id: "kitchen-appliances", label: "Kitchen Appliances" },
+  ],
+  fashion: [
+    { id: "all", label: "All Fashion" },
+    { id: "mens-clothing", label: "Men's Clothing" },
+    { id: "footwear", label: "Footwear & Shoes" },
+    { id: "watches", label: "Watches" },
+    { id: "under-2k", label: "Under ₹2,000" },
+  ],
+  beauty: [
+    { id: "all", label: "All Beauty" },
+    { id: "skincare", label: "Skincare Serums" },
+    { id: "makeup", label: "Makeup & Lipsticks" },
+    { id: "top-rated", label: "Top Rated (4.8★+)", isRating: true },
+  ],
+  "food-health": [
+    { id: "all", label: "All Food & Health" },
+    { id: "grocery-staples", label: "Grocery & Staples" },
+    { id: "oils-ghee", label: "Oils & Pure Ghee" },
+    { id: "dry-fruits", label: "Dry Fruits & Nuts" },
+    { id: "nutrition-supplements", label: "Protein & Supplements" },
+    { id: "organic", label: "100% Organic" },
+  ],
+  home: [
+    { id: "all", label: "All Home" },
+    { id: "kitchen-dining", label: "Kitchen & Dining" },
+    { id: "furniture", label: "Mattresses & Furniture" },
+    { id: "bedding", label: "Bedding & Comforters" },
+  ],
+  "toys-baby": [
+    { id: "all", label: "All Toys & Baby" },
+    { id: "toys-games", label: "Building Toys & LEGO" },
+    { id: "baby-care", label: "Baby Care & Diapers" },
+  ],
+  "auto-accessories": [
+    { id: "all", label: "All Auto" },
+    { id: "helmets-gear", label: "Helmets & Gear" },
+    { id: "car-electronics", label: "Dash Cams & Tech" },
+  ],
+  "sports-fitness": [
+    { id: "all", label: "All Sports & Fitness" },
+    { id: "badminton", label: "Badminton" },
+    { id: "fitness-accessories", label: "Yoga & Fitness" },
+  ],
+};
 
 // Top Tech Deals for Cartwise Plus
 const CARTWISE_TOP_TECH_DEALS = [
@@ -296,6 +364,7 @@ function MainApp() {
   const [isLoading, setIsLoading] = useState(false);
   const [thinkingLabel, setThinkingLabel] = useState("Searching Cartwise Plus product catalog…");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
   const [wishlistActive, setWishlistActive] = useState<Record<number, boolean>>({});
   const [activeCopilotTab, setActiveCopilotTab] = useState<"chat" | "snap" | "voice">("chat");
@@ -304,9 +373,21 @@ function MainApp() {
   const [activeFilterTag, setActiveFilterTag] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"featured" | "price-low" | "price-high" | "rating">("featured");
 
-  // Derived filtered & sorted products
+  // Derived filtered & sorted products with real-time category & search filter
   const displayedProducts = React.useMemo(() => {
     let list = [...catalogProducts];
+
+    // Search Query Filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          (p.sub_category && p.sub_category.toLowerCase().includes(q))
+      );
+    }
 
     // Filter Tag
     if (activeFilterTag === "top-rated") {
@@ -318,7 +399,7 @@ function MainApp() {
     } else if (activeFilterTag === "organic") {
       list = list.filter((p) => p.is_organic);
     } else if (activeFilterTag !== "all") {
-      list = list.filter((p) => p.sub_category === activeFilterTag);
+      list = list.filter((p) => p.sub_category === activeFilterTag || p.category === activeFilterTag);
     }
 
     // Sort
@@ -331,7 +412,7 @@ function MainApp() {
     }
 
     return list;
-  }, [catalogProducts, activeFilterTag, sortBy]);
+  }, [catalogProducts, activeFilterTag, sortBy, searchQuery]);
 
   // Carousel scroll ref
   const dealsScrollRef = useRef<HTMLDivElement>(null);
@@ -531,8 +612,15 @@ function MainApp() {
             }
           )
         }
-        onSearch={handleSendMessage}
-        onSelectCategory={(cat) => setSelectedCategory(cat)}
+        onSearch={(term) => {
+          setSearchQuery(term);
+          handleSendMessage(term);
+        }}
+        onSelectCategory={(cat) => {
+          setSelectedCategory(cat);
+          setActiveFilterTag("all");
+          setSearchQuery("");
+        }}
         selectedCategory={selectedCategory}
       />
 
@@ -733,59 +821,33 @@ function MainApp() {
                   </div>
                 </div>
 
-                {/* Subcategory & Price Filter Chips */}
+                {/* Dynamic Subcategory & Price Filter Chips (Adapts per selected category) */}
                 <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-1 text-xs">
-                  <button
-                    onClick={() => setActiveFilterTag("all")}
-                    className={`px-3 py-1 rounded-full font-bold transition-all shrink-0 cursor-pointer text-xs ${
-                      activeFilterTag === "all"
-                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
-                        : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
-                    }`}
-                  >
-                    All Items
-                  </button>
-                  <button
-                    onClick={() => setActiveFilterTag("top-rated")}
-                    className={`px-3 py-1 rounded-full font-bold transition-all shrink-0 cursor-pointer text-xs flex items-center gap-1 ${
-                      activeFilterTag === "top-rated"
-                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
-                        : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
-                    }`}
-                  >
-                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                    <span>Top Rated (4.8★+)</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveFilterTag("under-2k")}
-                    className={`px-3 py-1 rounded-full font-bold transition-all shrink-0 cursor-pointer text-xs ${
-                      activeFilterTag === "under-2k"
-                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
-                        : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
-                    }`}
-                  >
-                    Under ₹2,000
-                  </button>
-                  <button
-                    onClick={() => setActiveFilterTag("under-30k")}
-                    className={`px-3 py-1 rounded-full font-bold transition-all shrink-0 cursor-pointer text-xs ${
-                      activeFilterTag === "under-30k"
-                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
-                        : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
-                    }`}
-                  >
-                    Under ₹30,000
-                  </button>
-                  <button
-                    onClick={() => setActiveFilterTag("organic")}
-                    className={`px-3 py-1 rounded-full font-bold transition-all shrink-0 cursor-pointer text-xs ${
-                      activeFilterTag === "organic"
-                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
-                        : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
-                    }`}
-                  >
-                    100% Organic
-                  </button>
+                  {(CATEGORY_CHIP_PRESETS[selectedCategory] || CATEGORY_CHIP_PRESETS.all).map((chip) => {
+                    const isSelected = activeFilterTag === chip.id;
+                    return (
+                      <button
+                        key={chip.id}
+                        onClick={() => setActiveFilterTag(chip.id)}
+                        className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer text-xs flex items-center gap-1 ${
+                          isSelected
+                            ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
+                            : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
+                        }`}
+                      >
+                        {chip.isRating && <Star className="w-3 h-3 fill-amber-400 text-amber-400" />}
+                        <span>{chip.label}</span>
+                      </button>
+                    );
+                  })}
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="px-2.5 py-1 rounded-full text-rose-600 bg-rose-50 border border-rose-200 text-[11px] font-bold shrink-0 hover:bg-rose-100 transition-colors cursor-pointer"
+                    >
+                      Clear "{searchQuery}" ✕
+                    </button>
+                  )}
                 </div>
 
                 {/* Adaptive Product Cards Grid (1 col on mobile, 2 on sm, 3 on md/lg, up to 4 on ultra-wide) */}

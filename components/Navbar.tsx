@@ -43,17 +43,73 @@ interface NavbarProps {
 }
 
 export const CATEGORIES_NAV = [
-  { id: "all", label: "For You", icon: Sparkles, isSpecial: true },
-  { id: "fashion", label: "Fashion", icon: Shirt },
-  { id: "mobiles", label: "Mobiles", icon: Smartphone },
-  { id: "electronics", label: "Electronics", icon: Laptop },
-  { id: "beauty", label: "Beauty", icon: Flame },
-  { id: "home", label: "Home", icon: Home },
-  { id: "appliances", label: "Appliances", icon: Tv },
-  { id: "toys-baby", label: "Toys, baby..", icon: Baby },
-  { id: "food-health", label: "Food & Health", icon: HeartPulse },
-  { id: "auto-accessories", label: "Auto Access...", icon: Car },
-  { id: "sports-fitness", label: "Sports & Fitn...", icon: Trophy },
+  {
+    id: "all",
+    label: "For You",
+    icon: Sparkles,
+    image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=160&q=80",
+    isSpecial: true,
+  },
+  {
+    id: "fashion",
+    label: "Fashion",
+    icon: Shirt,
+    image: "https://images.unsplash.com/photo-1542272604-780c96856478?auto=format&fit=crop&w=160&q=80",
+  },
+  {
+    id: "mobiles",
+    label: "Mobiles",
+    icon: Smartphone,
+    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=160&q=80",
+  },
+  {
+    id: "electronics",
+    label: "Electronics",
+    icon: Laptop,
+    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=160&q=80",
+  },
+  {
+    id: "beauty",
+    label: "Beauty",
+    icon: Flame,
+    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=160&q=80",
+  },
+  {
+    id: "home",
+    label: "Home",
+    icon: Home,
+    image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=160&q=80",
+  },
+  {
+    id: "appliances",
+    label: "Appliances",
+    icon: Tv,
+    image: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=160&q=80",
+  },
+  {
+    id: "toys-baby",
+    label: "Toys, baby..",
+    icon: Baby,
+    image: "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?auto=format&fit=crop&w=160&q=80",
+  },
+  {
+    id: "food-health",
+    label: "Food & Health",
+    icon: HeartPulse,
+    image: "/images/honey.png",
+  },
+  {
+    id: "auto-accessories",
+    label: "Auto Access...",
+    icon: Car,
+    image: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=160&q=80",
+  },
+  {
+    id: "sports-fitness",
+    label: "Sports & Fitn...",
+    icon: Trophy,
+    image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=160&q=80",
+  },
 ];
 
 export function Navbar({
@@ -417,9 +473,9 @@ export function Navbar({
         </div>
       )}
 
-      {/* Category Navigation Icons Ribbon (Smooth Touch Horizontal Scroll) */}
-      <div className="border-t border-slate-200 bg-white overflow-x-auto scrollbar-none px-2 sm:px-6">
-        <div className="max-w-[1600px] w-full mx-auto flex items-center justify-start sm:justify-between gap-1.5 sm:gap-2 py-2">
+      {/* Category Navigation Ribbon (Real Product Thumbnails & Smooth Touch Scroll) */}
+      <div className="border-t border-slate-200 bg-white overflow-x-auto scrollbar-none px-2 sm:px-6 shadow-xs">
+        <div className="max-w-[1600px] w-full mx-auto flex items-center justify-start sm:justify-between gap-2 sm:gap-3 py-2 sm:py-2.5">
           {CATEGORIES_NAV.map((cat) => {
             const Icon = cat.icon;
             const isSelected = selectedCategory === cat.id;
@@ -431,26 +487,44 @@ export function Navbar({
                   onSelectCategory?.(cat.id);
                   if (activeTab !== "chat") setActiveTab("chat");
                 }}
-                className={`flex flex-col items-center gap-1 px-2.5 sm:px-3 py-1 rounded-xl transition-all cursor-pointer shrink-0 relative group ${
+                className={`flex flex-col items-center gap-1.5 px-2 py-1 rounded-xl transition-all cursor-pointer shrink-0 relative group ${
                   isSelected
                     ? "text-slate-950 font-bold"
                     : "text-slate-600 hover:text-slate-950"
                 }`}
               >
                 <div
-                  className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-colors ${
+                  className={`relative w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all overflow-hidden p-1 ${
                     isSelected
-                      ? "bg-slate-950 text-amber-400 shadow-xs"
-                      : "bg-slate-50 text-slate-600 group-hover:bg-amber-50 group-hover:text-amber-700"
+                      ? "bg-slate-950 border-2 border-amber-400 ring-2 ring-amber-400/30 shadow-md scale-105"
+                      : "bg-slate-50 border border-slate-200 group-hover:border-amber-400/60 group-hover:bg-amber-50/40 group-hover:scale-105"
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <img
+                    src={cat.image}
+                    alt={cat.label}
+                    className="w-full h-full object-cover rounded-lg sm:rounded-xl group-hover:scale-110 transition-transform duration-200"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                  <div
+                    className={`absolute bottom-0 right-0 p-0.5 rounded-tl-md ${
+                      isSelected ? "bg-amber-400 text-slate-950" : "bg-slate-900/80 text-white"
+                    }`}
+                  >
+                    <Icon className="w-2.5 h-2.5" />
+                  </div>
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-semibold whitespace-nowrap">
+                <span
+                  className={`text-[10px] sm:text-[11px] whitespace-nowrap transition-colors ${
+                    isSelected ? "text-slate-950 font-extrabold" : "font-semibold text-slate-700 group-hover:text-amber-600"
+                  }`}
+                >
                   {cat.label}
                 </span>
                 {isSelected && (
-                  <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-amber-500 rounded-full" />
+                  <span className="absolute -bottom-1 left-2 right-2 h-0.5 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full shadow-xs" />
                 )}
               </button>
             );
