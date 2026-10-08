@@ -290,7 +290,12 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
 }
 
 export async function handleMockImage(file: string | Buffer | File): Promise<AssistantMessage> {
-  const fileName = typeof file === "string" ? file.toLowerCase() : "";
+  let fileName = "";
+  if (typeof file === "string") {
+    fileName = file.toLowerCase();
+  } else if (file && typeof (file as any).name === "string") {
+    fileName = (file as any).name.toLowerCase();
+  }
 
   if (fileName.includes("honey")) {
     const honey = getProductById(601) || getProductById(101);
