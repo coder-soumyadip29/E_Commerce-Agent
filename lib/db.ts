@@ -161,6 +161,7 @@ export function getDb(): any {
       const orderCols = betterSqliteInstance.prepare("PRAGMA table_info(orders)").all() as Array<{ name: string }>;
       const colNames = new Set(orderCols.map((c) => c.name));
       const requiredColumns = [
+        { name: "user_id", type: "INTEGER DEFAULT 1" },
         { name: "payment_id", type: "TEXT" },
         { name: "payment_method", type: "TEXT" },
         { name: "delivery_address_json", type: "TEXT" },
@@ -422,7 +423,7 @@ export function getProductById(id: number): Product | null {
   return found ? { ...found } : null;
 }
 
-export function createOrder(productId: number): { order: Order; success: boolean } {
+export function createOrder(productId: number, userId: number = 1): { order: Order; success: boolean } {
   const product = getProductById(productId);
   if (!product) {
     throw new Error(`Product with ID ${productId} does not exist in store.`);
@@ -433,8 +434,8 @@ export function createOrder(productId: number): { order: Order; success: boolean
     try {
       let orderRow: Order | null = null;
       db.transaction(() => {
-        const stmt = db.prepare("INSERT INTO orders (total, status) VALUES (?, ?)");
-        const info = stmt.run(product.price, "delivered");
+        const stmt = db.prepare("INSERT INTO orders (user_id, total, status) VALUES (?, ?, ?)");
+        const info = stmt.run(userId, product.price, "delivered");
         const itemStmt = db.prepare(
           "INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity) VALUES (?, ?, ?, ?, ?)"
         );
@@ -455,6 +456,7 @@ export function createOrder(productId: number): { order: Order; success: boolean
   const newOrderId = memoryOrders.length > 0 ? Math.max(...memoryOrders.map((o) => o.id)) + 1 : 1042;
   const newOrder: Order = {
     id: newOrderId,
+    user_id: userId,
     total: product.price,
     status: "delivered",
     created_at: new Date().toISOString().replace("T", " ").substring(0, 19),
@@ -494,6 +496,7 @@ export function formatOrderRecord(raw: any, items?: OrderItem[]): Order {
 
   return {
     id: raw.id,
+    user_id: raw.user_id !== undefined && raw.user_id !== null ? Number(raw.user_id) : 1,
     total: Number(raw.total),
     status: raw.status || "delivered",
     created_at: raw.created_at,
@@ -515,12 +518,16 @@ export function formatOrderRecord(raw: any, items?: OrderItem[]): Order {
   };
 }
 
-export function getOrders(): Order[] {
+export function getOrders(userId?: number): Order[] {
   const db = getDb();
   if (db) {
     try {
-      const stmt = db.prepare("SELECT * FROM orders ORDER BY id DESC");
-      const rows = stmt.all() as any[];
+      const hasUserFilter = userId !== undefined && !isNaN(userId);
+      const query = hasUserFilter
+        ? "SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC"
+        : "SELECT * FROM orders ORDER BY id DESC";
+      const stmt = db.prepare(query);
+      const rows = (hasUserFilter ? stmt.all(userId) : stmt.all()) as any[];
       const itemsStmt = db.prepare("SELECT * FROM order_items WHERE order_id = ?");
       return rows.map((r) => {
         const items = itemsStmt.all(r.id) as OrderItem[];
@@ -529,6 +536,12 @@ export function getOrders(): Order[] {
     } catch (e) {
       // Fallback
     }
+  }
+
+  if (userId !== undefined && !isNaN(userId)) {
+    return memoryOrders
+      .filter((o) => (o.user_id ?? 1) === userId)
+      .map((o) => formatOrderRecord(o, o.items));
   }
 
   return memoryOrders.map((o) => formatOrderRecord(o, o.items));
@@ -955,7 +968,11 @@ export function deleteCartDb(sessionId: string, productId?: number): { success: 
   return { success: true };
 }
 
-export function checkoutCartDb(sessionId: string): { success: boolean; order?: Order; error?: string } {
+export function saveFallbackOrder(order: Order): void {
+  memoryOrders.unshift(order);
+}
+
+export function checkoutCartDb(sessionId: string, userId: number = 1, extra?: any): { success: boolean; order?: Order; error?: string } {
   const cartItems = getCartDb(sessionId);
   if (cartItems.length === 0) {
     return { success: false, error: "Cart is empty." };
@@ -974,9 +991,13 @@ export function checkoutCartDb(sessionId: string): { success: boolean; order?: O
   const newOrderId = memoryOrders.length > 0 ? Math.max(...memoryOrders.map((o) => o.id)) + 1 : 1042;
   const newOrder: Order = {
     id: newOrderId,
+    user_id: userId,
     total,
     status: "delivered",
     created_at: new Date().toISOString().replace("T", " ").substring(0, 19),
+    delivery_address_json: extra?.deliveryAddress ? JSON.stringify(extra.deliveryAddress) : undefined,
+    delivery_slot: extra?.deliverySlot?.title || undefined,
+    payment_method: extra?.paymentMethod || extra?.method || "upi",
     items: cartItems.map((item, idx) => ({
       id: Date.now() + idx,
       order_id: newOrderId,

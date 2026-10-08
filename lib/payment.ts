@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { getProductById, getDb, calculatePromoDiscount } from "./db";
+import { getProductById, getDb, calculatePromoDiscount, saveFallbackOrder } from "./db";
 import { Product, Order, OrderItem } from "./types";
 import { connectToDatabase } from "./mongodb";
 import { PaymentModel, IPaymentItem } from "./models/Payment";
@@ -160,6 +160,7 @@ export function atomicCreateSqliteOrder(
   paymentMethod: string,
   paymentId: string,
   extra?: {
+    userId?: number;
     deliveryAddress?: any;
     deliverySlot?: any;
     paymentDetails?: any;
@@ -167,6 +168,7 @@ export function atomicCreateSqliteOrder(
 ): Order {
   const db = getDb();
   const now = new Date().toISOString().replace("T", " ").substring(0, 19);
+  const orderUserId = extra?.userId || 1;
 
   if (db) {
     let orderRow: Order | null = null;
@@ -175,10 +177,11 @@ export function atomicCreateSqliteOrder(
         // 1. Insert into orders table with tracking lifecycle columns
         const orderStmt = db.prepare(`
           INSERT INTO orders (
-            total, status, created_at, payment_id, payment_method, delivery_address_json, delivery_slot, tracking_status, estimated_delivery_time
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            user_id, total, status, created_at, payment_id, payment_method, delivery_address_json, delivery_slot, tracking_status, estimated_delivery_time
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
         const orderResult = orderStmt.run(
+          orderUserId,
           finalTotal,
           "placed",
           now,
@@ -216,6 +219,7 @@ export function atomicCreateSqliteOrder(
 
         orderRow = {
           id: fetchOrder.id,
+          user_id: fetchOrder.user_id !== undefined ? Number(fetchOrder.user_id) : orderUserId,
           total: fetchOrder.total,
           status: fetchOrder.status,
           created_at: fetchOrder.created_at,
@@ -247,9 +251,16 @@ export function atomicCreateSqliteOrder(
   const fallbackId = Date.now();
   const fallbackOrder: Order = {
     id: fallbackId,
+    user_id: orderUserId,
     total: finalTotal,
     status: "delivered",
     created_at: now,
+    delivery_address_json: extra?.deliveryAddress ? JSON.stringify(extra.deliveryAddress) : undefined,
+    delivery_slot: extra?.deliverySlot?.title || "30-Min Fast Express",
+    payment_method: paymentMethod,
+    payment_id: paymentId,
+    tracking_status: "placed",
+    estimated_delivery_time: "25-35 mins (Express Delivery)",
     items: verifiedItems.map((item, idx) => ({
       id: fallbackId + idx + 1,
       order_id: fallbackId,
@@ -260,6 +271,7 @@ export function atomicCreateSqliteOrder(
     })),
   };
 
+  saveFallbackOrder(fallbackOrder);
   return fallbackOrder;
 }
 

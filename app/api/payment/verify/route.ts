@@ -60,6 +60,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: verified.error }, { status: 400 });
     }
 
+    const userId = Number(body.userId) || 1;
+
     // 3. Atomic Order Creation in SQLite
     const sqliteOrder = atomicCreateSqliteOrder(
       verified.items.map((i) => ({ product: i.product, quantity: i.quantity })),
@@ -67,6 +69,7 @@ export async function POST(req: NextRequest) {
       paymentMethod,
       paymentId || `cod_${orderId}`,
       {
+        userId,
         deliveryAddress: deliveryAddress || paymentDetails?.deliveryAddress,
         deliverySlot: deliverySlot || paymentDetails?.deliverySlot,
         paymentDetails,

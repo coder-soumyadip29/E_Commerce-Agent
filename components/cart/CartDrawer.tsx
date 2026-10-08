@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
+import { useUser } from "@/context/UserContext";
 import { Product, Order, UserAddressRecord, DeliverySlotId, InvoiceData } from "@/lib/types";
 import { DELIVERY_SLOTS } from "@/lib/deliverySlots";
 import {
@@ -55,6 +56,7 @@ export function CartDrawer() {
     confirmedOrder,
     setConfirmedOrder,
   } = useCart();
+  const { user } = useUser();
 
   // Address & Delivery Slot State
   const [savedAddresses, setSavedAddresses] = useState<UserAddressRecord[]>([]);
@@ -99,13 +101,17 @@ export function CartDrawer() {
   useEffect(() => {
     async function loadAddresses() {
       try {
-        const res = await fetch("/api/addresses?userId=1");
+        const userId = user?.id || 1;
+        const res = await fetch(`/api/addresses?userId=${userId}`);
         if (res.ok) {
           const data = await res.json();
           if (data.addresses && data.addresses.length > 0) {
             setSavedAddresses(data.addresses);
             const def = data.addresses.find((a: any) => a.is_default) || data.addresses[0];
             setSelectedAddressId(def.id);
+          } else {
+            setSavedAddresses([]);
+            setSelectedAddressId(null);
           }
         }
       } catch (e) {
@@ -113,7 +119,7 @@ export function CartDrawer() {
       }
     }
     loadAddresses();
-  }, [isReviewOpen]);
+  }, [isReviewOpen, user?.id]);
 
   // Handle address added callback
   const handleAddressCreated = (newAddr: UserAddressRecord) => {
@@ -225,6 +231,7 @@ export function CartDrawer() {
 
     try {
       const payload = {
+        userId: user?.id || 1,
         cartItems: cart.map((i) => ({ productId: i.product.id, quantity: i.quantity })),
         discountCode: appliedPromo || undefined,
         paymentMethod,
@@ -282,6 +289,7 @@ export function CartDrawer() {
       const activeSlot = DELIVERY_SLOTS.find((s) => s.id === selectedSlotId) || DELIVERY_SLOTS[0];
 
       const checkoutPayload = {
+        userId: user?.id || 1,
         cartItems: cart.map((i) => ({ productId: i.product.id, quantity: i.quantity })),
         paymentDetails: {
           ...receipt,

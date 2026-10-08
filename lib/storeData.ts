@@ -66,6 +66,42 @@ export function getProductImageUrl(name: string, category: string, subCategory?:
 export const SEED_PRODUCTS_RAW: Array<[number, string, string, string, number, string, number, number, number, number]> = [
   // id, name, category, sub_category, price, description, is_organic, stock, average_rating, review_count
   // ==========================================
+  // 0. CORE MENTOR ORGANIC HARVEST (IDs 1 - 32)
+  // ==========================================
+  [1, "Organic Raw Honey", "food-health", "grocery-staples", 14.99, "Pure organic raw honey, unfiltered and cold-pressed", 1, 20, 4.6, 12],
+  [2, "Wildflower Honey", "food-health", "grocery-staples", 12.99, "Natural wildflower honey from local beekeepers", 0, 20, 3.8, 8],
+  [3, "Organic Manuka Honey", "food-health", "grocery-staples", 29.99, "Premium organic Manuka honey from New Zealand", 1, 20, 4.8, 15],
+  [4, "Clover Honey", "food-health", "grocery-staples", 8.99, "Classic clover honey, smooth and sweet", 0, 20, 3.5, 6],
+  [5, "Organic Buckwheat Honey", "food-health", "grocery-staples", 18.99, "Dark and robust organic buckwheat honey, antioxidant-rich", 1, 20, 4.6, 9],
+  [6, "Orange Blossom Honey", "food-health", "grocery-staples", 15.99, "Light and floral orange blossom honey", 0, 0, 4.2, 7],
+  [7, "Organic Acacia Honey", "food-health", "grocery-staples", 17.99, "Light and mild organic acacia honey, low glycemic index", 1, 20, 4.8, 11],
+  [8, "Creamed Honey", "food-health", "grocery-staples", 11.99, "Smooth creamed honey with spreadable texture", 0, 20, 4.0, 5],
+  [9, "Organic Extra Virgin Olive Oil", "food-health", "oils-ghee", 16.99, "Cold-pressed organic EVOO from Mediterranean olives", 1, 20, 4.7, 14],
+  [10, "Coconut Oil", "food-health", "oils-ghee", 12.49, "Refined coconut oil, great for high-heat cooking", 0, 20, 4.1, 8],
+  [11, "Organic Flaxseed Oil", "food-health", "oils-ghee", 14.99, "Cold-pressed organic flaxseed oil, rich in omega-3", 1, 20, 4.5, 10],
+  [12, "Avocado Oil", "food-health", "oils-ghee", 18.99, "Cold-pressed avocado oil, high smoke point", 0, 20, 4.6, 9],
+  [13, "Organic Almonds", "food-health", "dry-fruits", 11.99, "Raw organic almonds, unsalted, non-GMO certified", 1, 20, 4.8, 16],
+  [14, "Roasted Cashews", "food-health", "dry-fruits", 9.99, "Lightly salted dry-roasted cashews", 0, 20, 4.3, 11],
+  [15, "Organic Chia Seeds", "food-health", "grocery-staples", 8.49, "Organic black chia seeds, high in fiber and omega-3", 1, 20, 4.7, 13],
+  [16, "Mixed Nuts", "food-health", "dry-fruits", 13.99, "Premium mix of walnuts, pecans, almonds and Brazil nuts", 0, 20, 4.4, 9],
+  [17, "Organic Quinoa", "food-health", "grocery-staples", 10.99, "Organic white quinoa, complete protein, gluten-free", 1, 20, 4.6, 12],
+  [18, "Rolled Oats", "food-health", "grocery-staples", 5.49, "Whole grain rolled oats, great for porridge and baking", 0, 20, 4.5, 14],
+  [19, "Organic Brown Rice", "food-health", "grocery-staples", 7.99, "Long-grain organic brown rice, naturally gluten-free", 1, 20, 4.3, 8],
+  [20, "Steel-Cut Oats", "food-health", "grocery-staples", 6.99, "Traditional steel-cut oats, low GI, hearty texture", 0, 20, 4.4, 10],
+  [21, "Organic Green Tea", "food-health", "grocery-staples", 12.99, "Japanese organic sencha green tea, 50 bags", 1, 20, 4.7, 15],
+  [22, "Chamomile Tea", "food-health", "grocery-staples", 8.99, "Dried chamomile flowers, caffeine-free, soothing", 0, 20, 4.2, 7],
+  [23, "Organic Ethiopian Coffee", "food-health", "grocery-staples", 16.99, "Single-origin organic Arabica, medium roast whole bean", 1, 20, 4.9, 18],
+  [24, "Dark Roast Espresso Blend", "food-health", "grocery-staples", 14.49, "Bold dark roast espresso blend, ground", 0, 0, 4.1, 6],
+  [25, "Organic Granola", "food-health", "grocery-staples", 9.99, "Organic oat granola with honey, almonds and dried cranberries", 1, 20, 4.6, 11],
+  [26, "Rice Cakes", "food-health", "grocery-staples", 4.49, "Lightly salted brown rice cakes, low calorie", 0, 20, 3.9, 5],
+  [27, "Organic Dried Mango", "food-health", "dry-fruits", 7.99, "Unsweetened organic dried mango slices, no preservatives", 1, 20, 4.8, 17],
+  [28, "Trail Mix", "food-health", "dry-fruits", 8.49, "Classic trail mix with raisins, M&Ms, peanuts and sunflower seeds", 0, 20, 4.3, 8],
+  [29, "Organic Almond Milk", "food-health", "grocery-staples", 4.99, "Unsweetened organic almond milk, fortified with calcium", 1, 20, 4.5, 12],
+  [30, "Oat Milk", "food-health", "grocery-staples", 4.49, "Barista-style oat milk, great for coffee", 0, 20, 4.6, 14],
+  [31, "Organic Coconut Milk", "food-health", "grocery-staples", 3.99, "Full-fat organic coconut milk, great for curries", 1, 20, 4.7, 10],
+  [32, "Soy Milk", "food-health", "grocery-staples", 3.49, "Unsweetened soy milk, high protein", 0, 20, 4.1, 7],
+
+  // ==========================================
   // 1. MOBILES (mobiles)
   // ==========================================
   [101, "Motorola edge 70 Fusion (12GB RAM, 256GB)", "mobiles", "smartphones", 29999, "144Hz 3D Curved pOLED Display, Sony LYTIA 700C Camera with OIS, IP68 Protection", 0, 40, 4.9, 1420],
@@ -225,6 +261,7 @@ export const INITIAL_REVIEWS: Review[] = [
 export const INITIAL_ORDERS: Order[] = [
   {
     id: 1040,
+    user_id: 1,
     total: 349.0,
     status: "delivered",
     tracking_status: "out_for_delivery",
@@ -251,20 +288,63 @@ export const INITIAL_ORDERS: Order[] = [
       },
     ],
   },
+  {
+    id: 1039,
+    user_id: 1,
+    total: 25.97,
+    status: "delivered",
+    tracking_status: "delivered",
+    created_at: "2026-03-05 09:15:00",
+    payment_id: "pay_card_1039",
+    payment_method: "card",
+    delivery_slot: "Morning Slot (7 AM - 10 AM)",
+    estimated_delivery_time: "Delivered",
+    items: [
+      {
+        id: 1,
+        order_id: 1039,
+        product_id: 1,
+        product_name: "Organic Raw Honey",
+        unit_price: 14.99,
+        quantity: 1,
+      },
+      {
+        id: 2,
+        order_id: 1039,
+        product_id: 18,
+        product_name: "Rolled Oats",
+        unit_price: 5.49,
+        quantity: 2,
+      },
+    ],
+  },
 ];
 
 export const INITIAL_USER_ADDRESSES: UserAddressRecord[] = [
   {
     id: 1,
     user_id: 1,
-    name: "Rahul Sharma",
+    name: "Maya Sterling",
     phone: "+91 98765 43210",
-    street_address: "Flat 4B, Greenwood Park, Action Area 2",
-    landmark: "Near City Center 2",
-    city: "Kolkata",
-    pincode: "700156",
+    street_address: "Penthouse 4B, 742 Evergreen Terrace",
+    landmark: "Bellandur Outer Ring Road",
+    city: "Bengaluru",
+    pincode: "560103",
     type: "Home",
     is_default: true,
     created_at: "2026-03-01 10:00:00",
+  },
+  {
+    id: 2,
+    user_id: 1,
+    name: "Maya Sterling (Work)",
+    phone: "+91 98765 43210",
+    street_address: "BioTech Innovation Hub, Block 3A, Ecospace",
+    landmark: "Opposite Tech Park Gate 2",
+    city: "Bengaluru",
+    pincode: "560103",
+    type: "Work",
+    is_default: false,
+    created_at: "2026-03-02 14:30:00",
   },
 ];

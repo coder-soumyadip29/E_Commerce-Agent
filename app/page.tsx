@@ -365,7 +365,47 @@ function MainApp() {
     },
   };
 
-  const [messages, setMessages] = useState<ChatMessage[]>([initialUserMessage, initialAssistantMessage]);
+  const getChatStorageKey = (userId?: number | null) =>
+    userId ? `cartwise_chat_user_${userId}` : "cartwise_chat_guest";
+
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const hasLoadedChatRef = useRef(false);
+
+  // Sync messages when user changes (e.g. login, logout, new account creation)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const storageKey = getChatStorageKey(user?.id);
+    const saved = localStorage.getItem(storageKey);
+
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setMessages(parsed);
+          hasLoadedChatRef.current = true;
+          return;
+        }
+      } catch (err) {
+        // Fallback
+      }
+    }
+
+    // Default messages for VIP user Maya (id 1) if nothing saved yet;
+    // brand new users (id > 1) or guest start with a clean empty chat!
+    if (user?.id === 1) {
+      setMessages([initialUserMessage, initialAssistantMessage]);
+    } else {
+      setMessages([]);
+    }
+    hasLoadedChatRef.current = true;
+  }, [user?.id]);
+
+  // Persist messages per user
+  useEffect(() => {
+    if (typeof window === "undefined" || !hasLoadedChatRef.current) return;
+    const storageKey = getChatStorageKey(user?.id);
+    localStorage.setItem(storageKey, JSON.stringify(messages));
+  }, [messages, user?.id]);
   const [isLoading, setIsLoading] = useState(false);
   const [thinkingLabel, setThinkingLabel] = useState("Searching Cartwise Plus product catalog…");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -586,6 +626,10 @@ function MainApp() {
 
   const handleNewChat = () => {
     setMessages([]);
+    if (typeof window !== "undefined") {
+      const storageKey = getChatStorageKey(user?.id);
+      localStorage.removeItem(storageKey);
+    }
   };
 
   const toggleWishlist = (id: number) => {

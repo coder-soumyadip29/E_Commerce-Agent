@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Order, OrderTrackingStatus, InvoiceData } from "@/lib/types";
 import { useCart } from "@/context/CartContext";
+import { useUser } from "@/context/UserContext";
 import { generateInvoiceData } from "@/lib/invoice";
 import { InvoiceModal } from "@/components/cart/InvoiceModal";
 import {
@@ -241,6 +242,7 @@ export function OrdersView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "delivered" | "cancelled">("all");
   const { buyDirectly, setActiveTab } = useCart();
+  const { user } = useUser();
   const [reorderingId, setReorderingId] = useState<number | null>(null);
 
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceData | null>(null);
@@ -250,10 +252,17 @@ export function OrdersView() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/orders");
+      if (!user?.id) {
+        setOrders([]);
+        setLoading(false);
+        return;
+      }
+      const res = await fetch(`/api/orders?userId=${user.id}`);
       const data = await res.json();
       if (data.success && Array.isArray(data.orders)) {
         setOrders(data.orders);
+      } else {
+        setOrders([]);
       }
     } catch (e) {
       console.error("Failed to load orders:", e);
@@ -264,7 +273,7 @@ export function OrdersView() {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [user?.id]);
 
   const handleReorder = async (orderId: number) => {
     setReorderingId(orderId);

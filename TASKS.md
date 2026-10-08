@@ -205,4 +205,80 @@
   - [x] All 7 test suites (45/45 vitest tests) passing 100%
   - [x] Full TypeScript type-checking (`npx tsc --noEmit`) verified with 0 errors
 
+## Step 13: Complete Multi-Vendor Marketplace Admin System
+- [x] Multi-Vendor Architectural Foundations & Data Abstraction (`lib/adminDb.ts`, `lib/types.ts`):
+  - [x] Seller entity schema (`ACTIVE`, `PENDING`, `SUSPENDED`, `REJECTED`, bank accounts, custom commission rates)
+  - [x] Multi-tier Commission Engine (Global platform baseline, category rates, vendor contracts)
+  - [x] Order Split Fulfillment Architecture (Parent order split into vendor sub-orders with frozen commission snapshots)
+  - [x] Financial audit models: Payouts, payment reconciliation, returns (RMA lifecycle), refunds, coupons, and customer reviews
+  - [x] RBAC Administration schema (`SUPER_ADMIN`, `ADMIN`, `MANAGER`, `SUPPORT`, `FINANCE`, `MODERATOR`) and Audit Logging
+- [x] Admin Secure Authentication & Session Guard:
+  - [x] Cookie token session (`cartwise_admin_token`) with role verification (`app/api/admin/auth/route.ts`)
+  - [x] Dedicated branded login portal (`app/admin/login/page.tsx`) with 1-click super admin pre-fill
+  - [x] Route-level protection and unauthorized 401 interception
+- [x] Admin Shell & Responsive Navigation (`components/admin/`):
+  - [x] `AdminNavbar.tsx`: Live search, unread notification counter, current admin identity, and logout
+  - [x] `AdminSidebar.tsx`: Grouped navigation (Overview, Marketplace, Operations, Finance, Marketing, System), collapsible mobile drawer, and active indicator
+  - [x] `AdminLayout.tsx`: Authentication validation wrapper with persistent layout shell
+- [x] 18 Complete Production-Grade Admin Control Center Modules:
+  - [x] Executive Dashboard (`app/admin/page.tsx`): 8 real-time KPI metrics, dynamic SVG GMV chart, and pending moderation queue
+  - [x] Seller Directory & Onboarding (`app/admin/sellers/page.tsx`): Status toggling, KYC verification badges, and custom commission rates
+  - [x] Products & Moderation Queue (`app/admin/products/page.tsx`): Product approvals, suspensions, inline stock adjustment, and price controls
+  - [x] Categories & Taxonomies (`app/admin/categories/page.tsx`): Category hierarchy, category commission rate overrides, and subcategories
+  - [x] Inventory & Stock Center (`app/admin/inventory/page.tsx`): Low stock alerts, threshold triggers, and bulk stock replenishment
+  - [x] Order Fulfillment & Multi-Vendor Splits (`app/admin/orders/page.tsx`): Sub-order vendor breakdown, tracking carrier assignment, and status updates
+  - [x] Commission Rate Rules & Live Simulator (`app/admin/commissions/page.tsx`): Dynamic fee simulator and rule hierarchy editor
+  - [x] Vendor Payout Disbursements (`app/admin/payouts/page.tsx`): Bank transfer approvals, wire reference IDs, and payout logs
+  - [x] Payment Gateway Reconciliations (`app/admin/payments/page.tsx`): Dual-gateway transaction log (UPI, Stripe, Cards, COD)
+  - [x] Returns & RMA Management (`app/admin/returns/page.tsx`): 6-stage reverse logistics lifecycle (`REQUESTED` -> `COMPLETED`)
+  - [x] Customer Refund Disputes (`app/admin/refunds/page.tsx`): Instant dispute resolution and full/partial refund processing
+  - [x] Customer Directory & CRM (`app/admin/customers/page.tsx`): Lifetime value, order history, and account status
+  - [x] Product Review Moderation (`app/admin/reviews/page.tsx`): Customer rating reviews, approval, spam rejection, and purge
+  - [x] Coupons & Marketplace Discounts (`app/admin/coupons/page.tsx`): Coupon builder, usage limits, and active toggling
+  - [x] Flash Sales & Marketing Campaigns (`app/admin/promotions/page.tsx`): Promotional banner management and scheduled events
+  - [x] Financial & Operations Reports (`app/admin/reports/page.tsx`): 1-click real CSV exports for GMV, payouts, orders, and taxes
+  - [x] Business Intelligence & Analytics (`app/admin/analytics/page.tsx`): Category sales share, top performing vendors, and growth curves
+  - [x] Admin Notification Center (`app/admin/notifications/page.tsx`): Real-time operations alerts and mark-as-read toggling
+  - [x] Admin Staff & RBAC Management (`app/admin/admin-users/page.tsx`): Admin team management and role permission matrix
+  - [x] Compliance Audit Logs (`app/admin/audit-logs/page.tsx`): Immutable administrative activity ledger with actor and resource metadata
+  - [x] Global Marketplace Settings (`app/admin/settings/page.tsx`): Commission baselines, payout schedules, tax rules, and currency
+## Step 14: Complete Production-Grade Seller / Vendor Portal
+- [x] Multi-Vendor Seller Architecture & Database Isolation (`lib/sellerDb.ts`, `lib/sellerAuth.ts`, `lib/types.ts`):
+  - [x] Zero-IDOR backend query filters strictly derived from `cartwise_seller_token` session cookie
+  - [x] Extended data models: store slug, branding, policies, bank credentials, support tickets, product variants, and seller replies
+  - [x] Status-based access interception: `ACTIVE` accounts enter dashboard; `SUSPENDED` / `BLOCKED` accounts receive a restricted-access screen; `PENDING` accounts see onboarding notice
+- [x] Seller Authentication & Master Layout (`components/seller/`):
+  - [x] Secure authentication API (`app/api/seller/auth/route.ts`) supporting login, onboarding registration, session check, and logout
+  - [x] Branded merchant login page (`app/seller/login/page.tsx`) with 1-click test credentials for Seller 1 (Active), Seller 2 (Active), Seller 4 (Under Review), and Seller 5 (Suspended)
+  - [x] Merchant navigation bar (`components/seller/SellerNavbar.tsx`) with store identity, live customer storefront preview link, and notification badge
+  - [x] Responsive 10-module merchant sidebar (`components/seller/SellerSidebar.tsx`) with mobile drawer
+  - [x] Master layout guard (`components/seller/SellerLayout.tsx`) with account status checks
+- [x] Seller Operations & Catalog Management:
+  - [x] Seller Executive Dashboard (`app/seller/dashboard/page.tsx`, `app/api/seller/dashboard/route.ts`): 8 live KPI cards, SVG sales velocity chart, recent sub-orders, and top products
+  - [x] Store Branding & Profile (`app/seller/store/page.tsx`, `app/seller/settings/store/page.tsx`, `app/api/seller/store/route.ts`): Logo, banner, contact info, and policies (shipping, return, refund)
+  - [x] Merchant Identity & Onboarding Profile (`app/seller/profile/page.tsx`, `app/api/seller/profile/route.ts`): 85% profile completion meter, KYC status, and masked bank coordinates
+  - [x] Public Customer Storefront (`app/store/[slug]/page.tsx`, `app/api/store/[slug]/route.ts`): Integrated customer store page with verified vendor rating, banner, and direct cart add
+  - [x] Catalog Management (`app/seller/products/page.tsx`, `app/api/seller/products/route.ts`): Filterable product table, moderation status (`ACTIVE`, `PENDING_APPROVAL`, `REJECTED`), and stock/price editor
+  - [x] Product Creation Pipeline (`app/seller/products/new/page.tsx`): Multi-variant creator, low-stock threshold, dimensions, SEO metadata, and admin submission workflow
+  - [x] Warehouse Inventory Control (`app/seller/inventory/page.tsx`, `app/api/seller/inventory/route.ts`): Total stock vs reserved stock vs available stock with inline stock updates
+  - [x] Sub-Order Fulfillment & Shipping (`app/seller/orders/page.tsx`, `app/api/seller/orders/route.ts`): Sub-order isolation, carrier dispatch (`Delhivery`, `Bluedart`, `FedEx`, `Shadowfax`), tracking codes, and status lifecycle
+  - [x] Returns & RMA Management (`app/seller/returns/page.tsx`, `app/api/seller/returns/route.ts`): Return authorization and completion
+  - [x] Refunds History (`app/seller/refunds/page.tsx`, `app/api/seller/refunds/route.ts`): Customer refund deductions and escrow ledger tracking
+- [x] Economics, Finance & Payouts:
+  - [x] Earnings & Settlement (`app/seller/earnings/page.tsx`, `app/api/seller/earnings/route.ts`): Gross sales, platform fee deductions, net lifetime earnings, available balance, and escrow pending
+  - [x] Immutable Commission Log (`app/seller/commissions/page.tsx`): Historical fee snapshot per sub-order immune to retroactive changes
+  - [x] Payout Disbursements & Modal (`app/seller/payouts/page.tsx`, `app/api/seller/payouts/route.ts`): Minimum ₹500 withdrawal guard, available balance check, and status tracker (`PENDING`, `COMPLETED`, `REJECTED`)
+  - [x] Bank Coordinates & Payment Settings (`app/seller/settings/payment/page.tsx`): Masked account details, IFSC, and UPI VPA
+- [x] Marketing, Analytics & Support:
+  - [x] Product Reviews & Merchant Replies (`app/seller/reviews/page.tsx`, `app/api/seller/reviews/route.ts`): Star distribution metrics, public merchant reply posting, and safety reporting
+  - [x] Store-Exclusive Coupons (`app/seller/coupons/page.tsx`, `app/api/seller/coupons/route.ts`): Coupon builder, usage caps, and active/inactive toggle
+  - [x] Deep Performance Analytics (`app/seller/analytics/page.tsx`, `app/api/seller/analytics/route.ts`): Revenue charts, order volume, category share, and product diagnostic table
+  - [x] Seller Notifications Feed (`app/seller/notifications/page.tsx`, `app/api/seller/notifications/route.ts`): Real-time operations feed with mark-as-read
+  - [x] Merchant Support Desk (`app/seller/support/page.tsx`, `app/api/seller/support/route.ts`): Multi-category ticket system with threaded back-and-forth messaging
+- [x] Security, Zero-IDOR & Quality Verification:
+  - [x] Dedicated unit test suite (`tests/seller_security.test.ts`) with 8 tests passing verifying cross-tenant catalog isolation, order isolation, IDOR prevention, negative stock rejection, and payout limits
+  - [x] Full Vitest regression suite passing (8/8 test files, 53/53 tests 100% passing)
+  - [x] Full TypeScript compiler check (`npx tsc --noEmit`) passing with 0 errors
+  - [x] Zero regression across existing customer storefront and Admin control center
+
 

@@ -113,7 +113,7 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
     const discountRes = calculatePromoDiscount("SAVE10", 29999);
     return {
       type: "text",
-      text: `🎉 **Cartwise Plus Promo Validated: SAVE10**\n- **Discount Applied:** Flat 10% Instant Savings\n- **Estimated Savings:** ₹${discountRes.savings.toLocaleString("en-IN")}\n- **Bank Offers:** Applicable across SBI, HDFC & Axis Bank credit/debit cards.\nUse code **SAVE10** at checkout to claim your discount!`,
+      text: `🎉 **Cartwise Plus Promo Validated: SAVE10**\n- **Discount Applied:** Flat 10% Instant Savings\n- **Estimated Savings:** ₹${discountRes.discountAmount.toLocaleString("en-IN")}\n- **Bank Offers:** Applicable across SBI, HDFC & Axis Bank credit/debit cards.\nUse code **SAVE10** at checkout to claim your discount!`,
     };
   }
 
@@ -300,7 +300,6 @@ export async function handleMockImage(file: string | Buffer | File): Promise<Ass
       description: "Identified premium Raw Forest Honey. Cold-extracted unheated wild honey with rich natural antioxidants.",
       matchedProducts: honey ? [honey] : [],
       uploadedImage: "/images/honey.png",
-      onOpenTrace: undefined,
     };
   }
 
@@ -312,7 +311,6 @@ export async function handleMockImage(file: string | Buffer | File): Promise<Ass
       description: "Identified Whole Grain Rolled Oats. High in beta-glucan soluble fiber for heart and metabolic wellness.",
       matchedProducts: oats ? [oats] : [],
       uploadedImage: "/images/oats.png",
-      onOpenTrace: undefined,
     };
   }
 
@@ -324,7 +322,6 @@ export async function handleMockImage(file: string | Buffer | File): Promise<Ass
       description: "Identified Cold-Pressed Extra Virgin Olive Oil. Rich in healthy monounsaturated fatty acids and Vitamin E.",
       matchedProducts: oil ? [oil] : [],
       uploadedImage: "/images/avocado_oil.png",
-      onOpenTrace: undefined,
     };
   }
 
@@ -336,6 +333,5 @@ export async function handleMockImage(file: string | Buffer | File): Promise<Ass
     description: "Visual analysis complete. Matched with store catalog records.",
     matchedProducts: products,
     uploadedImage: "/images/honey.png",
-    onOpenTrace: undefined,
   };
 }

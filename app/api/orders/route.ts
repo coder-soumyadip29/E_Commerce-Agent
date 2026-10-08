@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getOrders, createOrder } from "@/lib/db";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const orders = getOrders();
+    const { searchParams } = new URL(req.url);
+    const userIdParam = searchParams.get("userId");
+
+    if (userIdParam === "guest") {
+      return NextResponse.json({ success: true, orders: [] });
+    }
+
+    const userId = userIdParam && !isNaN(Number(userIdParam)) ? Number(userIdParam) : undefined;
+    const orders = getOrders(userId);
     return NextResponse.json({ success: true, orders });
   } catch (error) {
     console.error("Failed to fetch orders:", error);
@@ -18,6 +26,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const productId = Number(body.productId);
+    const userId = Number(body.userId) || 1;
 
     if (!productId || isNaN(productId)) {
       return NextResponse.json(
@@ -26,7 +35,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { order, success } = createOrder(productId);
+    const { order, success } = createOrder(productId, userId);
     return NextResponse.json({ success, order });
   } catch (error: any) {
     console.error("Order creation failed:", error);

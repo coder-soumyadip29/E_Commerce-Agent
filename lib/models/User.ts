@@ -32,6 +32,8 @@ export interface IUser extends Document {
   verificationCodeExpires?: Date;
   avatar_url?: string;
   vip_level: string;
+  role: "CUSTOMER" | "SELLER" | "ADMIN" | "SUPER_ADMIN" | "MANAGER" | "SUPPORT";
+  permissions?: string[];
   default_address_id: number;
   preferences: IUserPreferences;
   addresses: IUserAddress[];
@@ -82,6 +84,12 @@ const UserSchema = new Schema<IUser>(
         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
     },
     vip_level: { type: String, default: "Verified VIP Buyer" },
+    role: {
+      type: String,
+      enum: ["CUSTOMER", "SELLER", "ADMIN", "SUPER_ADMIN", "MANAGER", "SUPPORT"],
+      default: "CUSTOMER",
+    },
+    permissions: { type: [String], default: [] },
     default_address_id: { type: Number, default: 1 },
     preferences: { type: PreferencesSchema, default: () => ({}) },
     addresses: { type: [AddressSchema], default: [] },

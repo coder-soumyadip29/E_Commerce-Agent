@@ -10,7 +10,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Session not found. Cart is empty." }, { status: 400 });
     }
 
-    const res = checkoutCartDb(sessionId);
+    const body = await req.json().catch(() => ({}));
+    const userId = Number(body?.userId) || 1;
+
+    const res = checkoutCartDb(sessionId, userId, body?.paymentDetails);
     if (!res.success) {
       return NextResponse.json({ error: res.error }, { status: 400 });
     }

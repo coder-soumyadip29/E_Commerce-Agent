@@ -106,12 +106,12 @@ export function AuthModal() {
     setInfoMessage(null);
     setLoading(true);
 
-    const res = await register({
+    const res = await register(
       name,
       email,
       password,
-      dietaryTags: selectedTags,
-    });
+      selectedTags
+    );
 
     setLoading(false);
     if (!res.success) {

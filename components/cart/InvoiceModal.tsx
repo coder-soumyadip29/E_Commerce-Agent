@@ -120,7 +120,7 @@ export function InvoiceModal({ isOpen, onClose, invoice }: InvoiceModalProps) {
               </div>
               <div className="text-xs text-slate-500">
                 <span>Date: </span>
-                <span className="font-medium text-slate-900">{invoice.invoiceDate}</span>
+                <span className="font-medium text-slate-900">{invoice.date}</span>
               </div>
               <div className="text-xs text-slate-500">
                 <span>Place of Supply: </span>
@@ -135,19 +135,19 @@ export function InvoiceModal({ isOpen, onClose, invoice }: InvoiceModalProps) {
               <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px] block mb-1">
                 Billed To (Customer):
               </span>
-              <p className="font-bold text-slate-900 text-sm">{invoice.customer.name}</p>
-              <p className="text-slate-600">{invoice.customer.email}</p>
-              <p className="text-slate-600">{invoice.customer.phone}</p>
+              <p className="font-bold text-slate-900 text-sm">{invoice.customerName}</p>
+              {invoice.customerEmail && <p className="text-slate-600">{invoice.customerEmail}</p>}
+              {invoice.customerPhone && <p className="text-slate-600">{invoice.customerPhone}</p>}
             </div>
 
             <div>
               <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px] block mb-1">
                 Delivery Destination:
               </span>
-              <p className="font-semibold text-slate-900">{invoice.deliveryAddress.name} ({invoice.deliveryAddress.type})</p>
-              <p className="text-slate-600">{invoice.deliveryAddress.street_address}</p>
+              <p className="font-semibold text-slate-900">{invoice.deliveryAddress?.name} ({invoice.deliveryAddress?.type})</p>
+              <p className="text-slate-600">{invoice.deliveryAddress?.street_address}</p>
               <p className="text-slate-600">
-                {invoice.deliveryAddress.city}, {invoice.deliveryAddress.pincode}
+                {invoice.deliveryAddress?.city}, {invoice.deliveryAddress?.pincode}
               </p>
             </div>
           </div>
@@ -170,13 +170,13 @@ export function InvoiceModal({ isOpen, onClose, invoice }: InvoiceModalProps) {
                   <tr key={idx} className="hover:bg-slate-50/50">
                     <td className="py-2.5 px-3 font-mono text-slate-500">{idx + 1}</td>
                     <td className="py-2.5 px-3">
-                      <span className="font-bold text-slate-900 block">{item.name}</span>
+                      <span className="font-bold text-slate-900 block">{item.product_name}</span>
                     </td>
-                    <td className="py-2.5 px-3 font-mono text-slate-500">{item.hsnCode || "040900"}</td>
+                    <td className="py-2.5 px-3 font-mono text-slate-500">{item.hsn_code || "040900"}</td>
                     <td className="py-2.5 px-3 text-right font-bold text-slate-900">{item.quantity}</td>
-                    <td className="py-2.5 px-3 text-right font-mono">₹{item.unitPrice.toFixed(2)}</td>
+                    <td className="py-2.5 px-3 text-right font-mono">₹{item.unit_price.toFixed(2)}</td>
                     <td className="py-2.5 px-3 text-right font-bold text-slate-900 font-mono">
-                      ₹{item.total.toFixed(2)}
+                      ₹{item.line_total.toFixed(2)}
                     </td>
                   </tr>
                 ))}
@@ -192,11 +192,11 @@ export function InvoiceModal({ isOpen, onClose, invoice }: InvoiceModalProps) {
               </span>
               <div className="flex justify-between">
                 <span>Payment Mode:</span>
-                <strong className="text-slate-900 uppercase">{invoice.paymentDetails.method}</strong>
+                <strong className="text-slate-900 uppercase">{invoice.paymentMethod}</strong>
               </div>
               <div className="flex justify-between font-mono">
                 <span>Transaction ID:</span>
-                <span className="text-slate-800">{invoice.paymentDetails.transactionId}</span>
+                <span className="text-slate-800">{invoice.paymentId}</span>
               </div>
               <div className="flex justify-between">
                 <span>Payment Status:</span>
@@ -217,11 +217,11 @@ export function InvoiceModal({ isOpen, onClose, invoice }: InvoiceModalProps) {
               )}
               <div className="flex justify-between text-slate-600">
                 <span>CGST (2.5%):</span>
-                <span className="font-mono">₹{invoice.cgst.toFixed(2)}</span>
+                <span className="font-mono">₹{invoice.gst.cgstAmount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>SGST (2.5%):</span>
-                <span className="font-mono">₹{invoice.sgst.toFixed(2)}</span>
+                <span className="font-mono">₹{invoice.gst.sgstAmount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Delivery Fee:</span>

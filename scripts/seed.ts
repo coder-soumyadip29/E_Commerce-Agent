@@ -133,6 +133,42 @@ db.exec(`
 // [id, name, category, sub_category, price, original_price, description, is_organic, image_url, stock]
 const products: Array<[number, string, string, string, number, number, string, number, string, number]> = [
   // ==========================================
+  // 0. CORE MENTOR ORGANIC HARVEST (IDs 1 - 32)
+  // ==========================================
+  [1, "Organic Raw Honey", "food-health", "grocery-staples", 14.99, 19.99, "Pure organic raw honey, unfiltered and cold-pressed", 1, "/images/honey.png", 20],
+  [2, "Wildflower Honey", "food-health", "grocery-staples", 12.99, 16.99, "Natural wildflower honey from local beekeepers", 0, "/images/honey.png", 20],
+  [3, "Organic Manuka Honey", "food-health", "grocery-staples", 29.99, 39.99, "Premium organic Manuka honey from New Zealand", 1, "/images/honey.png", 20],
+  [4, "Clover Honey", "food-health", "grocery-staples", 8.99, 11.99, "Classic clover honey, smooth and sweet", 0, "/images/honey.png", 20],
+  [5, "Organic Buckwheat Honey", "food-health", "grocery-staples", 18.99, 24.99, "Dark and robust organic buckwheat honey, antioxidant-rich", 1, "/images/honey.png", 20],
+  [6, "Orange Blossom Honey", "food-health", "grocery-staples", 15.99, 19.99, "Light and floral orange blossom honey", 0, "/images/honey.png", 0],
+  [7, "Organic Acacia Honey", "food-health", "grocery-staples", 17.99, 22.99, "Light and mild organic acacia honey, low glycemic index", 1, "/images/honey.png", 20],
+  [8, "Creamed Honey", "food-health", "grocery-staples", 11.99, 14.99, "Smooth creamed honey with spreadable texture", 0, "/images/honey.png", 20],
+  [9, "Organic Extra Virgin Olive Oil", "food-health", "oils-ghee", 16.99, 21.99, "Cold-pressed organic EVOO from Mediterranean olives", 1, "/images/avocado_oil.png", 20],
+  [10, "Coconut Oil", "food-health", "oils-ghee", 12.49, 15.99, "Refined coconut oil, great for high-heat cooking", 0, "/images/avocado_oil.png", 20],
+  [11, "Organic Flaxseed Oil", "food-health", "oils-ghee", 14.99, 18.99, "Cold-pressed organic flaxseed oil, rich in omega-3", 1, "/images/avocado_oil.png", 20],
+  [12, "Avocado Oil", "food-health", "oils-ghee", 18.99, 23.99, "Cold-pressed avocado oil, high smoke point", 0, "/images/avocado_oil.png", 20],
+  [13, "Organic Almonds", "food-health", "dry-fruits", 11.99, 14.99, "Raw organic almonds, unsalted, non-GMO certified", 1, "/images/oats.png", 20],
+  [14, "Roasted Cashews", "food-health", "dry-fruits", 9.99, 12.99, "Lightly salted dry-roasted cashews", 0, "/images/oats.png", 20],
+  [15, "Organic Chia Seeds", "food-health", "grocery-staples", 8.49, 10.99, "Organic black chia seeds, high in fiber and omega-3", 1, "/images/oats.png", 20],
+  [16, "Mixed Nuts", "food-health", "dry-fruits", 13.99, 17.99, "Premium mix of walnuts, pecans, almonds and Brazil nuts", 0, "/images/oats.png", 20],
+  [17, "Organic Quinoa", "food-health", "grocery-staples", 10.99, 13.99, "Organic white quinoa, complete protein, gluten-free", 1, "/images/oats.png", 20],
+  [18, "Rolled Oats", "food-health", "grocery-staples", 5.49, 7.99, "Whole grain rolled oats, great for porridge and baking", 0, "/images/oats.png", 20],
+  [19, "Organic Brown Rice", "food-health", "grocery-staples", 7.99, 9.99, "Long-grain organic brown rice, naturally gluten-free", 1, "/images/oats.png", 20],
+  [20, "Steel-Cut Oats", "food-health", "grocery-staples", 6.99, 8.99, "Traditional steel-cut oats, low GI, hearty texture", 0, "/images/oats.png", 20],
+  [21, "Organic Green Tea", "food-health", "grocery-staples", 12.99, 15.99, "Japanese organic sencha green tea, 50 bags", 1, "/images/oats.png", 20],
+  [22, "Chamomile Tea", "food-health", "grocery-staples", 8.99, 11.99, "Dried chamomile flowers, caffeine-free, soothing", 0, "/images/oats.png", 20],
+  [23, "Organic Ethiopian Coffee", "food-health", "grocery-staples", 16.99, 21.99, "Single-origin organic Arabica, medium roast whole bean", 1, "/images/oats.png", 20],
+  [24, "Dark Roast Espresso Blend", "food-health", "grocery-staples", 14.49, 18.99, "Bold dark roast espresso blend, ground", 0, "/images/oats.png", 0],
+  [25, "Organic Granola", "food-health", "grocery-staples", 9.99, 12.99, "Organic oat granola with honey, almonds and dried cranberries", 1, "/images/oats.png", 20],
+  [26, "Rice Cakes", "food-health", "grocery-staples", 4.49, 5.99, "Lightly salted brown rice cakes, low calorie", 0, "/images/oats.png", 20],
+  [27, "Organic Dried Mango", "food-health", "dry-fruits", 7.99, 9.99, "Unsweetened organic dried mango slices, no preservatives", 1, "/images/oats.png", 20],
+  [28, "Trail Mix", "food-health", "dry-fruits", 8.49, 10.99, "Classic trail mix with raisins, M&Ms, peanuts and sunflower seeds", 0, "/images/oats.png", 20],
+  [29, "Organic Almond Milk", "food-health", "grocery-staples", 4.99, 6.49, "Unsweetened organic almond milk, fortified with calcium", 1, "/images/oats.png", 20],
+  [30, "Oat Milk", "food-health", "grocery-staples", 4.49, 5.99, "Barista-style oat milk, great for coffee", 0, "/images/oats.png", 20],
+  [31, "Organic Coconut Milk", "food-health", "grocery-staples", 3.99, 4.99, "Full-fat organic coconut milk, great for curries", 1, "/images/oats.png", 20],
+  [32, "Soy Milk", "food-health", "grocery-staples", 3.49, 4.49, "Unsweetened soy milk, high protein", 0, "/images/oats.png", 20],
+
+  // ==========================================
   // 1. MOBILES (mobiles)
   // ==========================================
   [101, "Motorola edge 70 Fusion (12GB RAM, 256GB)", "mobiles", "smartphones", 29999, 34999, "144Hz 3D Curved pOLED Display, Sony LYTIA 700C Camera with OIS, IP68 Underwater Protection", 0, "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80", 40],
@@ -300,7 +336,8 @@ insertOrder.run(
   "Delivered"
 );
 
-insertOrderItem.run(1039, 203, "OnePlus Bullets Wireless Z2 Bluetooth Neckband", 1499.00, 1);
+insertOrderItem.run(1039, 1, "Organic Raw Honey", 14.99, 1);
+insertOrderItem.run(1039, 18, "Rolled Oats", 5.49, 2);
 
 console.log(`Database seeded with ${products.length} products across 10 Cartwise Plus categories, ratings, reviews, and test orders.`);
 db.close();
