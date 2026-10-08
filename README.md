@@ -1,222 +1,214 @@
-# Cartwise Plus — Next-Gen AI-Powered E-Commerce Storefront
+<div align="center">
+  <img src="./public/logo.png" alt="CartWise Plus Logo" width="160" />
+  <h1>CartWise Plus+</h1>
+  <p><strong>Smarter Search. Better Choices.</strong></p>
+  <p>Next-Gen Multi-Vendor E-Commerce Platform & Autonomous AI Shopping Assistant</p>
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.0-black?logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19.0-61dafb?logo=react)](https://react.dev/)
-[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
-[![SQLite](https://img.shields.io/badge/SQLite-WAL_Mode-003B57?logo=sqlite)](https://www.sqlite.org/)
-[![Google Gemini](https://img.shields.io/badge/Gemini_LLM-Tool_Calling-4285F4?logo=google)](https://ai.google.dev/)
-
-**Cartwise Plus** is a luxury, enterprise-grade e-commerce storefront integrated with an autonomous multi-agent AI Shopping Assistant. Built with Next.js 16, React 19, and Tailwind CSS, it blends a sleek **Onyx Black & Amber Gold** visual identity with real-time catalog search, visual product recognition, multilingual voice synthesis, atomic cart checkout, and 15-minute express delivery tracking.
-
----
-
-## ✨ 1. Key Features & Capabilities
-
-### 🛒 Luxury Storefront & Real-World Product Catalog
-- **Luxury Black & Gold Theme**: Premium obsidian surfaces (`#0b0f17`), warm amber/gold accents (`#f59e0b` / `text-amber-400`), and crisp high-contrast cards.
-- **11 Broad Categories & Real-World Products**:
-  - ⚡ **For You** (Personalized Deals & Recommendations)
-  - 👕 **Fashion** (Designer Silk Sarees, Cotton Kurtas, Polo T-Shirts)
-  - 📱 **Mobiles** (Motorola edge 70 Fusion, Apple iPhone 15, Samsung Galaxy S24 Ultra)
-  - 💻 **Electronics** (ASUS Vivobook 15 OLED, TCL 43" 4K QLED TV, ANC Wireless Neckbands)
-  - 🔥 **Beauty** (Vitamin C Serum, 100% Pure Moroccan Argan Oil)
-  - 🏠 **Home & Living** (Handcrafted Teakwood Spoons, Ceramic Pots)
-  - 📺 **Appliances** (Air Fryers, Microwaves, Electric Kettles)
-  - 👶 **Toys, Baby & Kids** (Educational Wooden Blocks, Soft Toys)
-  - 💖 **Food & Health** (Cold-Extracted Raw Forest Honey, A2 Desi Cow Ghee)
-  - 🚗 **Auto Accessories** (High-Pressure Car Washers, Dash Cams)
-  - 🏆 **Sports & Fitness** (Neoprene Dumbbell Sets, Yoga Mats)
-- **Top Tech Deals Revealed**: Smooth horizontal carousel displaying flagship tech products and instant deal prices.
-- **Indian Rupee (`₹` / INR)**: All items, vouchers, cart calculations, and GST invoices formatted cleanly in Indian Rupees.
-- **Quick View Modal (`ProductDetailModal`)**: High-res image galleries, stock counters, verified review breakdowns, Cartwise Plus Assured badges, and instant "Ask AI about this item" actions.
+  [![Next.js](https://img.shields.io/badge/Next.js-16.0-black?logo=next.js)](https://nextjs.org/)
+  [![React](https://img.shields.io/badge/React-19.0-61dafb?logo=react)](https://react.dev/)
+  [![React Native](https://img.shields.io/badge/React_Native-Expo_57-blue?logo=react)](https://reactnative.dev/)
+  [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
+  [![SQLite](https://img.shields.io/badge/SQLite-WAL_Mode-003B57?logo=sqlite)](https://www.sqlite.org/)
+  [![Google Gemini](https://img.shields.io/badge/Gemini_LLM-Vision_%26_Tools-4285F4?logo=google)](https://ai.google.dev/)
+</div>
 
 ---
 
-### 🤖 Multi-Agent AI Shopping Copilot
-- **Deterministic Grounding**: Backed directly by SQLite store records—zero hallucinations or phantom products.
-- **Multi-Turn Chat & Tool Calling**: Search by natural language specifications (*"Find me a curved screen 5G smartphone under ₹30,000 with 12GB RAM"*).
-- **Instant Price Arbitrage & Promos**: Auto-applies voucher codes (e.g. `SAVE10` for flat 10% instant bank discounts).
-- **Multimodal Vision Search (Photo Lookup)**: Upload or snap product photos; the vision agent extracts attributes, checks inventory, and returns exact matches.
-- **Multilingual Voice Assistant (STT & TTS)**:
-  - **Speech-to-Text**: Real-time microphone listening supporting **English (`en-IN`)**, **Hindi (`hi-IN`)**, and **Bengali (`bn-IN`)**.
-  - **Text-to-Speech**: Instant natural voice reading with auto-speak toggles.
-- **Transparent Agent Trace Inspector**: View step-by-step SQL queries, parsed intents, and execution timings.
+## 🌟 Executive Overview
+
+**CartWise Plus+** is a unified e-commerce ecosystem built with **Next.js 16, React 19, SQLite, and React Native (Expo)**. It delivers a comprehensive multi-portal architecture designed with a **Luxury Obsidian Black, Royal Gold, and Pure White** visual identity:
+
+1. 🛍️ **Customer AI Shopping Storefront** (`/`): Real-time catalog, multimodal Gemini Vision, Indian Rupee (`₹`), 15-min express delivery tracking, and atomic checkout (UPI QR, Card, COD).
+2. 🏛️ **Marketplace Admin Control Center** (`/admin`): Executive oversight, GMV revenue analytics, seller moderation, dynamic commissions, payout disbursements, dispute handling, and compliance audit logs.
+3. 🏪 **Merchant / Seller Portal** (`/seller`): Zero-IDOR isolated vendor dashboard, inventory & SKU management, sub-order fulfillment, payout tracking, and public storefronts (`/store/[slug]`).
+4. 📱 **React Native Mobile App** (`cartwise-mobile`): Live Web Bridge container enabling **instant auto-updates** without app store recompilation, backed by native Haptics, Camera, and GPS.
 
 ---
 
-### 📦 15-Minute Express Delivery & Live Order Tracking
-- **4-Stage Order Lifecycle**: Order Placed ➔ Packed & Inspected ➔ Out for Delivery ➔ Delivered.
-- **Live Countdown Timer**: Real-time minute & second arrival countdown.
-- **Delivery Partner Card**: Rider contact, vehicle registration, and OTP verification code.
-- **Satellite GPS Modal**: Simulated interactive real-time map with live delivery coordinates.
-- **GST Tax Invoices**: Downloadable and printable GST-compliant invoices with itemized taxes (CGST 9% + SGST 9%).
+## 🎨 Design System: Luxury Black, Gold & White
+
+All three web portals and the mobile container adhere to a cohesive design system:
+- **Base Surfaces**: Deep obsidian black (`#07090E`, `#0A0D16`, `#0E131F`).
+- **Metallic Gold Accents**: Royal Gold gradients (`#F59E0B`, `#FBBF24`, `#D97706`) for active pills, brand emblems, and KPI metrics.
+- **High-Contrast Typography**: Crisp Pure White (`#FFFFFF`) headings and clear muted slate subtext.
+- **Glassmorphic Depth**: Semi-transparent card panels with subtle ambient gold lighting.
 
 ---
 
-### 📱 Full-Screen & Mobile Responsiveness
-- **Desktop & Ultra-Wide Monitors (≥1024px, 1440p, 4K)**: Fluid `max-w-[1600px]` width with dual-column grid (`8 cols` Storefront + `4 cols` Sticky Copilot).
-- **Adaptive 4-Column Card Grid**: Smoothly scales from 1 card on mobile to 4 cards on ultra-wide screens.
-- **Mobile Screens (<640px)**:
-  - Two-tier header: Monogram logo + cart/profile on row 1, full-width search on row 2.
-  - Mobile hamburger drawer with saved addresses and preferences.
-  - Segmented switcher pill (*Explore Products* ↔ *AI Assistant*).
-  - Touch-scrollable category ribbon with momentum scrolling.
-  - Safe bottom insets (`pb-24 sm:pb-8`) preventing obstruction by navigation bars.
+## 🚀 Portals & Modules
+
+### 1. 🛍️ Customer Storefront & AI Shopping Copilot
+- **Multimodal Visual Search**: Upload product images for instant attribute parsing and SQLite catalog matching.
+- **Function-Calling Agent (`lib/agent/real.ts`)**:
+  - `search_products`: Multi-filter queries (category, price range, organic rating).
+  - `track_specific_order`: Real-time rider telemetry, coordinates, and countdown ETA.
+  - `cancel_order`: Atomic cancellation with inventory replenishment and refund calculation.
+  - `generate_invoice`: Grounded GST tax invoice computation.
+- **Multilingual Voice Assistant**: Web Speech API for real-time speech-to-text in English, Hindi, and Bengali.
+- **Multi-Mode Payment System**: Dynamic UPI QR generator (`upi://pay`), 3D Secure simulation, and COD with tamper-proof price verification.
+- **Tax Compliance & Invoices**: 5% GST computation (CGST 2.5% + SGST 2.5%), HSN mapping, and printable PDF modal (`InvoiceModal`).
+
+### 2. 🏛️ Admin Control Center (`/admin`)
+- **Executive KPI Dashboard**: Real-time revenue analytics, order volume, active vendors, and SVG time series curves.
+- **Vendor KYC & Directory (`/admin/sellers`)**: Onboard merchants, toggle `ACTIVE`/`SUSPENDED`/`REJECTED`, and configure custom commission rates.
+- **Catalog Moderation (`/admin/products`)**: Review submitted SKUs, manage marketplace prices, and toggle stock.
+- **Commission Engine & Simulator (`/admin/commissions`)**: Dynamic rule hierarchy editor and simulated fee calculator.
+- **Payout Disbursements (`/admin/payouts`)**: Process vendor bank transfers with wire reference IDs.
+- **Audit Ledger & RBAC (`/admin/audit-logs`)**: Immutable log of all administrative actions with actor metadata.
+
+### 3. 🏪 Seller / Merchant Portal (`/seller`)
+- **Zero-IDOR Security**: Session queries strictly scoped to authenticated vendor token (`cartwise_seller_token`).
+- **Store Dashboard (`/seller/dashboard`)**: Daily sales, pending fulfillment alerts, and revenue trends.
+- **Order Fulfillment (`/seller/orders`)**: Manage store sub-orders and package tracking.
+- **Catalog Management (`/seller/products/new`)**: Add new product listings with image URLs and variants.
+- **Public Storefronts (`/store/[slug]`)**: Dedicated customer-facing seller pages.
+
+### 4. 📱 React Native Mobile App (`cartwise-mobile`)
+- **Instant Auto-Update Architecture**: Mobile users always receive the latest website updates without rebuilding APKs.
+- **Native Device Bridge**:
+  - 📸 Camera & Photo Picker for AI Vision search.
+  - 📳 Tactile Haptic feedback on button clicks.
+  - 📍 Hardware GPS reverse geocoding for pincode lookup.
+  - 📡 Dark-mode offline reconnect screen with retry button.
+  - ⚙️ In-App Server Switcher (Local Wi-Fi, Emulator, Production).
 
 ---
 
-## 🏗️ 2. Architecture & Tech Stack
-
-```mermaid
-graph TD
-    UI[Next.js 16 + React 19 Client UI] -->|REST / JSON| API[Next.js API Routes /app/api]
-    API --> AgentLayer[AI Agent Layer /lib/agent]
-    AgentLayer -- AGENT_MODE=mock --> MockAgent[Deterministic Mock Engine]
-    AgentLayer -- AGENT_MODE=real --> RealAgent[Google Gemini 2.0 / Groq LLM]
-    MockAgent --> DB[(SQLite 3 Database WAL Mode)]
-    RealAgent --> DB
-    API -->|Direct Transactions| DB
-```
-
-| Layer | Technology |
-| :--- | :--- |
-| **Framework** | [Next.js 16 (App Router)](https://nextjs.org/) |
-| **UI Library** | [React 19](https://react.dev/) + [Lucide React Icons](https://lucide.dev/) |
-| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) with Black & Gold custom palette |
-| **Database** | [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) (WAL journal mode) |
-| **AI LLM / Vision** | [Google Gemini Flash / Groq SDK](https://ai.google.dev/) |
-| **Voice Engine** | Web Speech API (SpeechRecognition + SpeechSynthesis) |
-
----
-
-## 📂 3. Folder Structure
+## 📁 Repository Structure
 
 ```text
-CartWise-main/
-├── app/
-│   ├── api/
-│   │   ├── addresses/route.ts        # Saved delivery addresses endpoint
-│   │   ├── cart/route.ts             # Atomic cart add/update/delete
-│   │   ├── chat/route.ts             # Multi-agent chat router & tool executor
-│   │   ├── checkout/route.ts         # Order creation & stock deduction
-│   │   ├── image-search/route.ts     # Visual product recognition
-│   │   ├── orders/route.ts           # Order history & status simulation
-│   │   ├── payment/                  # Razorpay / UPI order creation
-│   │   └── products/route.ts         # Categorized catalog lookup & filters
-│   ├── globals.css                   # Obsidian Black, Amber Gold & Tailwind tokens
-│   ├── layout.tsx                    # Root layout with metadata & fonts
-│   └── page.tsx                      # Main Storefront & Copilot dual-column page
-├── components/
-│   ├── Navbar.tsx                    # Two-tier header, mobile drawer & category ribbon
-│   ├── ChatInput.tsx                 # Multimodal input (text, photo upload, voice STT)
-│   ├── auth/
-│   │   ├── AddressModal.tsx          # Saved delivery addresses modal
-│   │   ├── AuthModal.tsx             # Login & VIP member registration modal
-│   │   └── PersonalisationModal.tsx  # Dietary & AI preferences modal
-│   ├── cart/
-│   │   ├── AddNewAddressModal.tsx    # Address addition dialog
-│   │   ├── CardSecurityModal.tsx     # 3D Secure / CVV payment modal
-│   │   ├── CartDrawer.tsx            # 3-step checkout drawer with UPI/Card/COD
-│   │   ├── DynamicUpiQrModal.tsx     # Dynamic UPI QR code with live timer
-│   │   └── InvoiceModal.tsx          # GST Tax Invoice download & print modal
-│   ├── chat/
-│   │   ├── AgentTraceModal.tsx       # Internal SQL & reasoning trace inspector
-│   │   ├── ClarifyMessage.tsx        # Interactive clarification buttons
-│   │   ├── CompareMessage.tsx        # Side-by-side product comparison tables
-│   │   ├── EmptyChatPrompt.tsx       # Suggested prompts & queries
-│   │   ├── EmptyStateMessage.tsx     # Empty state handler with suggestions
-│   │   ├── ImageAnalysisMessage.tsx  # Visual search results with dietary tags
-│   │   ├── ProductsMessage.tsx       # Interactive product cards in chat
-│   │   ├── SatelliteGpsModal.tsx     # Real-time satellite delivery tracking map
-│   │   ├── TextMessage.tsx           # Markdown-rendered assistant bubble
-│   │   ├── ThinkingMessage.tsx       # Animated thinking state indicator
-│   │   └── UserBubble.tsx            # User speech & text bubble
-│   ├── orders/
-│   │   └── OrdersView.tsx            # Order history, live progress bar & reorder
-│   └── product/
-│       └── ProductDetailModal.tsx    # Comprehensive product quick-view modal
-├── context/
-│   ├── CartContext.tsx               # Cart state, subtotal & active tab provider
-│   ├── UserContext.tsx               # User auth, active address & dietary preferences
-│   └── VoiceContext.tsx              # Multilingual STT & TTS speech engine
-├── data/
-│   └── store.db                      # SQLite 3 database file
-├── lib/
-│   ├── agent/                        # AI Agent orchestration (mock vs real)
-│   ├── db.ts                         # SQLite connection & schema initializer
-│   ├── invoice.ts                    # GST Invoice calculation & generation
-│   ├── storeData.ts                  # Reference seed catalog with 11 categories
-│   └── types.ts                      # TypeScript type definitions
-└── scripts/
-    └── seed.ts                       # Database reset & seeding script
+Euphoria Ecommerce/
+├── CartWise-main/                      # Next.js 16 Full-Stack Application
+│   ├── app/
+│   │   ├── admin/                      # 18 Admin Control Center Pages
+│   │   │   ├── analytics/              # Business intelligence & sales share
+│   │   │   ├── audit-logs/             # Compliance activity ledger
+│   │   │   ├── commissions/            # Commission rules & live simulator
+│   │   │   ├── login/                  # Admin authentication portal
+│   │   │   ├── orders/                 # Order fulfillment & vendor split
+│   │   │   ├── payouts/                # Payout disbursements
+│   │   │   ├── products/               # Product moderation queue
+│   │   │   ├── sellers/                # Vendor onboarding & KYC
+│   │   │   └── page.tsx                # Admin overview dashboard
+│   │   ├── seller/                     # 17 Seller / Merchant Hub Pages
+│   │   │   ├── dashboard/              # Seller analytics & KPIs
+│   │   │   ├── inventory/              # Low-stock monitoring
+│   │   │   ├── login/                  # Merchant login & registration
+│   │   │   ├── orders/                 # Vendor sub-order fulfillment
+│   │   │   ├── payouts/                # Payout withdrawal requests
+│   │   │   └── products/new/           # Add new product form
+│   │   ├── store/[slug]/               # Public vendor storefronts
+│   │   ├── api/                        # REST & Agent API Endpoints
+│   │   │   ├── admin/                  # Admin CRUD & auth routes
+│   │   │   ├── seller/                 # Isolated seller routes
+│   │   │   ├── chat/                   # AI shopping copilot router
+│   │   │   ├── orders/                 # SQLite atomic order routes
+│   │   │   └── payment/                # Verification & invoice dispatch
+│   │   ├── globals.css                 # Black & Gold luxury styling tokens
+│   │   ├── layout.tsx                  # Root Next.js layout
+│   │   └── page.tsx                    # Main customer storefront
+│   ├── components/
+│   │   ├── admin/                      # AdminNavbar, AdminSidebar, AdminLayout
+│   │   ├── seller/                     # SellerNavbar, SellerSidebar, SellerLayout
+│   │   ├── auth/                       # AuthModal, AddressModal, PersonalisationModal
+│   │   ├── cart/                       # CartDrawer, InvoiceModal, UpiQrModal
+│   │   ├── chat/                       # Copilot messages (Text, Products, Vision, Trace)
+│   │   ├── orders/                     # OrdersView with 4-stage lifecycle stepper
+│   │   └── Navbar.tsx                  # Customer sticky navbar with official logo
+│   ├── context/                        # CartContext, UserContext, VoiceContext
+│   ├── data/                           # store.db (SQLite database with WAL mode)
+│   ├── lib/
+│   │   ├── adminAuth.ts                # Admin cookie token authentication
+│   │   ├── adminDb.ts                  # Admin multi-vendor database queries
+│   │   ├── sellerAuth.ts               # Seller cookie token authentication
+│   │   ├── sellerDb.ts                 # Zero-IDOR isolated seller data layer
+│   │   ├── agent/                      # Gemini Real and Deterministic Mock agents
+│   │   ├── db.ts                       # SQLite core data access layer
+│   │   ├── email.ts                    # Brevo SMTP invoice email dispatcher
+│   │   ├── invoice.ts                  # GST tax computation & HSN mapper
+│   │   ├── payment.ts                  # Cryptographic HMAC payment verification
+│   │   └── types.ts                    # Unified TypeScript contracts
+│   ├── public/                         # logo.png, product images, icons
+│   ├── scripts/seed.ts                 # SQLite seed script (10 categories & orders)
+│   └── tests/                          # 7 Vitest test suites (45+ tests)
+│
+└── cartwise-mobile/                    # React Native (Expo) Mobile App
+    ├── assets/                         # logo.png, app icon, splash screen
+    ├── src/
+    │   ├── components/
+    │   │   ├── NativeHeader.tsx        # Top bar with live sync indicator
+    │   │   ├── OfflineScreen.tsx       # Dark offline reconnection screen
+    │   │   └── ServerSwitchModal.tsx   # Server environment changer
+    │   └── services/
+    │       └── nativeBridge.ts         # Two-way JS Bridge (Haptics, Camera, GPS)
+    ├── App.tsx                         # Main WebView container
+    ├── app.json                        # Permissions (Camera, Location, Vibrate)
+    └── config.ts                       # Server URLs & feature flags
 ```
 
 ---
 
-## 🚀 4. Quick Start Guide
+## 🛠️ Quick Start & Installation
 
 ### Prerequisites
-- **Node.js**: v18.0.0 or higher (v20+ recommended)
-- **npm** or **pnpm**
+- **Node.js**: `v20+` or `v24+`
+- **NPM**: `v10+`
 
-### Step-by-Step Setup
-
+### 1. Web Application Setup
 ```bash
-# 1. Clone the repository
-git clone https://github.com/coder-soumyadip29/E_Commerce-Agent.git
-cd E_Commerce-Agent
+# Navigate to web project
+cd CartWise-main
 
-# 2. Install dependencies
+# Install dependencies
 npm install
 
-# 3. Configure environment variables
-cp .env.example .env
-# Edit .env to set your GEMINI_API_KEY or keep AGENT_MODE=mock for local demo
-
-# 4. Seed the database with 11 real-world product categories
+# Seed the SQLite database
 npm run db:seed
 
-# 5. Start the local development server
+# Start Next.js development server
 npm run dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser to view Cartwise Plus.
+Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 
 ---
 
-## ⚡ 5. Environment Configuration (`.env`)
+### 2. Mobile App Setup (Free)
+```bash
+# Navigate to mobile project
+cd cartwise-mobile
 
-```env
-# Agent Execution Mode: 'mock' (standalone deterministic) or 'real' (Gemini / Groq LLM)
-AGENT_MODE=mock
+# Install dependencies
+npm install
 
-# Gemini API Key (Required if AGENT_MODE=real)
-GEMINI_API_KEY=your_gemini_api_key_here
+# Start Expo development server
+npm start
+```
+1. Install **Expo Go** on your smartphone from Google Play Store or Apple App Store.
+2. Scan the terminal QR code to run the live mobile app on your phone!
 
-# Groq API Key (Optional alternative LLM provider)
-GROQ_API_KEY=your_groq_api_key_here
+---
 
-# Next.js Port (Default 3000)
-PORT=3000
+### 3. Test Credentials & Demo Accounts
+
+| Role | Portal URL | Email | Password | Access Level |
+|---|---|---|---|---|
+| **Super Admin** | `/admin/login` | `admin@cartwise.com` | `Admin@12345` | Full Marketplace Control |
+| **Active Seller** | `/seller/login` | `vikram@natureharvest.in` | `Seller@12345` | Nature's Harvest (10% Fee) |
+| **Active Seller** | `/seller/login` | `meera@purebotanics.com` | `Seller@12345` | Pure Botanics (12% Fee) |
+| **Pending Seller** | `/seller/login` | `ananya@greenlife.co` | `Seller@12345` | Under Onboarding Review |
+| **Customer** | `/` | *(Any email with 6-digit OTP)* | — | Standard Shopper |
+
+---
+
+## 🧪 Test Suite Execution
+
+Run all unit, integration, and security test suites:
+```bash
+cd CartWise-main
+npm test
 ```
 
 ---
 
-## 🧪 6. Testing & Demo Scenarios
-
-### Multimodal Vision Search:
-1. **Raw Forest Honey**: Click the camera icon or select `Photo Search` ➔ matches *Organic Raw Forest Honey*.
-2. **Whole Grain Oats**: Upload `oats.png` ➔ returns gluten-free oats & breakfast granola.
-3. **Non-Product Images**: Upload an animal or object photo ➔ returns friendly advice with zero false matches.
-
-### Multilingual Voice Search:
-- Click the microphone icon in the chat bar.
-- Speak in **English** (*"Show me flagship 5G mobiles"*), **Hindi** (*"मुझे ऑर्गेनिक शहद और ड्राई फ्रूट्स दिखाओ"*), or **Bengali** (*"আমাকে সেরা ল্যাপটপ আর স্মার্টফোন দেখাও"*).
-
-### Promo Arbitrage & Discount:
-- Ask: *"Apply discount code SAVE10"* ➔ receives 10% instant price deduction.
-
----
-
-## 📄 7. License
-This project is licensed under the **MIT License**.
+## 📜 License
+This project is licensed under the MIT License.

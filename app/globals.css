@@ -72,16 +72,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #0b0e17;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #2a3447;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #f59e0b;
 }
 
 /* Shimmer Animation for loading state */
@@ -95,7 +95,180 @@ body {
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background: linear-gradient(90deg, #131b2e 25%, #1e293b 50%, #131b2e 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
+
+/* Luxury Black & Gold Admin Theme Utilities */
+.admin-gold-gradient {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+}
+
+.admin-gold-text {
+  background: linear-gradient(135deg, #fef08a 0%, #facc15 40%, #eab308 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.admin-gold-border {
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.admin-gold-glow {
+  box-shadow: 0 0 20px -5px rgba(245, 158, 11, 0.3);
+}
+
+.admin-gold-glow-lg {
+  box-shadow: 0 0 35px -5px rgba(245, 158, 11, 0.4);
+}
+
+.admin-card {
+  background: rgba(14, 19, 31, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+  border-radius: 1rem;
+  backdrop-filter: blur(12px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-card:hover {
+  border-color: rgba(245, 158, 11, 0.45);
+  box-shadow: 0 8px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px -5px rgba(245, 158, 11, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Luxury Black, Gold & White Theme Overrides for All Admin & Seller Pages
+   ========================================================================== */
+.admin-portal-scope,
+.seller-portal-scope {
+  color: #ffffff;
+  background-color: #07090e;
+}
+
+.admin-portal-scope .bg-white,
+.seller-portal-scope .bg-white {
+  background-color: rgba(14, 19, 31, 0.9) !important;
+  border-color: rgba(245, 158, 11, 0.22) !important;
+  color: #ffffff !important;
+}
+
+.admin-portal-scope .bg-slate-50,
+.admin-portal-scope .bg-slate-100,
+.seller-portal-scope .bg-slate-50,
+.seller-portal-scope .bg-slate-100 {
+  background-color: #121826 !important;
+  border-color: rgba(245, 158, 11, 0.2) !important;
+  color: #f1f5f9 !important;
+}
+
+.admin-portal-scope .text-slate-900,
+.admin-portal-scope .text-slate-800,
+.admin-portal-scope .text-slate-700,
+.seller-portal-scope .text-slate-900,
+.seller-portal-scope .text-slate-800,
+.seller-portal-scope .text-slate-700 {
+  color: #ffffff !important;
+}
+
+.admin-portal-scope .text-slate-600,
+.admin-portal-scope .text-slate-500,
+.admin-portal-scope .text-slate-400,
+.seller-portal-scope .text-slate-600,
+.seller-portal-scope .text-slate-500,
+.seller-portal-scope .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+.admin-portal-scope .border-slate-100,
+.admin-portal-scope .border-slate-200,
+.admin-portal-scope .border-slate-200\/80,
+.admin-portal-scope .border-slate-200\/90,
+.admin-portal-scope .border-slate-300,
+.seller-portal-scope .border-slate-100,
+.seller-portal-scope .border-slate-200,
+.seller-portal-scope .border-slate-200\/80,
+.seller-portal-scope .border-slate-200\/90,
+.seller-portal-scope .border-slate-300 {
+  border-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+.admin-portal-scope .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+.admin-portal-scope .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
+.seller-portal-scope .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+.seller-portal-scope .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(245, 158, 11, 0.12) !important;
+}
+
+.admin-portal-scope input,
+.admin-portal-scope select,
+.admin-portal-scope textarea,
+.seller-portal-scope input,
+.seller-portal-scope select,
+.seller-portal-scope textarea {
+  background-color: #101522 !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+  color: #ffffff !important;
+}
+
+.admin-portal-scope input:focus,
+.admin-portal-scope select:focus,
+.admin-portal-scope textarea:focus,
+.seller-portal-scope input:focus,
+.seller-portal-scope select:focus,
+.seller-portal-scope textarea:focus {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25) !important;
+}
+
+.admin-portal-scope .text-emerald-600,
+.admin-portal-scope .text-emerald-700,
+.admin-portal-scope .text-teal-600,
+.seller-portal-scope .text-emerald-600,
+.seller-portal-scope .text-emerald-700,
+.seller-portal-scope .text-teal-600 {
+  color: #fbbf24 !important;
+}
+
+.admin-portal-scope .bg-emerald-50,
+.admin-portal-scope .bg-emerald-500\/10,
+.admin-portal-scope .bg-emerald-500\/20,
+.seller-portal-scope .bg-emerald-50,
+.seller-portal-scope .bg-emerald-500\/10,
+.seller-portal-scope .bg-emerald-500\/20 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  color: #fef08a !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+.admin-portal-scope .bg-emerald-600,
+.admin-portal-scope .bg-emerald-700,
+.seller-portal-scope .bg-emerald-600,
+.seller-portal-scope .bg-emerald-700 {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%) !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+.admin-portal-scope .bg-slate-950,
+.seller-portal-scope .bg-slate-950 {
+  background-color: #07090e !important;
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
+}
+
+.admin-portal-scope thead,
+.admin-portal-scope th,
+.seller-portal-scope thead,
+.seller-portal-scope th {
+  background-color: #0a0e18 !important;
+  color: #fbbf24 !important;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.25) !important;
+}
+
+.admin-portal-scope tr:hover,
+.seller-portal-scope tr:hover {
+  background-color: rgba(245, 158, 11, 0.05) !important;
+}
+
+
+

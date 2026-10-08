@@ -200,22 +200,24 @@ export function Navbar({
               setActiveTab("chat");
               onNewChat();
             }}
-            className="flex items-center gap-2 group text-left cursor-pointer"
+            className="flex items-center gap-2.5 group text-left cursor-pointer"
           >
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-slate-900 via-slate-950 to-black border border-amber-400/40 text-amber-400 font-black flex items-center justify-center text-base sm:text-lg shadow-sm group-hover:border-amber-400 transition-all shrink-0">
-              C
-            </div>
+            <img
+              src="/logo.png"
+              alt="CartWise Plus Logo"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-contain bg-slate-950 p-0.5 border border-amber-500/30 shadow-[0_0_12px_rgba(245,158,11,0.25)] group-hover:border-amber-400 group-hover:scale-105 transition-all shrink-0"
+            />
             <div>
               <div className="flex items-center gap-1 sm:gap-1.5">
                 <span className="font-black text-base sm:text-xl tracking-tight text-slate-950">
-                  Cartwise
+                  CartWise
                 </span>
                 <span className="px-1.5 py-0.2 rounded text-[8px] sm:text-[9px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 shadow-xs">
-                  PLUS
+                  PLUS+
                 </span>
               </div>
               <span className="text-[9px] sm:text-[10px] text-slate-500 font-medium block -mt-1 hidden xs:block">
-                Explore <span className="text-amber-600 font-bold">Cartwise Plus</span>
+                Smarter Search • <span className="text-amber-600 font-bold">Better Choices</span>
               </span>
             </div>
           </button>

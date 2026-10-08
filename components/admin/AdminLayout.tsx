@@ -89,18 +89,20 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center space-y-4">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 flex items-center justify-center font-black text-xl shadow-lg animate-pulse">
-          CW
-        </div>
-        <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs font-mono text-slate-400 tracking-wider">Verifying Admin Session…</p>
+      <div className="min-h-screen bg-[#07090E] flex flex-col items-center justify-center space-y-4">
+        <img
+          src="/logo.png"
+          alt="CartWise Plus Logo"
+          className="w-16 h-16 rounded-2xl object-contain bg-black p-1 border border-amber-500/40 shadow-[0_0_35px_rgba(245,158,11,0.5)] animate-pulse"
+        />
+        <div className="w-7 h-7 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs font-mono text-amber-300 font-bold tracking-widest uppercase">Verifying Admin Session…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex">
+    <div className="min-h-screen bg-[#07090E] text-white flex">
       {/* Fixed Left Navigation Sidebar */}
       <AdminSidebar
         onLogout={handleLogout}
@@ -121,7 +123,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           onMarkNotificationRead={handleMarkNotificationRead}
         />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full bg-[#07090E] admin-portal-scope">
           {children}
         </main>
       </div>
