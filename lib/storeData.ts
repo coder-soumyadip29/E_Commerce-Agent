@@ -4,59 +4,120 @@ export function getProductImageUrl(name: string, category: string, subCategory?:
   const lower = (name + " " + category + " " + (subCategory || "")).toLowerCase();
 
   // Mobiles & Smartphones
+  if (lower.includes("pixel") || lower.includes("google")) return "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("xiaomi") || lower.includes("14 ultra")) return "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("motorola") || lower.includes("edge 70")) return "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("iphone") || lower.includes("apple phone")) return "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("oneplus 12") || lower.includes("oneplus")) return "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("tab s9") || (lower.includes("samsung") && lower.includes("tab"))) return "https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("galaxy") || lower.includes("samsung")) return "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("spigen") || lower.includes("case") || lower.includes("cover")) return "https://images.unsplash.com/photo-1601593346740-925612772716?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("anker") || lower.includes("power bank")) return "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("k14") || lower.includes("realme") || lower.includes("poco")) return "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("smartphone") || lower.includes("mobile")) return "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?auto=format&fit=crop&w=600&q=80";
 
   // Electronics, Laptops, TV & Audio
+  if (lower.includes("macbook")) return "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("legion") || lower.includes("gaming laptop")) return "https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("vivobook") || lower.includes("asus") || lower.includes("laptop")) return "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("oled evo") || lower.includes("c3 smart tv")) return "https://images.unsplash.com/photo-1509281373149-e957c6296406?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("tcl") || lower.includes("qled") || lower.includes("tv") || lower.includes("television")) return "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("airpods")) return "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("jbl") || lower.includes("charge 5") || lower.includes("speaker")) return "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("neckband") || lower.includes("bullets")) return "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("headphone") || lower.includes("wh-1000xm") || lower.includes("sony")) return "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("ipad") || lower.includes("tablet")) return "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("galaxy watch")) return "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("mouse") || lower.includes("mx master") || lower.includes("logitech")) return "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("smart watch") || lower.includes("smartwatch") || lower.includes("noise")) return "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80";
 
   // Appliances
-  if (lower.includes("refrigerator") || lower.includes("fridge") || lower.includes("lg")) return "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("air conditioner") || lower.includes("ac") || lower.includes("voltas")) return "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("side-by-side") || lower.includes("653l")) return "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("whirlpool") || lower.includes("refrigerator") || lower.includes("fridge") || lower.includes("lg")) return "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("daikin") || lower.includes("air conditioner") || lower.includes("ac") || lower.includes("voltas")) return "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("washing machine") || lower.includes("ifb")) return "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("microwave") || lower.includes("otg") || lower.includes("griller")) return "https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("dyson") || lower.includes("vacuum")) return "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("air fryer") || lower.includes("fryer") || lower.includes("philips")) return "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("induction") || lower.includes("cooktop") || lower.includes("prestige")) return "https://images.unsplash.com/photo-1588854337221-4cf9fa96059c?auto=format&fit=crop&w=600&q=80";
 
   // Fashion & Apparel
-  if (lower.includes("jean") || lower.includes("levi")) return "https://images.unsplash.com/photo-1542272604-780c96856478?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("jordan") || lower.includes("nike")) return "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("ultraboost") || lower.includes("adidas")) return "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("shoe") || lower.includes("sneaker") || lower.includes("puma")) return "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("jean") || lower.includes("levi")) return "https://images.unsplash.com/photo-1542272604-780c96856478?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("oxford") || lower.includes("tommy hilfiger")) return "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("blazer") || lower.includes("zara")) return "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("fossil") || lower.includes("g-shock")) return "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("watch") || lower.includes("titan")) return "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("sunglasses") || lower.includes("ray-ban")) return "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("backpack") || lower.includes("samsonite")) return "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("shirt") || lower.includes("t-shirt") || lower.includes("polo")) return "https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=600&q=80";
 
   // Beauty & Personal Care
+  if (lower.includes("cosrx") || lower.includes("snail mucin")) return "https://images.unsplash.com/photo-1608248597359-58b387e38e1b?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("hyaluronic") || lower.includes("the ordinary")) return "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("sunscreen") || lower.includes("la roche")) return "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("hair serum") || lower.includes("extraordinary")) return "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("ruby woo") || lower.includes("lipstick") || lower.includes("maybelline")) return "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("soundarya") || lower.includes("forest essentials")) return "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("sauvage") || lower.includes("perfume") || lower.includes("dior")) return "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("serum") || lower.includes("niacinamide") || lower.includes("minimalist")) return "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("cleanser") || lower.includes("cetaphil") || lower.includes("facewash")) return "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80";
-  if (lower.includes("lipstick") || lower.includes("maybelline")) return "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=600&q=80";
 
   // Food & Grocery
   if (lower.includes("honey")) return "/images/honey.png";
   if (lower.includes("olive oil") || lower.includes("avocado")) return "/images/avocado_oil.png";
   if (lower.includes("oat")) return "/images/oats.png";
-  if (lower.includes("whey") || lower.includes("protein")) return "https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("walnut") || lower.includes("nutraj")) return "https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("tulsi") || lower.includes("green tea")) return "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("peanut butter") || lower.includes("pintola")) return "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("basmati rice") || lower.includes("daawat")) return "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("saffola") || lower.includes("cooking oil")) return "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("chyawanprash") || lower.includes("dabur")) return "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("super seeds") || lower.includes("true elements")) return "https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("whey") || lower.includes("protein") || lower.includes("muscleblaze")) return "https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("almond") || lower.includes("cashew") || lower.includes("nut")) return "https://images.unsplash.com/photo-1508061252445-b95013cb7c5b?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("atta") || lower.includes("flour") || lower.includes("rice") || lower.includes("dal")) return "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("ghee")) return "https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=600&q=80";
 
   // Home & Kitchen
+  if (lower.includes("cookware") || lower.includes("granite")) return "https://images.unsplash.com/photo-1584990347449-39976378c3b2?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("gas stove") || lower.includes("burner")) return "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("pillow") || lower.includes("sleepycat")) return "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("bed sheet") || lower.includes("spaces")) return "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("gaming chair") || lower.includes("green soul") || lower.includes("office chair")) return "https://images.unsplash.com/photo-1598550476439-6847785fcea6?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("smart bulb") || lower.includes("led bulb") || lower.includes("wipro")) return "https://images.unsplash.com/photo-1550524514-648b26f582f3?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("mixing bowl") || lower.includes("borosil") || lower.includes("bowl")) return "https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("flask") || lower.includes("bottle") || lower.includes("milton")) return "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("mattress") || lower.includes("wakefit")) return "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("comforter") || lower.includes("blanket")) return "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=600&q=80";
 
   // Toys & Baby
-  if (lower.includes("lego") || lower.includes("toy")) return "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("bugatti") || lower.includes("technic") || lower.includes("lego")) return "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("hot wheels") || lower.includes("toy car")) return "https://images.unsplash.com/photo-1594787318286-3d835c1d207f?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("baby basket") || lower.includes("himalaya baby")) return "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("stroller") || lower.includes("pram") || lower.includes("luvlap")) return "https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("scrabble") || lower.includes("board game")) return "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("baby shampoo") || lower.includes("chicco")) return "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("diaper") || lower.includes("pampers") || lower.includes("baby")) return "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=600&q=80";
 
-  // Auto & Sports
-  if (lower.includes("helmet") || lower.includes("steelbird")) return "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=600&q=80";
+  // Auto Accessories
+  if (lower.includes("helmet") || lower.includes("vega") || lower.includes("steelbird")) return "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("tire inflator") || lower.includes("compressor") || lower.includes("qubo")) return "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("car vacuum") || lower.includes("bergmann")) return "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("car wash") || lower.includes("car shampoo") || lower.includes("3m")) return "https://images.unsplash.com/photo-1601362840469-51e4d8d58785?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("body cover") || lower.includes("bike cover")) return "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("floor mats") || lower.includes("7d mat")) return "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("dash cam") || lower.includes("camera")) return "https://images.unsplash.com/photo-1508974239320-0a029497e820?auto=format&fit=crop&w=600&q=80";
+
+  // Sports & Fitness
+  if (lower.includes("football") || lower.includes("nivia")) return "https://images.unsplash.com/photo-1511886929837-354d827aae26?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("dumbbell") || lower.includes("kobo")) return "https://images.unsplash.com/photo-1586401100295-7a8096fd231a?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("resistance band") || lower.includes("loop band")) return "https://images.unsplash.com/photo-1598289431512-b97b0917affc?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("cricket bat") || lower.includes("willow")) return "https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("skipping rope") || lower.includes("jump rope")) return "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80";
+  if (lower.includes("bicycle") || lower.includes("mountain bike") || lower.includes("firefox")) return "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("badminton") || lower.includes("yonex") || lower.includes("racquet")) return "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=600&q=80";
   if (lower.includes("yoga") || lower.includes("mat")) return "https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80";
 
@@ -110,6 +171,12 @@ export const SEED_PRODUCTS_RAW: Array<[number, string, string, string, number, s
   [104, "Samsung Galaxy S24 5G (Onyx Black, 256GB)", "mobiles", "smartphones", 74999, "Galaxy AI, 50MP Dual Telephoto, Dynamic AMOLED 2X Display with Armor Aluminum 2.0", 0, 18, 4.9, 560],
   [105, "Realme K14 Plus 5G (Submarine Blue, 128GB)", "mobiles", "smartphones", 25999, "Periscope Portrait Camera, Luxury Watch Design, 120Hz Curved Vision OLED Display", 0, 50, 4.7, 720],
   [106, "POCO X6 Pro 5G (Racing Yellow, 512GB)", "mobiles", "smartphones", 26999, "Dimensity 8300 Ultra processor, 1.5K 120Hz AMOLED, 64MP OIS Triple Camera", 0, 35, 4.8, 640],
+  [107, "Google Pixel 8a (Bay Blue, 128GB)", "mobiles", "smartphones", 44999, "Google Tensor G3, Actua OLED Display, 64MP Camera with Magic Eraser & Best Take", 0, 30, 4.8, 540],
+  [108, "Xiaomi 14 Ultra (Titanium Black, 512GB)", "mobiles", "smartphones", 99999, "Leica Quad Camera with 1-inch sensor, Snapdragon 8 Gen 3, WQHD+ 120Hz AMOLED", 0, 15, 4.9, 320],
+  [109, "Apple iPad Pro 11-inch M4 (Space Black, 256GB)", "mobiles", "tablets", 99900, "Ultra Retina XDR Tandem OLED, M4 chip, ProMotion 120Hz, Thunderbolt USB-4", 0, 20, 5.0, 180],
+  [110, "Samsung Galaxy Tab S9 FE (Mint, 128GB Wi-Fi)", "mobiles", "tablets", 34999, "10.9-inch 90Hz Display, Exynos 1380, S Pen included, IP68 water & dust resistance", 0, 25, 4.7, 410],
+  [111, "Spigen Ultra Hybrid MagFit Case for iPhone 15", "mobiles", "mobile-accessories", 1899, "Crystal clear TPU bumper with built-in magnetic ring for MagSafe charging compatibility", 0, 80, 4.8, 890],
+  [112, "Anker 737 Power Bank (PowerCore 24K, 140W Fast Charge)", "mobiles", "mobile-accessories", 9999, "24,000mAh Ultra-Powerful 3-Port portable charger with smart digital display", 0, 35, 4.9, 310],
 
   // ==========================================
   // 2. ELECTRONICS & LAPTOPS (electronics)
@@ -120,6 +187,14 @@ export const SEED_PRODUCTS_RAW: Array<[number, string, string, string, number, s
   [204, "Sony WH-1000XM5 Wireless Active Noise Cancelling Headphones", "electronics", "audio", 28990, "Industry Leading ANC with 8 Mics, Auto NC Optimizer, Hi-Res Audio LDAC, 30h Battery", 0, 12, 5.0, 180],
   [205, "Apple iPad Air M2 (11-inch, Wi-Fi, 128GB, Space Grey)", "electronics", "tablets", 57900, "Apple M2 chip, Liquid Retina display with P3 wide color, 12MP Center Stage Camera", 0, 22, 4.9, 140],
   [206, "Noise ColorFit Pulse 4 Smart Watch with Bluetooth Calling", "electronics", "wearables", 1799, "1.85-inch Advanced AMOLED display, 7-day battery, 100+ Sports Modes, Health Tracking", 0, 80, 4.6, 920],
+  [207, "MacBook Air 15-inch M3 (Midnight, 16GB RAM, 512GB SSD)", "electronics", "laptops", 154900, "Liquid Retina display, MagSafe charging, 18-hour battery, Fanless silent design", 0, 12, 5.0, 240],
+  [208, "Lenovo Legion Pro 5i Gaming Laptop (Core i7 14th Gen, RTX 4060)", "electronics", "laptops", 134990, "16-inch WQXGA 240Hz 500nits, 32GB DDR5 RAM, 1TB NVMe Gen4 SSD, Legion Coldfront 5.0", 0, 14, 4.8, 190],
+  [209, "Samsung 55-inch Crystal 4K Vivid Pro Ultra HD Smart TV", "electronics", "televisions", 44990, "Crystal Processor 4K, PurColor, SolarCell Remote, Q-Symphony Audio Integration", 0, 22, 4.8, 510],
+  [210, "LG 65-inch 4K OLED evo C3 Smart TV", "electronics", "televisions", 174990, "Self-lit OLED pixels, α9 AI Processor Gen6, Dolby Vision IQ & Atmos, 0.1ms Gaming", 0, 10, 4.9, 140],
+  [211, "Apple AirPods Pro (2nd Generation with MagSafe USB-C)", "electronics", "audio", 22990, "H2 chip, Up to 2x more Active Noise Cancellation, Adaptive Audio, Personalized Spatial Audio", 0, 50, 4.9, 1840],
+  [212, "JBL Charge 5 Portable Waterproof Bluetooth Speaker", "electronics", "audio", 14999, "Original Pro Sound with long excursion driver, separate tweeter, 20 hours playtime, IP67", 0, 40, 4.8, 760],
+  [213, "Samsung Galaxy Watch6 LTE (44mm, Graphite)", "electronics", "wearables", 24999, "Sapphire Crystal glass, Advanced Sleep Coaching, ECG & Blood Pressure Monitoring, Wear OS", 0, 30, 4.7, 430],
+  [214, "Logitech MX Master 3S Wireless Performance Mouse", "electronics", "wearables", 8995, "8K DPI Any-surface tracking, Quiet Clicks, MagSpeed electromagnetic scrolling wheel", 0, 60, 4.9, 890],
 
   // ==========================================
   // 3. APPLIANCES (appliances)
@@ -128,6 +203,13 @@ export const SEED_PRODUCTS_RAW: Array<[number, string, string, string, number, s
   [302, "Voltas 1.5 Ton 5-Star Adjustable Inverter Split AC (185V Vectra Elite)", "appliances", "air-conditioners", 34990, "4-in-1 Adjustable Cooling Modes, 100% Copper Condenser, Anti-dust Filter, Stabilizer Free", 0, 10, 4.8, 290],
   [303, "Philips Digital Air Fryer HD9252/90 (4.1 Liter, 1400W)", "appliances", "kitchen-appliances", 7499, "Rapid Air Technology for 90% Less Fat, Touch Screen with 7 Pre-set Menus, Dishwasher Safe", 0, 25, 4.8, 340],
   [304, "Prestige Induction Cooktop PIC 20 (1600 Watt with Indian Menu Options)", "appliances", "kitchen-appliances", 2399, "Push Button Controls, Automatic Voltage Regulator, Anti-Magnetic Wall, Feather Touch Control", 0, 40, 4.7, 480],
+  [305, "Samsung 653L Frost-Free Double Door Convertible Side-by-Side Refrigerator", "appliances", "refrigerators", 74990, "Twin Cooling Plus, 5-in-1 Convertible Modes, Digital Inverter with 20-Year Warranty, Wi-Fi", 0, 10, 4.9, 210],
+  [306, "Whirlpool 240L Triple Door Multi-Door Refrigerator (Protton Royale)", "appliances", "refrigerators", 25490, "Microblock Technology, Active Fresh Zone for fruit retention, Moisture Retention Crisper", 0, 20, 4.7, 340],
+  [307, "Daikin 1.5 Ton 5-Star Inverter Split AC (PM 2.5 Filter)", "appliances", "air-conditioners", 45490, "Dew Clean Technology, Coanda Airflow, Triple Display, 100% Copper with Anti-Corrosion", 0, 15, 4.9, 280],
+  [308, "IFB 8 Kg 5-Star Front Load Washing Machine (Senator Smart)", "appliances", "kitchen-appliances", 36990, "AI Powered Powered Wash, 9 Swirl Wash, Steam Wash at 95°C for 99.9% Germ Protection", 0, 18, 4.8, 390],
+  [309, "LG 28L Charcoal Convection Microwave Oven (MJ2886BWUM)", "appliances", "kitchen-appliances", 19990, "Charcoal Lighting Heater for tandoori roasting, Diet Fry for 88% less oil cooking", 0, 25, 4.8, 230],
+  [310, "Dyson V12 Detect Slim Cordless Vacuum Cleaner", "appliances", "kitchen-appliances", 44900, "Laser reveals invisible dust, Piezo sensor counts particles, 150AW suction, LCD screen", 0, 12, 4.9, 170],
+  [311, "Morphy Richards 24L Digital Oven Toaster Griller (OTG)", "appliances", "kitchen-appliances", 8499, "Motorized Rotisserie, Convection baking technology, Digital timer and temperature display", 0, 30, 4.7, 310],
 
   // ==========================================
   // 4. FASHION (fashion)
@@ -136,6 +218,14 @@ export const SEED_PRODUCTS_RAW: Array<[number, string, string, string, number, s
   [402, "Puma Flyer Runner Running & Training Shoes for Men (Black-White)", "fashion", "footwear", 2199, "SoftFoam+ comfort sockliner for instant step-in cushioning, breathable mesh upper", 0, 60, 4.7, 850],
   [403, "Titan Neo Analog Dial Quartz Watch for Men (Stainless Steel Strap)", "fashion", "watches", 4295, "Midnight blue sunray dial, Mineral glass, 50m water resistance, 2-year warranty", 0, 30, 4.8, 290],
   [404, "U.S. Polo Assn. Solid Slim Fit Pure Cotton Polo T-Shirt", "fashion", "mens-clothing", 999, "100% Pique Cotton, Signature brand embroidery, Ribbed collar and sleeve hems", 0, 75, 4.6, 410],
+  [405, "Nike Air Jordan 1 Low Retro Sneakers (Gym Red/White)", "fashion", "footwear", 8995, "Encapsulated Air-Sole unit for lightweight cushioning, genuine leather upper, rubber cupsole", 0, 35, 4.9, 780],
+  [406, "Adidas Ultraboost Light Running Shoes for Men", "fashion", "footwear", 11999, "Light BOOST midsole cushioning, PRIMEKNIT+ textile upper, Continental rubber grip outsole", 0, 40, 4.8, 620],
+  [407, "Tommy Hilfiger Classic Oxford Cotton Button-Down Shirt", "fashion", "mens-clothing", 3999, "100% Premium organic oxford cotton, embroidered flag logo on chest, regular tailored fit", 0, 45, 4.8, 350],
+  [408, "Zara Structured Tailored Blazer Jacket", "fashion", "mens-clothing", 6990, "Peak lapel collar, double-welt front pockets, premium crease-resistant blended fabric", 0, 25, 4.7, 210],
+  [409, "Fossil Grant Chronograph Leather Watch for Men", "fashion", "watches", 9995, "Roman numeral dial with 3 sub-dials, rich genuine amber leather strap, 50m water resistant", 0, 35, 4.8, 480],
+  [410, "Casio G-Shock GA-2100 Carbon Core Guard Watch (All Black)", "fashion", "watches", 8995, "Octagonal retro bezel, 200m water resistance, shock-absorbent carbon fiber reinforced resin", 0, 50, 4.9, 940],
+  [411, "Ray-Ban Aviator Classic Polarized Sunglasses (Gold Frame, Green Lens)", "fashion", "mens-clothing", 8590, "Crystal green polarized lenses, timeless teardrop metal frame, 100% UV400 protection", 0, 30, 4.9, 560],
+  [412, "Samsonite GuardIT 2.0 Laptop Backpack (Black 27L)", "fashion", "mens-clothing", 4500, "Padded 15.6-inch laptop compartment, ergonomic shoulder straps, water-repellent ballistic nylon", 0, 55, 4.8, 410],
 
   // ==========================================
   // 5. BEAUTY & HEALTH (beauty)
@@ -143,6 +233,13 @@ export const SEED_PRODUCTS_RAW: Array<[number, string, string, string, number, s
   [501, "Minimalist 10% Niacinamide Face Serum with Zinc (30ml)", "beauty", "skincare", 599, "Clinically tested for blemish marks reduction, sebum control, and pore refining", 1, 65, 4.9, 1200],
   [502, "Cetaphil Gentle Skin Cleanser for Sensitive & Dry Skin (250ml)", "beauty", "skincare", 499, "Dermatologist recommended, Soap-free, Fragrance-free hydrating cleanser with Niacinamide", 0, 80, 4.8, 980],
   [503, "Maybelline SuperStay Matte Ink Liquid Lipstick (Pioneer 20)", "beauty", "makeup", 549, "Up to 16 Hours intense matte color payoff, smudge-proof, transfer-resistant precision applicator", 0, 90, 4.7, 760],
+  [504, "COSRX Advanced Snail 96 Mucin Power Essence (100ml)", "beauty", "skincare", 1299, "96% Snail Secretion Filtrate for deep hydration, skin elasticity, and radiant glass-skin glow", 1, 60, 4.9, 1420],
+  [505, "The Ordinary Hyaluronic Acid 2% + B5 Hydration Serum (30ml)", "beauty", "skincare", 850, "Multi-depth hydration with 3 forms of hyaluronic acid and Vitamin B5 for plump skin", 0, 80, 4.8, 1150],
+  [506, "La Roche-Posay Anthelios SPF 50+ Invisible Fluid Sunscreen", "beauty", "skincare", 1950, "Broad spectrum UVA/UVB protection, ultra-resistant to water, sweat, and sand, non-greasy", 0, 50, 4.9, 870],
+  [507, "L'Oreal Paris Extraordinary Oil Hair Serum (100ml)", "beauty", "haircare", 499, "Infused with 6 precious floral oils for instant 6x shine, frizz control, and heat protection", 0, 95, 4.7, 1890],
+  [508, "MAC Matte Lipstick (Ruby Woo 3g)", "beauty", "makeup", 1950, "Iconic vivid blue-red shade with long-wearing non-feathering retro matte finish", 0, 70, 4.9, 1340],
+  [509, "Forest Essentials Ayurvedic Soundarya Radiance Cream with 24K Gold", "beauty", "skincare", 3975, "Pure 24 Karat Gold Bhasma and saffron infused in rich unrefined sweet almond oil", 1, 30, 4.9, 290],
+  [510, "Dior Sauvage Eau De Parfum for Men (100ml)", "beauty", "makeup", 11500, "Radiant Calabrian bergamot, sensual Papua New Guinean vanilla absolute, smoky ambery sillage", 0, 20, 5.0, 520],
 
   // ==========================================
   // 6. FOOD & HEALTH (food-health)
@@ -155,6 +252,14 @@ export const SEED_PRODUCTS_RAW: Array<[number, string, string, string, number, s
   [606, "Aashirvaad Shudh Chakki Atta (100% Whole Wheat, 10kg)", "food-health", "grocery-staples", 445, "Crafted from golden grains using traditional 4-step chakki process for soft, fluffy rotis", 1, 120, 4.9, 2100],
   [607, "Tata Sampann Unpolished Toor Dal / Arhar Dal (1kg)", "food-health", "grocery-staples", 189, "Unpolished natural toor dal sourced from certified farms, rich in wholesome protein", 1, 90, 4.8, 890],
   [608, "Amul Pure Cow Ghee (1 Liter Tin)", "food-health", "oils-ghee", 620, "Traditional granular texture and authentic aroma, rich source of Vitamin A, D, E & K", 1, 60, 4.9, 1780],
+  [609, "Nutraj Signature Premium California Walnuts (Kernels 500g)", "food-health", "dry-fruits", 699, "Extra-light walnut halves, rich source of plant-based Omega-3 ALA, vacuum nitrogen flushed", 1, 65, 4.8, 640],
+  [610, "Organic India Tulsi Green Tea Classic (100 Tea Bags Tin)", "food-health", "grocery-staples", 425, "Certified organic blend of Rama, Krishna & Vana Tulsi with delicate sencha green tea", 1, 90, 4.8, 920],
+  [611, "Pintola All Natural Creamy Peanut Butter (100% Roasted Peanuts, 1kg)", "food-health", "nutrition-supplements", 399, "Zero added sugar, zero hydrogenated oil, 30g protein per 100g, pure roasted peanuts", 1, 80, 4.9, 1750],
+  [612, "Daawat Rozana Super Basmati Rice (5kg Bag)", "food-health", "grocery-staples", 485, "Aged long-grain basmati with sweet aroma and fluffy non-sticky texture for daily cooking", 1, 100, 4.8, 1420],
+  [613, "Saffola Total Pro Heart Pro-Blend Edible Cooking Oil (5 Liter Can)", "food-health", "oils-ghee", 989, "Dual seed technology (Rice bran & Safflower), Oryzanol power for healthy cholesterol", 0, 70, 4.8, 890],
+  [614, "Dabur Chyawanprash with 2X Immunity 40+ Herbs (1kg Jar)", "food-health", "grocery-staples", 385, "Traditional Ayurvedic formulation backed by clinical trials, rich in Amla Vitamin C", 1, 110, 4.9, 2350],
+  [615, "MuscleBlaze Biozyme Performance Whey (Rich Chocolate, 2kg)", "food-health", "nutrition-supplements", 4499, "Enhanced Absorption Formula (EAF), 25g Protein, 5.51g BCAA, Informed-Choice certified", 0, 40, 4.9, 1680],
+  [616, "True Elements 7-in-1 Super Seeds Mix (Chia, Flax, Pumpkin, Sunflower 500g)", "food-health", "dry-fruits", 449, "Lightly roasted crunchy mix of 7 nutritious seeds, rich in zinc, magnesium, and dietary fiber", 1, 85, 4.8, 710],
 
   // ==========================================
   // 7. HOME & KITCHEN (home)
@@ -162,24 +267,49 @@ export const SEED_PRODUCTS_RAW: Array<[number, string, string, string, number, s
   [701, "Milton Thermosteel Flip Lid 1000ml Vacuum Insulated Flask", "home", "kitchen-dining", 949, "24 Hours Hot & Cold retention, 100% Food grade 304 Stainless steel with carry bag", 0, 60, 4.8, 640],
   [702, "Wakefit Orthopedic Memory Foam King Size Mattress (78x72x6 Inch)", "home", "furniture", 13499, "Next-Gen memory foam with differential pressure zone support, breathable 100% cotton cover", 0, 15, 4.9, 410],
   [703, "Solimo Microfiber Reversible Comforter / Blanket (Double Bed, Aqua Blue)", "home", "bedding", 1499, "200 GSM hollow siliconized polyester filling, lightweight warmth, hypoallergenic", 0, 40, 4.7, 320],
+  [704, "Prestige Omega Deluxe Granite Non-Stick 3-Piece Cookware Set", "home", "kitchen-dining", 2499, "Omni Tawa, Fry Pan & Kadai with Glass Lid, 5-layer durable German granite coating", 0, 45, 4.8, 560],
+  [705, "Pigeon by Stovekraft Sheen Stainless Steel 3-Burner Gas Stove", "home", "kitchen-dining", 3299, "High-efficiency tri-pin brass burners, designer stainless steel body, ISI certified", 0, 30, 4.7, 430],
+  [706, "SleepyCat Hybrid Latex Orthopedic CoolGel Memory Foam Pillow", "home", "bedding", 1899, "Contours to neck alignment, infused cooling gel beads, removable washable bamboo cover", 0, 50, 4.8, 390],
+  [707, "Spaces 100% Pure Egyptian Cotton 400 TC King Bed Sheet Set", "home", "bedding", 2799, "Sateen weave with silky smooth touch, breathable natural cotton, includes 2 pillow covers", 0, 40, 4.8, 310],
+  [708, "Green Soul Monster Ultimate Ergonomic Gaming & Work Chair", "home", "furniture", 16990, "Breathable spandex fabric, magnetic memory foam neck pillow, 4D adjustable armrests", 0, 20, 4.9, 270],
+  [709, "Wipro Garnet 12W Smart LED B22 WiFi Color Bulb with Voice Control", "home", "furniture", 699, "16 Million colors with dimming, works with Alexa & Google Assistant, music sync mode", 0, 90, 4.7, 1120],
+  [710, "Borosil Prime Glass Mixing Bowl Set with Lids (Pack of 3)", "home", "kitchen-dining", 999, "100% Borosilicate glass, oven and microwave safe up to 350°C, air-tight BPA-free lids", 0, 60, 4.9, 680],
 
   // ==========================================
   // 8. TOYS & BABY CARE (toys-baby)
   // ==========================================
   [801, "LEGO Classic Medium Creative Brick Box Building Set (484 Pieces)", "toys-baby", "toys-games", 2499, "Inspires open-ended creativity with 35 vibrant brick colors, windows, eyes, and tires", 0, 30, 4.9, 290],
   [802, "Pampers All Round Protection Pants Diapers (Large, 74 Count)", "toys-baby", "baby-care", 1199, "Up to 12 hours absorption with magic gel technology and lotion with aloe vera", 0, 50, 4.8, 840],
+  [803, "LEGO Technic Bugatti Bolide Agile Race Car Model Building Kit", "toys-baby", "toys-games", 4499, "Working W16 engine, steering, scissor doors, realistic yellow and black finish with decals", 0, 25, 4.9, 340],
+  [804, "Hot Wheels 10-Car Gift Pack of 1:64 Scale Vehicles", "toys-baby", "toys-games", 1199, "Authentic die-cast sports and muscle cars with rolling wheels and detailed racing decos", 0, 60, 4.8, 890],
+  [805, "Himalaya Total Baby Care Gentle Gift Basket (7 Baby Care Essentials)", "toys-baby", "baby-care", 899, "Gentle baby massage oil, powder, cream, wipes, soap, shampoo with natural herb extracts", 1, 75, 4.9, 1240],
+  [806, "LuvLap Sunshine Baby Stroller & Pram with Reversible Handle", "toys-baby", "baby-care", 4299, "3-position reclining seat, 5-point safety harness, 360-degree front swivel lock wheels", 0, 20, 4.7, 450],
+  [807, "Mattel Scrabble Original Crossword Board Game for Families", "toys-baby", "toys-games", 899, "Classic wordplay board game with letter tiles, tile racks, score pad, and rule guide", 0, 50, 4.8, 620],
+  [808, "Chicco Natural Sensation Baby Shampoo & Body Wash (300ml)", "toys-baby", "baby-care", 599, "Soap-free tearless formula with aloe vera & chamomile, tested by pediatricians", 0, 65, 4.8, 510],
 
   // ==========================================
   // 9. AUTO ACCESSORIES (auto-accessories)
   // ==========================================
   [901, "Steelbird SB-50 Adonis Full Face Helmet with Visor (Matte Black, L)", "auto-accessories", "helmets-gear", 1499, "ISI Certified (IS:4151), High impact ABS shell, breathable multi-pore interior padding", 0, 40, 4.8, 510],
   [902, "70mai Smart Dash Cam 1S (1080P Full HD, Night Vision, G-Sensor)", "auto-accessories", "car-electronics", 3999, "Sony IMX307 sensor, 130-degree wide angle, voice control and emergency auto-recording", 0, 25, 4.7, 180],
+  [903, "Vega Crux Half Face Helmet with Smoke Visor (Glossy Black, M)", "auto-accessories", "helmets-gear", 1099, "ISI certified shell, quick release metallic buckle, removable odor-resistant cheek pads", 0, 50, 4.7, 630],
+  [904, "Qubo Smart Tire Inflator Portable Air Compressor for Car & Bike", "auto-accessories", "car-electronics", 2799, "Auto shutoff with real-time digital pressure gauge, 150 PSI max, built-in LED torch", 0, 40, 4.8, 410],
+  [905, "Bergmann Typhoon Heavy Duty Metal Car Vacuum Cleaner 150W", "auto-accessories", "car-electronics", 1499, "100% Pure copper motor, medical grade HEPA filter, 5-meter power cord with accessories", 0, 35, 4.7, 360],
+  [906, "3M Large Car Care Auto Wash Shampoo (1 Liter)", "auto-accessories", "helmets-gear", 399, "High foaming pH-balanced formula removes dirt without stripping wax coating", 0, 80, 4.8, 920],
+  [907, "TVS Motor Premium Weather-Resistant Two-Wheeler Body Cover", "auto-accessories", "helmets-gear", 699, "100% Water-resistant polyester with mirror pockets and buckle strap lock", 0, 60, 4.7, 470],
+  [908, "All-Weather Heavy Duty Anti-Skid Rubber 7D Car Floor Mats", "auto-accessories", "helmets-gear", 2999, "Laser cut custom tailored design with curly heel pad, waterproof and easy to clean", 0, 30, 4.8, 280],
 
   // ==========================================
   // 10. SPORTS & FITNESS (sports-fitness)
   // ==========================================
   [1001, "Yonex Muscle Power 29 Light Graphite Badminton Racquet", "sports-fitness", "badminton", 2199, "High modulus graphite frame, Isometric head shape with Muscle Power shock absorption", 0, 45, 4.8, 380],
   [1002, "Boldfit Anti-Skid Yoga Mat 6mm with Carrying Strap (Navy Blue)", "sports-fitness", "fitness-accessories", 799, "Eco-friendly TPE material, double-sided non-slip grip, sweat-resistant & easy to clean", 1, 60, 4.7, 490],
+  [1003, "Nivia Storm Football Rubber Moulded Size 5 Official Match Ball", "sports-fitness", "badminton", 599, "Rubber moulded exterior for hard surfaces, 32-panel aerodynamic construction", 0, 60, 4.8, 740],
+  [1004, "Kobo Hexagonal Rubber Encased Dumbbell Pair (5kg x 2)", "sports-fitness", "fitness-accessories", 2199, "Heavy duty cast iron encased in natural virgin rubber with contoured chrome handles", 0, 35, 4.9, 460],
+  [1005, "Decathlon Domyos Adjustable Resistance Loop Band Set (3-Pack)", "sports-fitness", "fitness-accessories", 699, "Light, Medium, and Heavy resistance elastic bands for strength and mobility training", 0, 70, 4.8, 590],
+  [1006, "SG Savage Edition English Willow Cricket Bat (Full Size Men)", "sports-fitness", "badminton", 7999, "Grade 3 hand-crafted English Willow with thick edges, massive sweet spot, toe guard", 0, 15, 4.9, 210],
+  [1007, "Fitkit FK001 Steel Wire High-Speed Skipping Jump Rope with Ball Bearings", "sports-fitness", "fitness-accessories", 299, "Tangle-free 360-degree ball bearing rotation with anti-slip aluminum alloy handles", 0, 90, 4.7, 850],
+  [1008, "Firefox Bikes Cyclone 27.5T 21-Speed Alloy Mountain Bicycle", "sports-fitness", "fitness-accessories", 16499, "Lightweight 6061 alloy hardtail frame, Zoom front suspension fork, Shimano Tourney gears", 0, 12, 4.9, 180],
 ];
 
 export const INITIAL_PRODUCTS: Product[] = SEED_PRODUCTS_RAW.map(p => ({
@@ -255,6 +385,76 @@ export const INITIAL_REVIEWS: Review[] = [
     rating: 5,
     reviewer_name: "Vikram Malhotra",
     review_text: "Best organic raw honey I have tasted. 100% authentic and unadulterated.",
+  },
+  {
+    id: 5,
+    product_id: 107,
+    rating: 5,
+    reviewer_name: "Arjun Verma",
+    review_text: "Pixel 8a camera and AI features are unreal! Outstanding value for money.",
+  },
+  {
+    id: 6,
+    product_id: 207,
+    rating: 5,
+    reviewer_name: "Neha Kapur",
+    review_text: "MacBook Air M3 handles 4K video rendering silently. Battery easily lasts 2 full days.",
+  },
+  {
+    id: 7,
+    product_id: 308,
+    rating: 5,
+    reviewer_name: "Meera Sen",
+    review_text: "IFB Front Load washing machine cleans tough stains effortlessly with steam wash.",
+  },
+  {
+    id: 8,
+    product_id: 405,
+    rating: 5,
+    reviewer_name: "Kabir Khan",
+    review_text: "Air Jordan 1 Low is 100% original verified. Super comfortable and stylish.",
+  },
+  {
+    id: 9,
+    product_id: 504,
+    rating: 5,
+    reviewer_name: "Ananya Ghosh",
+    review_text: "COSRX Snail Mucin gives instant glass skin hydration. HG skincare product!",
+  },
+  {
+    id: 10,
+    product_id: 611,
+    rating: 5,
+    reviewer_name: "Rohit Deshmukh",
+    review_text: "Pintola natural peanut butter is pure peanuts with no palm oil or added sugar. Perfect protein boost.",
+  },
+  {
+    id: 11,
+    product_id: 704,
+    rating: 5,
+    reviewer_name: "Sunita Patel",
+    review_text: "Prestige granite cookware set works seamlessly on induction and gas. Truly non-stick.",
+  },
+  {
+    id: 12,
+    product_id: 803,
+    rating: 5,
+    reviewer_name: "Karan Johar",
+    review_text: "LEGO Bugatti Bolide was an incredible build experience. Working pistons are amazing.",
+  },
+  {
+    id: 13,
+    product_id: 904,
+    rating: 5,
+    reviewer_name: "Deepak Joshi",
+    review_text: "Qubo tire inflator saved me on the highway! Inflated a car tire from 20 to 35 PSI in 3 minutes.",
+  },
+  {
+    id: 14,
+    product_id: 1004,
+    rating: 5,
+    reviewer_name: "Manish Tiwari",
+    review_text: "Kobo rubber dumbbells have great grip and protect tiled floors from drops.",
   },
 ];
 
