@@ -67,7 +67,7 @@ export function generateInvoiceData(params: {
   const taxableSubtotal = Number((finalTotal / (1 + gstRate / 100)).toFixed(2));
   const totalGst = Number((finalTotal - taxableSubtotal).toFixed(2));
   const cgstAmount = Number((totalGst / 2).toFixed(2));
-  const sgstAmount = Number((totalGst / 2).toFixed(2));
+  const sgstAmount = Number((totalGst - cgstAmount).toFixed(2));
 
   const invoiceItems: InvoiceItem[] = items.map((i: any, idx: number) => {
     const productName = i.product?.name || i.product_name || `Item #${i.product_id || idx + 1}`;

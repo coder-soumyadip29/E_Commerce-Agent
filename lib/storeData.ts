@@ -1,4 +1,5 @@
 import { Product, Review, Order, UserProfile, UserAddress, UserAddressRecord } from "./types";
+import { ALL_CATALOG_PRODUCTS } from "./catalogProducts";
 
 export function getProductImageUrl(name: string, category: string, subCategory?: string): string {
   const lower = (name + " " + category + " " + (subCategory || "")).toLowerCase();
@@ -312,19 +313,7 @@ export const SEED_PRODUCTS_RAW: Array<[number, string, string, string, number, s
   [1008, "Firefox Bikes Cyclone 27.5T 21-Speed Alloy Mountain Bicycle", "sports-fitness", "fitness-accessories", 16499, "Lightweight 6061 alloy hardtail frame, Zoom front suspension fork, Shimano Tourney gears", 0, 12, 4.9, 180],
 ];
 
-export const INITIAL_PRODUCTS: Product[] = SEED_PRODUCTS_RAW.map(p => ({
-  id: p[0],
-  name: p[1],
-  category: p[2],
-  sub_category: p[3],
-  price: p[4],
-  description: p[5],
-  is_organic: Boolean(p[6]),
-  stock: p[7],
-  average_rating: p[8],
-  review_count: p[9],
-  image_url: getProductImageUrl(p[1], p[2], p[3]),
-}));
+export const INITIAL_PRODUCTS: Product[] = ALL_CATALOG_PRODUCTS;
 
 export const INITIAL_USERS: UserProfile[] = [
   {
