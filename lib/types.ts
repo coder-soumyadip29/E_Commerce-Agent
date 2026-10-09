@@ -200,6 +200,16 @@ export interface UserProfile {
   isVerified?: boolean;
 }
 
+export interface FoundAccountPreview {
+  id: number;
+  name: string;
+  email: string;
+  maskedEmail: string;
+  avatar_url?: string;
+  vip_level?: string;
+}
+
+
 export interface AgentTraceStep {
   title: string;
   detail: string;
@@ -223,6 +233,11 @@ export interface AgentTrace {
   steps: AgentTraceStep[];
 }
 
+export interface RiderTelemetryCoordinates {
+  lat: number;
+  lng: number;
+}
+
 export interface OrderTrackingInfo {
   orderId: string | number;
   productName: string;
@@ -230,12 +245,52 @@ export interface OrderTrackingInfo {
   status: "OUT FOR DELIVERY" | "IN TRANSIT" | "DELIVERED";
   estimatedArrival: string;
   step: "packed" | "transit" | "out_for_delivery";
+  riderName?: string;
+  riderPhone?: string;
+  riderVehicle?: string;
+  riderRating?: number;
+  originCoords?: RiderTelemetryCoordinates;
+  destinationCoords?: RiderTelemetryCoordinates;
+  currentCoords?: RiderTelemetryCoordinates;
+  speedKmh?: number;
+  batteryPercent?: number;
+  routeProgress?: number;
 }
 
 export interface PromoArbitrageInfo {
   code: string;
   savings: number;
   finalTotal: number;
+}
+
+export interface RecipeIngredient {
+  product: Product;
+  requiredQty: number;
+  unit: string;
+  purpose: string;
+}
+
+export interface RecipeBundleMessagePayload {
+  type: "recipe_bundle";
+  recipeName: string;
+  dishType?: string;
+  servings: number;
+  prepTime?: string;
+  caloriesPerServing?: number;
+  nutrition?: {
+    protein: string;
+    carbs: string;
+    fats: string;
+    fiber?: string;
+  };
+  dietaryTags?: string[];
+  instructions?: string[];
+  ingredients: RecipeIngredient[];
+  totalBundlePrice: number;
+  originalBundlePrice?: number;
+  bundleDiscountPercent?: number;
+  text?: string;
+  trace?: AgentTrace;
 }
 
 export type AssistantMessage =
@@ -251,7 +306,8 @@ export type AssistantMessage =
   | { type: "image_analysis"; tags: string[]; description: string; matchedProducts?: Product[]; uploadedImage?: string }
   | { type: "clarify"; question: string; options: string[] }
   | { type: "compare"; products: Product[]; comparisonPoints: Record<string, string[]> }
-  | { type: "empty_state"; reason: string; suggestions?: string[] };
+  | { type: "empty_state"; reason: string; suggestions?: string[] }
+  | RecipeBundleMessagePayload;
 
 export interface UserChatMessage {
   id: string;

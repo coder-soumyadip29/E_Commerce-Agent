@@ -30,6 +30,8 @@ export interface IUser extends Document {
   isVerified: boolean;
   verificationCode?: string;
   verificationCodeExpires?: Date;
+  resetPasswordOtp?: string;
+  resetPasswordOtpExpires?: Date;
   avatar_url?: string;
   vip_level: string;
   role: "CUSTOMER" | "SELLER" | "ADMIN" | "SUPER_ADMIN" | "MANAGER" | "SUPPORT";
@@ -78,6 +80,8 @@ const UserSchema = new Schema<IUser>(
     isVerified: { type: Boolean, default: false },
     verificationCode: { type: String },
     verificationCodeExpires: { type: Date },
+    resetPasswordOtp: { type: String },
+    resetPasswordOtpExpires: { type: Date },
     avatar_url: {
       type: String,
       default:

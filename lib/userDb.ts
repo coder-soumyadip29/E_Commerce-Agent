@@ -7,6 +7,7 @@ import {
   verifyPassword,
   generateVerificationCode,
   sendVerificationEmail,
+  sendPasswordResetEmail,
 } from "./email";
 import { INITIAL_USERS } from "./storeData";
 
@@ -550,4 +551,195 @@ export async function getPersonalizedProducts(userId: number = 1): Promise<Produ
   }
 
   return searchResults;
+}
+
+// ---------------------------------------------------------------------------
+// Facebook-style Password Recovery Functions
+// ---------------------------------------------------------------------------
+
+function maskEmailAddress(email: string): string {
+  const parts = email.split("@");
+  if (parts.length !== 2) return email;
+  const name = parts[0];
+  const domain = parts[1];
+  if (name.length <= 2) {
+    return `${name[0]}*@${domain}`;
+  }
+  const first = name[0];
+  const last = name[name.length - 1];
+  const maskLength = Math.max(1, Math.min(name.length - 2, 4));
+  return `${first}${"*".repeat(maskLength)}${last}@${domain}`;
+}
+
+export interface FoundAccountPreview {
+  id: number;
+  name: string;
+  email: string;
+  maskedEmail: string;
+  avatar_url?: string;
+  vip_level?: string;
+}
+
+export async function searchAccountByEmail(email: string): Promise<{
+  success: boolean;
+  found: boolean;
+  account?: FoundAccountPreview;
+  error?: string;
+}> {
+  const cleanEmail = (email || "").trim().toLowerCase();
+  if (!cleanEmail) {
+    return { success: false, found: false, error: "Please enter an email address." };
+  }
+
+  try {
+    await connectToDatabase();
+    await ensureSeedUser();
+    const user = await UserModel.findOne({ email: cleanEmail }).lean();
+    if (user) {
+      return {
+        success: true,
+        found: true,
+        account: {
+          id: user.numericId,
+          name: user.name,
+          email: user.email,
+          maskedEmail: maskEmailAddress(user.email),
+          avatar_url: user.avatar_url,
+          vip_level: user.vip_level,
+        },
+      };
+    }
+  } catch (err) {
+    console.warn("MongoDB fallback in searchAccountByEmail:", (err as Error).message);
+  }
+
+  const memoryUser = memoryUsers.find((u) => u.email.toLowerCase() === cleanEmail);
+  if (memoryUser) {
+    return {
+      success: true,
+      found: true,
+      account: {
+        id: memoryUser.numericId || memoryUser.id,
+        name: memoryUser.name,
+        email: memoryUser.email,
+        maskedEmail: maskEmailAddress(memoryUser.email),
+        avatar_url: memoryUser.avatar_url,
+        vip_level: memoryUser.vip_level,
+      },
+    };
+  }
+
+  return {
+    success: true,
+    found: false,
+    error: "No account found matching this email address.",
+  };
+}
+
+export async function sendPasswordResetOtp(email: string): Promise<{
+  success: boolean;
+  code?: string;
+  devMode?: boolean;
+  message?: string;
+  error?: string;
+}> {
+  const cleanEmail = (email || "").trim().toLowerCase();
+  const code = generateVerificationCode();
+  const expires = new Date(Date.now() + 15 * 60 * 1000);
+
+  try {
+    await connectToDatabase();
+    await ensureSeedUser();
+    const user = await UserModel.findOne({ email: cleanEmail });
+    if (!user) {
+      return { success: false, error: "Account not found." };
+    }
+
+    user.resetPasswordOtp = code;
+    user.resetPasswordOtpExpires = expires;
+    await user.save();
+
+    const emailRes = await sendPasswordResetEmail(user.email, code, user.name);
+    return {
+      success: true,
+      code: emailRes.code,
+      devMode: emailRes.devMode,
+      message: `A 6-digit password reset code was sent to ${user.email}.`,
+    };
+  } catch (err) {
+    console.warn("MongoDB fallback in sendPasswordResetOtp:", (err as Error).message);
+    const user = memoryUsers.find((u) => u.email.toLowerCase() === cleanEmail);
+    if (!user) {
+      return { success: false, error: "Account not found." };
+    }
+    user.resetPasswordOtp = code;
+    user.resetPasswordOtpExpires = expires;
+
+    const emailRes = await sendPasswordResetEmail(user.email, code, user.name);
+    return {
+      success: true,
+      code: emailRes.code,
+      devMode: emailRes.devMode,
+      message: `A 6-digit password reset code was generated for ${user.email}.`,
+    };
+  }
+}
+
+export async function resetPasswordWithOtp(
+  email: string,
+  code: string,
+  newPassword: string
+): Promise<{ success: boolean; user?: UserProfile; error?: string }> {
+  const cleanEmail = (email || "").trim().toLowerCase();
+  const cleanCode = (code || "").trim();
+
+  if (!newPassword || newPassword.length < 6) {
+    return { success: false, error: "Password must be at least 6 characters long." };
+  }
+
+  const { hash, salt } = hashPassword(newPassword);
+
+  try {
+    await connectToDatabase();
+    await ensureSeedUser();
+    const user = await UserModel.findOne({ email: cleanEmail });
+    if (!user) {
+      return { success: false, error: "Account not found." };
+    }
+
+    if (!user.resetPasswordOtp || user.resetPasswordOtp !== cleanCode) {
+      return { success: false, error: "Invalid password reset code. Please check and try again." };
+    }
+
+    if (user.resetPasswordOtpExpires && user.resetPasswordOtpExpires < new Date()) {
+      return { success: false, error: "This password reset code has expired. Please request a new one." };
+    }
+
+    user.passwordHash = hash;
+    user.passwordSalt = salt;
+    user.resetPasswordOtp = undefined;
+    user.resetPasswordOtpExpires = undefined;
+    user.isVerified = true;
+    await user.save();
+
+    return { success: true, user: toUserProfile(user) };
+  } catch (err) {
+    console.warn("MongoDB fallback in resetPasswordWithOtp:", (err as Error).message);
+    const user = memoryUsers.find((u) => u.email.toLowerCase() === cleanEmail);
+    if (!user) {
+      return { success: false, error: "Account not found." };
+    }
+
+    if (!user.resetPasswordOtp || user.resetPasswordOtp !== cleanCode) {
+      return { success: false, error: "Invalid password reset code." };
+    }
+
+    user.passwordHash = hash;
+    user.passwordSalt = salt;
+    delete user.resetPasswordOtp;
+    delete user.resetPasswordOtpExpires;
+    user.isVerified = true;
+
+    return { success: true, user: toUserProfile(user) };
+  }
 }

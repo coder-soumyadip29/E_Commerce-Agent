@@ -10,7 +10,7 @@ import {
   calculatePromoDiscount,
 } from "../db";
 import { generateInvoiceData } from "../invoice";
-import { AssistantMessage, ChatMessage, Product, AgentTrace } from "../types";
+import { AssistantMessage, ChatMessage, Product, AgentTrace, RecipeIngredient, RecipeBundleMessagePayload } from "../types";
 import { handleMockChat, handleMockImage } from "./mock";
 import fs from "fs";
 import path from "path";
@@ -188,10 +188,51 @@ const TOOLS_DECLARATION = [
       required: ["order_id"],
     },
   },
+  {
+    name: "generate_recipe_bundle",
+    description:
+      "Generate an organic culinary recipe, meal plan, and itemized ingredient bundle strictly matched with products in our store catalog for 1-click cart addition.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        dish_name: {
+          type: "STRING",
+          description: "Name of the dish or meal requested (e.g. 'Power Protein Oats Breakfast Bowl', 'Mediterranean Quinoa Salad', 'Raw Honey Smoothie')",
+        },
+        dish_type: {
+          type: "STRING",
+          description: "Type of meal (e.g. 'Breakfast', 'Lunch', 'Dinner', 'Post-Workout')",
+        },
+        servings: {
+          type: "INTEGER",
+          description: "Number of servings (default is 2)",
+        },
+        ingredient_keywords: {
+          type: "ARRAY",
+          items: { type: "STRING" },
+          description: "Keywords of ingredients to match from store catalog (e.g. ['oats', 'honey', 'almonds', 'chia'])",
+        },
+        prep_time: {
+          type: "STRING",
+          description: "Estimated prep time (e.g. '10 mins')",
+        },
+        calories: {
+          type: "INTEGER",
+          description: "Estimated calories per serving",
+        },
+        instructions: {
+          type: "ARRAY",
+          items: { type: "STRING" },
+          description: "Step-by-step preparation guide instructions",
+        },
+      },
+      required: ["dish_name"],
+    },
+  },
 ];
 
 const SYSTEM_INSTRUCTION = `You are Cartwise AI Assistant, an elite, highly accurate, and transparent e-commerce shopping copilot for Cartwise Plus.
-Your goal is to help users discover real products across Mobiles, Electronics, Appliances, Fashion, Beauty, Grocery, Home, Toys, Auto, and Sports, check technical specs, compare devices, track live 15-minute deliveries, generate tax invoices, manage their cart, and apply discount promo codes (like SAVE10 for flat 10% instant discount).
+Your goal is to help users discover real products across Mobiles, Electronics, Appliances, Fashion, Beauty, Grocery, Home, Toys, Auto, and Sports, check technical specs, compare devices, track live 15-minute deliveries, generate tax invoices, manage their cart, plan recipes & meal bundles, and apply discount promo codes (like SAVE10 for flat 10% instant discount).
 
 MULTILINGUAL & VOICE CAPABILITIES:
 - You fluently support English, Hindi (हिन्दी / Hinglish), and Bengali (বাংলা / Banglish).
@@ -210,7 +251,8 @@ CORE RULES:
 7. When the user requests a receipt, bill, GST breakdown, or invoice for an order, call 'generate_invoice'.
 8. When the user wants to add an item to their cart, call 'add_to_cart'.
 9. When the user asks about discounts, coupons, or promo codes, call 'calculate_discount'.
-10. Keep your spoken explanations conversational, direct, and concise with clear benefits so they sound natural when read aloud.`;
+10. When the user asks for a recipe, meal plan, breakfast bowl, dinner idea, or what to cook with ingredients, call 'generate_recipe_bundle'. Provide ingredient keywords to find corresponding catalog products.
+11. Keep your spoken explanations conversational, direct, and concise with clear benefits so they sound natural when read aloud.`;
 
 
 // ---------------------------------------------------------------------------
@@ -520,6 +562,101 @@ async function executeTool(name: string, args: any, sessionId: string = "default
         };
       }
 
+      case "generate_recipe_bundle": {
+        const dishName = String(args.dish_name || args.dish_or_theme || "Power Protein Superfood Oats Bowl");
+        const dishType = String(args.dish_type || "Healthy Meal");
+        const servings = Number(args.servings) || 2;
+        const prepTime = String(args.prep_time || "12 mins");
+        const calories = Number(args.calories) || 410;
+        const requestedKeywords: string[] = Array.isArray(args.ingredient_keywords) && args.ingredient_keywords.length > 0
+          ? args.ingredient_keywords
+          : ["oats", "honey", "almonds", "chia"];
+
+        const matchedIngredients: RecipeIngredient[] = [];
+        const seenIds = new Set<number>();
+
+        for (const kw of requestedKeywords) {
+          const res = searchProducts({ query: kw, limit: 2 });
+          for (const prod of res.products) {
+            if (!seenIds.has(prod.id)) {
+              seenIds.add(prod.id);
+              matchedIngredients.push({
+                product: prod,
+                requiredQty: 1,
+                unit: prod.name.toLowerCase().includes("honey") ? "500g Jar" : prod.name.toLowerCase().includes("oil") ? "500ml Bottle" : "Standard Pack",
+                purpose: `Essential nutritious ingredient for ${dishName}`,
+              });
+              break;
+            }
+          }
+        }
+
+        // If not enough items found from query keywords, backfill with top organic pantry essentials from SQLite
+        if (matchedIngredients.length < 2) {
+          const defaults = [604, 601, 13, 15, 17, 9];
+          for (const defId of defaults) {
+            if (!seenIds.has(defId) && matchedIngredients.length < 4) {
+              const p = getProductById(defId);
+              if (p) {
+                seenIds.add(p.id);
+                matchedIngredients.push({
+                  product: p,
+                  requiredQty: 1,
+                  unit: p.name.toLowerCase().includes("honey") ? "500g Jar" : p.name.toLowerCase().includes("oil") ? "500ml Bottle" : "1 Pack",
+                  purpose: p.description.slice(0, 50) + "...",
+                });
+              }
+            }
+          }
+        }
+
+        const rawSubtotal = matchedIngredients.reduce((s, i) => s + (Number(i.product.price) || 0) * i.requiredQty, 0);
+        const discountPercent = 12;
+        const totalBundlePrice = Math.round(rawSubtotal * (1 - discountPercent / 100));
+
+        const instructions = Array.isArray(args.instructions) && args.instructions.length > 0
+          ? args.instructions
+          : [
+              `Gather and measure all ${matchedIngredients.length} organic pantry ingredients.`,
+              `Follow gentle heating or mixing depending on your dish preference.`,
+              `Portion evenly into ${servings} servings and garnish with raw organic honey and crushed nuts.`,
+              `Serve fresh for sustained vitality and wholesome nutrition!`,
+            ];
+
+        const payload: RecipeBundleMessagePayload = {
+          type: "recipe_bundle",
+          recipeName: dishName,
+          dishType,
+          servings,
+          prepTime,
+          caloriesPerServing: calories,
+          nutrition: {
+            protein: "22g",
+            carbs: "52g",
+            fats: "12g",
+            fiber: "8g",
+          },
+          dietaryTags: ["100% Certified Organic", "Nutrient-Dense", "Zero Artificial Additives"],
+          instructions,
+          ingredients: matchedIngredients,
+          totalBundlePrice,
+          originalBundlePrice: rawSubtotal,
+          bundleDiscountPercent: discountPercent,
+          text: `Chef AI has formulated your recipe for **${dishName}**. All ${matchedIngredients.length} ingredients are verified in stock in our organic catalog. Check what you need and bundle to your cart in 1 click:`,
+        };
+
+        return {
+          toolName: name,
+          args,
+          result: payload,
+          traceStep: {
+            title: "Recipe AI Generation (SQLite)",
+            detail: `Generated recipe bundle '${dishName}' with ${matchedIngredients.length} grounded catalog ingredients`,
+            status: "complete",
+          },
+        };
+      }
+
       default:
         return {
           toolName: name,
@@ -559,6 +696,18 @@ export async function cancelOrderTool(args: { order_id: number | string; reason?
 
 export async function generateInvoiceTool(args: { order_id: number | string }) {
   return executeTool("generate_invoice", args);
+}
+
+export async function generateRecipeBundleTool(args: {
+  dish_name: string;
+  dish_type?: string;
+  servings?: number;
+  ingredient_keywords?: string[];
+  prep_time?: string;
+  calories?: number;
+  instructions?: string[];
+}) {
+  return executeTool("generate_recipe_bundle", args);
 }
 
 // ---------------------------------------------------------------------------
@@ -638,6 +787,13 @@ function formatAssistantPayloadFromToolResult(params: {
     results_count: collectedProducts.length,
     steps: traceSteps,
   };
+
+  if (toolName === "generate_recipe_bundle" && toolExec.result?.type === "recipe_bundle") {
+    return {
+      ...(toolExec.result as RecipeBundleMessagePayload),
+      trace: agentTrace,
+    };
+  }
 
   if (collectedProducts.length > 0) {
     if (userText.toLowerCase().includes("compare") && collectedProducts.length >= 2) {

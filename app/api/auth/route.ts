@@ -5,6 +5,9 @@ import {
   registerUser,
   verifyUserEmail,
   resendVerificationCode,
+  searchAccountByEmail,
+  sendPasswordResetOtp,
+  resetPasswordWithOtp,
 } from "@/lib/userDb";
 
 export async function GET(req: NextRequest) {
@@ -27,7 +30,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { action, email, password, name, dietaryTags, code } = body;
+    const { action, email, password, newPassword, name, dietaryTags, code } = body;
 
     if (action === "login") {
       const result = await loginUser(email, password);
@@ -78,8 +81,52 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Facebook-style Forgot Password Flow:
+    // Step 1 & 2: Search accounts with email
+    if (action === "search_account") {
+      const result = await searchAccountByEmail(email);
+      if (!result.success || !result.found) {
+        return NextResponse.json(
+          { error: result.error || "No account found with this email." },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json({
+        success: true,
+        found: true,
+        account: result.account,
+      });
+    }
+
+    // Step 3: Send password reset OTP after user confirms account
+    if (action === "send_reset_otp") {
+      const result = await sendPasswordResetOtp(email);
+      if (!result.success) {
+        return NextResponse.json({ error: result.error || "Failed to send reset code" }, { status: 400 });
+      }
+      return NextResponse.json({
+        success: true,
+        code: result.code,
+        devMode: result.devMode,
+        message: result.message,
+      });
+    }
+
+    // Step 4: Verify OTP and set new password
+    if (action === "reset_password") {
+      const result = await resetPasswordWithOtp(email, code, newPassword || password);
+      if (!result.success) {
+        return NextResponse.json({ error: result.error || "Password reset failed" }, { status: 400 });
+      }
+      return NextResponse.json({
+        success: true,
+        user: result.user,
+        message: "Your password has been reset successfully.",
+      });
+    }
+
     return NextResponse.json(
-      { error: "Invalid action. Supported: 'login', 'register', 'verify', 'resend'." },
+      { error: "Invalid action. Supported: 'login', 'register', 'verify', 'resend', 'search_account', 'send_reset_otp', 'reset_password'." },
       { status: 400 }
     );
   } catch (error) {

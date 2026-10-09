@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Order, OrderTrackingStatus, InvoiceData } from "@/lib/types";
+import { Order, OrderTrackingStatus, InvoiceData, OrderTrackingInfo } from "@/lib/types";
 import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
 import { generateInvoiceData } from "@/lib/invoice";
 import { InvoiceModal } from "@/components/cart/InvoiceModal";
+import { SatelliteGpsModal } from "@/components/chat/SatelliteGpsModal";
 import {
   Package,
   Calendar,
@@ -23,6 +24,7 @@ import {
   Sparkles,
   ChevronRight,
   Phone,
+  Navigation,
 } from "lucide-react";
 
 // Inline Printer icon for clean bundle-safe rendering
@@ -248,6 +250,7 @@ export function OrdersView() {
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceData | null>(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
+  const [activeGpsOrder, setActiveGpsOrder] = useState<OrderTrackingInfo | null>(null);
 
   const fetchOrders = async () => {
     try {
@@ -610,6 +613,29 @@ export function OrdersView() {
                       </button>
                     )}
 
+                    {/* Live GPS Telemetry Button */}
+                    {!isDelivered && !isCancelled && (
+                      <button
+                        onClick={() =>
+                          setActiveGpsOrder({
+                            orderId: `#${order.id}`,
+                            productName: order.items?.[0]?.product_name || "CartWise Organic Essentials",
+                            carrier: order.delivery_partner?.name
+                              ? `${order.delivery_partner.name} (${order.delivery_partner.vehicle})`
+                              : "CartWise FastFleet Rider (Ather 450X EV)",
+                            status: "OUT FOR DELIVERY",
+                            estimatedArrival: order.estimated_delivery_time || "12 mins",
+                            step: "out_for_delivery",
+                          })
+                        }
+                        className="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold border border-emerald-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                        title="Open Live Mapbox GPS Tracking"
+                      >
+                        <Navigation className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Live GPS</span>
+                      </button>
+                    )}
+
                     {/* Reorder Button */}
                     <button
                       onClick={() => handleReorder(order.id)}
@@ -632,6 +658,17 @@ export function OrdersView() {
         isOpen={isInvoiceModalOpen}
         onClose={() => setIsInvoiceModalOpen(false)}
         invoice={selectedInvoice}
+      />
+
+      {/* Live Mapbox GPS Telemetry Modal */}
+      <SatelliteGpsModal
+        isOpen={Boolean(activeGpsOrder)}
+        onClose={() => setActiveGpsOrder(null)}
+        trackingInfo={activeGpsOrder}
+        orderId={activeGpsOrder?.orderId}
+        productName={activeGpsOrder?.productName}
+        carrier={activeGpsOrder?.carrier}
+        estimatedArrival={activeGpsOrder?.estimatedArrival}
       />
     </div>
   );

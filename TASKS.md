@@ -281,4 +281,125 @@
   - [x] Full TypeScript compiler check (`npx tsc --noEmit`) passing with 0 errors
   - [x] Zero regression across existing customer storefront and Admin control center
 
+## Step 15: Recipe & Meal-to-Cart AI Bundler
+- [x] Data Architecture & Schema Extension (`lib/types.ts`):
+  - [x] Defined `RecipeIngredient` (`product: Product`, `requiredQty`, `unit`, `purpose`)
+  - [x] Defined `RecipeBundleMessagePayload` (`recipeName`, `dishType`, `servings`, `prepTime`, `caloriesPerServing`, `nutrition`, `dietaryTags`, `instructions`, `ingredients`, `totalBundlePrice`, `originalBundlePrice`, `bundleDiscountPercent`, `trace`)
+  - [x] Integrated `recipe_bundle` structured variant directly into `AssistantMessage` union
+- [x] Dedicated Luxury Chef UI Component (`components/chat/RecipeBundleMessage.tsx`):
+  - [x] Executive Black & Gold / Organic Emerald styling with ambient lighting and Chef AI badge
+  - [x] Nutritional breakdown grid: Prep time, calories, protein, carbs, and verified dietary badges
+  - [x] Interactive Pantry Checklist: checkbox for each ingredient allowing users to uncheck items already in their pantry
+  - [x] Quantity stepper (`-` / `+`) per ingredient with live dynamic subtotal and savings recalculation
+  - [x] Collapsible step-by-step culinary preparation instructions
+  - [x] Deterministic 1-click batch cart bundler (`addToCart(product, qty)`) with loading spinner and success feedback
+- [x] Agent Intelligence & Catalog Grounding (`lib/agent/`):
+  - [x] Grounded recipes in `lib/agent/mock.ts` with instant responses for oats bowls, quinoa salads, smoothies, and meal prep
+  - [x] Added `generate_recipe_bundle` tool declaration to `lib/agent/real.ts` for Gemini / OpenAI / Groq LLMs
+  - [x] Catalog search and stock verification against SQLite `store.db` with zero invented product IDs
+  - [x] Updated suggestion prompts in `components/chat/EmptyChatPrompt.tsx` with 1-click Chef AI recipe trigger
+- [x] Test Suite & Build Verification:
+  - [x] Dedicated unit test suite (`tests/recipe_bundler.test.ts`) with 3 tests passing verifying structured bundle outputs, SQLite grounding, price calculations, and tool execution
+  - [x] Full Next.js production compilation (`npm run build`) passing with 0 errors across all 91 routes
+
+## Step 16: Live Mapbox Rider Telemetry & Interactive GPS Tracker Modal
+- [x] Environment & Tile Configuration:
+  - [x] Added `NEXT_PUBLIC_MAPBOX_TOKEN` to `.env.example`
+  - [x] Built seamless fallback to high-DPI vector Dark Matter & OSM tiles for zero-token local/offline execution
+- [x] Telemetry Schema Extension (`lib/types.ts`):
+  - [x] Extended `OrderTrackingInfo` with `originCoords`, `destinationCoords`, `currentCoords`, `riderName`, `riderPhone`, `riderVehicle`, `riderRating`, `speedKmh`, `batteryPercent`, `routeProgress`
+- [x] Interactive GPS Telemetry Engine (`components/chat/SatelliteGpsModal.tsx`):
+  - [x] High-precision Web Mercator projection supporting pan / drag and dynamic zoom controls
+  - [x] Map Layer Switcher: Dark Cyber, Live Satellite, and Street views
+  - [x] Animated Ather 450X EV rider navigating real-time polyline trajectory with dynamic heading rotation (bearing) and radar wave pulses
+  - [x] Store Fulfillment Hub and Customer Doorstep pins with glowing beacons
+  - [x] Real-time Telemetry HUD: RTK GPS satellite lock, live speedometer (km/h), EV battery level, live lat/long coordinates ticker, and dynamic ETA
+  - [x] Interactive action controls: Recenter on Rider, Play/Pause telemetry simulation, fast-forward to arrival, and simulated hands-free rider call dialog
+  - [x] Live shareable tracking link copying with visual feedback
+- [x] Storefront & Orders Integration (`components/orders/OrdersView.tsx`, `app/page.tsx`):
+  - [x] Integrated "🛰️ Live GPS" launch button directly on active customer orders in `OrdersView.tsx`
+  - [x] Grounded telemetry coordinates and vehicle data in `lib/agent/mock.ts` for AI copilot order tracking
+- [x] Test Suite & Verification:
+  - [x] Dedicated telemetry integration test suite (`tests/mapbox_telemetry.test.ts`) with 2/2 tests passing
+  - [x] Full Next.js production build (`npm run build`) verified with 0 errors across all 91 routes
+
+## Step 17: Facebook-Style Account Search & Password Reset Flow
+- [x] Backend & Data Security Layer:
+  - [x] Extended `IUser` and `UserSchema` in `lib/models/User.ts` with `resetPasswordOtp?: string` and `resetPasswordOtpExpires?: Date`
+  - [x] Created `sendPasswordResetEmail(email, code, userName)` in `lib/email.ts` with Brevo SMTP transport and dev auto-print fallback
+  - [x] Implemented `searchAccountByEmail(email)` with email masking (`m***a@example.com`), MongoDB + in-memory resilience in `lib/userDb.ts`
+  - [x] Implemented `sendPasswordResetOtp(email)` with 6-digit cryptographic code and 15-minute expiration
+  - [x] Implemented `resetPasswordWithOtp(email, code, newPassword)` using PBKDF2 hash & salt, atomic token clearing, and auto-verification
+  - [x] Extended `/api/auth` with `action: "search_account"`, `action: "send_reset_otp"`, and `action: "reset_password"`
+  - [x] Added `searchAccount`, `sendPasswordResetOtp`, and `resetPasswordWithOtp` helpers to `UserContext.tsx`
+- [x] Facebook-Style 3-Step Modal Interface (`components/auth/AuthModal.tsx`):
+  - [x] Added "Forgot password?" trigger link adjacent to Password label on the Sign-In tab
+  - [x] Step 1 (Search): User enters email; searches database; includes quick-demo auto-fill for testing
+  - [x] Step 2 (Confirm): Displays matched user card with avatar, full name, masked email, and VIP badge; prompts "This is my account — Send OTP" or "Not your account? Search again"
+  - [x] Step 3 (Reset): 6-digit OTP input with Dev Auto-Fill banner, show/hide password toggle, new password confirmation, resend cooldown timer, and automatic authenticated login
+  - [x] Step indicator breadcrumbs ("1. Search → 2. Confirm → 3. Reset") and contextual back navigation
+- [x] Testing & Build Verification:
+  - [x] Added comprehensive test suite `tests/forgot_password.test.ts` (12/12 tests passing 100%)
+  - [x] Verified zero regressions across all existing test suites (`auth_mongo`, `recipe_bundler`, `mapbox_telemetry`)
+  - [x] Full production build verified (`npm run build`) with 0 errors across all 91 routes
+
+## Step 18: Edge Caching & Multi-Tier Rate Limiting
+- [x] Edge Rate Limiter Architecture (`lib/edgeRateLimit.ts`):
+  - [x] Dual-mode rate limiter supporting Upstash Redis REST API (zero serverless cold-start) with automatic sliding-window in-memory fallback
+  - [x] Multi-tier route protection:
+    - Auth & Credential recovery (`/api/auth`): 10 req/min (anti-brute force and OTP spam protection)
+    - Payment transactions (`/api/payment`, `/api/checkout`): 15 req/min (anti-fraud protection)
+    - AI Copilot & Vision (`/api/chat`, `/api/image-search`): 30 req/min (LLM quota protection)
+    - General storefront APIs (`/api/`): 100 req/min (DDoS mitigation)
+  - [x] Standards-compliant RFC 6585 response headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`, `Retry-After`, `X-RateLimit-Source`)
+- [x] Distributed Edge Caching Layer (`lib/edgeCache.ts`):
+  - [x] Supports Upstash Redis REST KV cache with in-memory TTL map fallback
+  - [x] Standard CDN Cache-Control header helpers (`s-maxage=60`, `stale-while-revalidate=300`) for Cloudflare / Vercel Edge networks
+- [x] Global Next.js Edge Middleware (`middleware.ts`):
+  - [x] Intercepts `/api/:path*`, derives client IP (`x-forwarded-for` / `x-real-ip`), evaluates tier rules, and enforces HTTP 429 throttling
+  - [x] Attaches edge caching headers to public catalog reads (`/api/products`, `/api/store`)
+- [x] Environment & Documentation (`.env.example`):
+  - [x] Added `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` with instructions for the free tier
+- [x] Test Suite & Verification:
+  - [x] Dedicated unit test suite (`tests/edge_rate_limit.test.ts`) with 9/9 tests passing (100%)
+  - [x] Full Next.js production build (`npm run build`) verified with 0 errors across all 91 routes + Edge proxy
+
+## Step 19: Cloudinary Media Storage & Transformation Pipeline
+- [x] Core Cloudinary Utility (`lib/cloudinary.ts`):
+  - [x] Installed and configured `cloudinary` v2 SDK
+  - [x] Implemented `uploadImage(fileInput, options)` supporting Buffers, base64 data URIs, and remote URLs
+  - [x] Built resilient local fallback (`public/uploads`) for local development and offline resilience
+  - [x] Implemented `deleteImage(publicId)` for asset purging
+  - [x] Implemented `getOptimizedImageUrl(publicIdOrUrl, options)` generating automatic WebP/AVIF transformations (`f_auto,q_auto`)
+- [x] Media Upload API Route (`app/api/upload/route.ts`):
+  - [x] Multi-format upload handler supporting `multipart/form-data` and `application/json` (base64)
+  - [x] Protected with Edge Middleware rate limiting
+- [x] Environment & Documentation:
+  - [x] Added `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` to `.env.example`
+- [x] Test Suite & Verification:
+  - [x] Dedicated unit test suite (`tests/cloudinary_storage.test.ts`) with 9/9 tests passing (100%)
+  - [x] Full test suite (43/43 tests passing across 6 test suites)
+  - [x] Full Next.js production build (`npm run build`) verified with 0 errors across all 92 routes
+
+## Step 20: Enterprise Load Balancer Subsystem
+- [x] Core Load Balancer Engine (`lib/loadBalancer.ts`):
+  - [x] Implemented multiple distribution algorithms: Round-Robin, Weighted Round-Robin, Least-Connections, and IP Hash (Sticky Sessions)
+  - [x] Built Circuit Breaker with passive failure tracking (trips after 3 consecutive failures)
+  - [x] Built active health probing (`probeAllNodes()`)
+  - [x] Built automatic multi-node failover with retry logic and latency tracking
+- [x] Multi-Core Cluster Runner (`scripts/cluster.ts`):
+  - [x] Created `npm run start:cluster` running Node.js `node:cluster` to distribute incoming load across multi-core workers with zero-downtime auto-recovery
+- [x] Health Probing & Admin Telemetry APIs:
+  - [x] Created `/api/health` providing real-time system metrics, memory usage, uptime, and database connectivity checks
+  - [x] Created `/api/admin/load-balancer` allowing administrators to inspect active nodes, latencies, error rates, and dynamically toggle balancing algorithms
+  - [x] Integrated `X-LoadBalancer-Node` header in `middleware.ts` for per-request worker observability
+- [x] Test Suite & Verification:
+  - [x] Dedicated unit test suite (`tests/load_balancer.test.ts`) with 9/9 tests passing (100%)
+  - [x] Full test suite passing (52/52 tests across 7 test suites)
+  - [x] Full Next.js production compilation (`npm run build`) passing with 0 errors across all 94 routes
+
+
+
+
+
 

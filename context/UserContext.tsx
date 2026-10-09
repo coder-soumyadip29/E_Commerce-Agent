@@ -9,8 +9,8 @@ interface UserContextType {
   activeAddress: UserAddress | null;
   isAuthModalOpen: boolean;
   setIsAuthModalOpen: (open: boolean) => void;
-  authModalTab: "signin" | "signup" | "verify";
-  setAuthModalTab: (tab: "signin" | "signup" | "verify") => void;
+  authModalTab: "signin" | "signup" | "verify" | "forgot_password";
+  setAuthModalTab: (tab: "signin" | "signup" | "verify" | "forgot_password") => void;
   pendingVerificationEmail: string;
   setPendingVerificationEmail: (email: string) => void;
   lastGeneratedCode: string | null;
@@ -24,6 +24,9 @@ interface UserContextType {
   register: (name: string, email: string, password?: string, dietaryTags?: string[]) => Promise<{ success: boolean; verificationCode?: string; error?: string }>;
   verifyEmail: (email: string, code: string) => Promise<{ success: boolean; error?: string }>;
   resendCode: (email: string) => Promise<{ success: boolean; code?: string; error?: string }>;
+  searchAccount: (email: string) => Promise<{ success: boolean; account?: any; error?: string }>;
+  sendPasswordResetOtp: (email: string) => Promise<{ success: boolean; code?: string; devMode?: boolean; message?: string; error?: string }>;
+  resetPasswordWithOtp: (email: string, code: string, newPassword: string) => Promise<{ success: boolean; user?: any; error?: string }>;
   logout: () => void;
   addAddress: (address: Omit<UserAddress, "id" | "user_id">) => Promise<{ success: boolean; error?: string }>;
   setDefaultAddress: (addressId: number) => Promise<{ success: boolean; error?: string }>;
@@ -39,7 +42,7 @@ const LOCAL_STORAGE_USER_KEY = "cartwise_current_user_id";
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState<"signin" | "signup" | "verify">("signin");
+  const [authModalTab, setAuthModalTab] = useState<"signin" | "signup" | "verify" | "forgot_password">("signin");
   const [pendingVerificationEmail, setPendingVerificationEmail] = useState("");
   const [lastGeneratedCode, setLastGeneratedCode] = useState<string | null>(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
@@ -201,6 +204,69 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const searchAccount = async (email: string) => {
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "search_account", email }),
+      });
+      const data = await res.json();
+      if (data.success && data.account) {
+        return { success: true, account: data.account };
+      }
+      return { success: false, error: data.error || "Account not found." };
+    } catch (e: any) {
+      return { success: false, error: e.message || "Network error" };
+    }
+  };
+
+  const sendPasswordResetOtp = async (email: string) => {
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send_reset_otp", email }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (data.code) {
+          setLastGeneratedCode(data.code);
+        }
+        return {
+          success: true,
+          code: data.code,
+          devMode: data.devMode,
+          message: data.message,
+        };
+      }
+      return { success: false, error: data.error || "Failed to send reset code." };
+    } catch (e: any) {
+      return { success: false, error: e.message || "Network error" };
+    }
+  };
+
+  const resetPasswordWithOtp = async (email: string, code: string, newPassword: string) => {
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reset_password", email, code, newPassword }),
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        setUser(data.user);
+        if (typeof window !== "undefined") {
+          localStorage.setItem(LOCAL_STORAGE_USER_KEY, String(data.user.id));
+        }
+        return { success: true, user: data.user };
+      }
+      return { success: false, error: data.error || "Password reset failed." };
+    } catch (e: any) {
+      return { success: false, error: e.message || "Network error" };
+    }
+  };
+
   const logout = () => {
     setUser(null);
     if (typeof window !== "undefined") {
@@ -316,6 +382,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         register,
         verifyEmail,
         resendCode,
+        searchAccount,
+        sendPasswordResetOtp,
+        resetPasswordWithOtp,
         logout,
         addAddress,
         setDefaultAddress,

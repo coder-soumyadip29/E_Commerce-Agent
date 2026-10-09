@@ -21,9 +21,9 @@ const SUGGESTIONS = [
     icon: Scale,
   },
   {
-    category: "Healthy Essentials",
-    query: "Find a healthy breakfast under ₹500",
-    badge: "BUDGET",
+    category: "AI Chef Recipe Bundler",
+    query: "Recipe for high-protein superfood oats breakfast bowl with ingredients",
+    badge: "CHEF AI",
     icon: Utensils,
   },
   {

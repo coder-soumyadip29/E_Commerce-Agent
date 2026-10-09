@@ -8,7 +8,7 @@ import {
   calculatePromoDiscount,
 } from "../db";
 import { generateInvoiceData } from "../invoice";
-import { AssistantMessage, ChatMessage, Product, AgentTrace } from "../types";
+import { AssistantMessage, ChatMessage, Product, AgentTrace, RecipeIngredient } from "../types";
 
 export async function handleMockChat(messages: ChatMessage[]): Promise<AssistantMessage> {
   const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
@@ -78,6 +78,16 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
       status: "OUT FOR DELIVERY" as const,
       estimatedArrival: "Today in 12 mins (by 3:45 PM)",
       step: "out_for_delivery" as const,
+      riderName: "Ramesh Kumar",
+      riderPhone: "+91 98451 22890",
+      riderVehicle: "Ather 450X EV (KA-03-HA-8821)",
+      riderRating: 4.9,
+      originCoords: { lat: 12.9279, lng: 77.6271 },
+      destinationCoords: { lat: 12.9378, lng: 77.6248 },
+      currentCoords: { lat: 12.9328, lng: 77.6291 },
+      speedKmh: 31,
+      batteryPercent: 84,
+      routeProgress: 0.45,
     };
 
     const promoInfo = {
@@ -117,7 +127,183 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
     };
   }
 
-  // 5. Comparison Intent
+  // 5. Recipe & Meal-to-Cart Bundler Intent
+  if (
+    lowerQuery.includes("recipe") ||
+    lowerQuery.includes("meal") ||
+    lowerQuery.includes("cook") ||
+    lowerQuery.includes("breakfast bowl") ||
+    lowerQuery.includes("smoothie") ||
+    lowerQuery.includes("ingredients for") ||
+    lowerQuery.includes("pantry bundle") ||
+    (lowerQuery.includes("oats") && (lowerQuery.includes("bowl") || lowerQuery.includes("breakfast"))) ||
+    (lowerQuery.includes("high protein") && (lowerQuery.includes("breakfast") || lowerQuery.includes("recipe") || lowerQuery.includes("diet")))
+  ) {
+    const isSaladOrLunch =
+      lowerQuery.includes("salad") ||
+      lowerQuery.includes("quinoa") ||
+      lowerQuery.includes("mediterranean") ||
+      lowerQuery.includes("lunch");
+
+    if (isSaladOrLunch) {
+      const quinoa = getProductById(17);
+      const oliveOil = getProductById(9);
+      const almonds = getProductById(13);
+      const chia = getProductById(15);
+
+      const ingredients: RecipeIngredient[] = [
+        quinoa && {
+          product: quinoa,
+          requiredQty: 1,
+          unit: "500g Pack",
+          purpose: "Complete plant-based protein with all 9 essential amino acids",
+        },
+        oliveOil && {
+          product: oliveOil,
+          requiredQty: 1,
+          unit: "500ml Bottle",
+          purpose: "Cold-pressed heart-healthy monounsaturated fats & dressing",
+        },
+        almonds && {
+          product: almonds,
+          requiredQty: 1,
+          unit: "250g Pack",
+          purpose: "Toasted crunch with vitamin E and healthy micronutrients",
+        },
+        chia && {
+          product: chia,
+          requiredQty: 1,
+          unit: "200g Pack",
+          purpose: "Omega-3 superfood nutrient booster",
+        },
+      ].filter(Boolean) as RecipeIngredient[];
+
+      const rawSubtotal = ingredients.reduce((sum, item) => sum + item.product.price * item.requiredQty, 0);
+      const discount = 10;
+      const discountedPrice = Math.round(rawSubtotal * (1 - discount / 100));
+
+      return {
+        type: "recipe_bundle",
+        recipeName: "Mediterranean Superfood Quinoa & Nut Salad",
+        dishType: "High-Energy Organic Lunch",
+        servings: 2,
+        prepTime: "15 mins",
+        caloriesPerServing: 385,
+        nutrition: {
+          protein: "16g",
+          carbs: "48g",
+          fats: "14g",
+          fiber: "8g",
+        },
+        dietaryTags: ["100% Certified Organic", "Gluten-Free", "Plant Power", "Heart Healthy"],
+        instructions: [
+          "Rinse 1 cup of Organic Quinoa in cold water and simmer in 2 cups of boiling water for 15 minutes until light and fluffy.",
+          "Let quinoa cool to room temperature, then toss gently with 2 tablespoons of Organic Extra Virgin Olive Oil.",
+          "Chop Organic Almonds coarsely and toast lightly on a dry pan for 2 minutes for enhanced aroma.",
+          "Fold in the toasted almonds and a tablespoon of Organic Chia Seeds with fresh herbs and lemon juice.",
+          "Serve fresh for sustained afternoon cognitive clarity and zero afternoon slump!",
+        ],
+        ingredients,
+        totalBundlePrice: discountedPrice,
+        originalBundlePrice: rawSubtotal,
+        bundleDiscountPercent: discount,
+        text: "Here is your chef-curated Mediterranean Quinoa superfood recipe! All ingredients are verified in stock from our organic farm suppliers. You can customize your pantry checklist and bundle everything to your cart in 1 click:",
+        trace: {
+          query: rawQuery,
+          parsed_intent: "Identify meal prep recipe intent and construct organic pantry bundle grounded in SQLite",
+          filters: { category: "food-health", dietary: "organic, gluten-free", recipe_type: "mediterranean_salad" },
+          sql_query: "SELECT * FROM products WHERE id IN (17, 9, 13, 15) AND stock > 0",
+          results_count: ingredients.length,
+          steps: [
+            { title: "Culinary Parsing", detail: "Parsed lunch salad recipe with macro portioning", status: "complete" },
+            { title: "SQLite Stock Verification", detail: `Verified stock for ${ingredients.length} organic pantry ingredients`, status: "complete" },
+            { title: "Nutritional Computation", detail: "Computed 385 kcal, 16g protein, and 8g fiber per serving", status: "complete" },
+            { title: "Bundle Discount", detail: "Applied 10% pantry bundle discount with deterministic product IDs", status: "complete" },
+          ],
+        },
+      };
+    } else {
+      // Default: Power Protein Superfood Oats Breakfast Bowl
+      const oats = getProductById(604) || getProductById(18);
+      const honey = getProductById(601) || getProductById(1);
+      const almonds = getProductById(13);
+      const chia = getProductById(15);
+
+      const ingredients: RecipeIngredient[] = [
+        oats && {
+          product: oats,
+          requiredQty: 1,
+          unit: "1kg Pouch (Yields 20+ bowls)",
+          purpose: "Slow-release complex carbohydrates & beta-glucan heart fiber",
+        },
+        honey && {
+          product: honey,
+          requiredQty: 1,
+          unit: "500g Glass Jar",
+          purpose: "Raw enzymatic sweetener with natural immunity antioxidants",
+        },
+        almonds && {
+          product: almonds,
+          requiredQty: 1,
+          unit: "250g Pack",
+          purpose: "Crunchy plant protein, vitamin E, and essential healthy fats",
+        },
+        chia && {
+          product: chia,
+          requiredQty: 1,
+          unit: "200g Pack",
+          purpose: "Superfood omega-3 fatty acids and soluble dietary fiber",
+        },
+      ].filter(Boolean) as RecipeIngredient[];
+
+      const rawSubtotal = ingredients.reduce((sum, item) => sum + item.product.price * item.requiredQty, 0);
+      const discount = 12;
+      const discountedPrice = Math.round(rawSubtotal * (1 - discount / 100));
+
+      return {
+        type: "recipe_bundle",
+        recipeName: "Power Protein Superfood Oats Breakfast Bowl",
+        dishType: "High-Protein Superfood Breakfast",
+        servings: 2,
+        prepTime: "10 mins",
+        caloriesPerServing: 420,
+        nutrition: {
+          protein: "22g",
+          carbs: "54g",
+          fats: "12g",
+          fiber: "9g",
+        },
+        dietaryTags: ["100% Certified Organic", "High-Fiber", "Heart Healthy", "Gluten-Free Option"],
+        instructions: [
+          "Simmer 1 cup of whole grain rolled oats with 2 cups of water or warm almond milk for 5-7 minutes until creamy.",
+          "Fold in 1 tablespoon of organic chia seeds and let rest for 2 minutes to lock in omega-3 fatty acids.",
+          "Ladle into 2 serving bowls and drizzle 1 generous tablespoon of cold-extracted raw forest honey across each bowl.",
+          "Top with a handful of crushed raw organic almonds and fresh banana or strawberry slices.",
+          "Serve warm for clean, sustained morning energy and zero mid-day blood sugar crashes!",
+        ],
+        ingredients,
+        totalBundlePrice: discountedPrice,
+        originalBundlePrice: rawSubtotal,
+        bundleDiscountPercent: discount,
+        text: "Here is your chef-curated high-protein breakfast recipe! All ingredients are 100% verified in stock in our organic pantry. Check what you need, uncheck what you already have at home, and bundle everything into your cart in 1 click:",
+        trace: {
+          query: rawQuery,
+          parsed_intent: "Identify breakfast recipe intent and construct organic pantry bundle grounded in SQLite",
+          filters: { category: "food-health", dietary: "organic, high-protein", recipe_type: "oats_bowl" },
+          sql_query: "SELECT * FROM products WHERE id IN (604, 601, 13, 15) AND stock > 0",
+          results_count: ingredients.length,
+          steps: [
+            { title: "Culinary Parsing", detail: "Parsed high-protein breakfast recipe with macro portioning", status: "complete" },
+            { title: "SQLite Stock Verification", detail: `Verified stock for ${ingredients.length} organic pantry ingredients`, status: "complete" },
+            { title: "Nutritional Computation", detail: "Computed 420 kcal, 22g protein, and 9g fiber per serving", status: "complete" },
+            { title: "Bundle Discount", detail: "Applied 12% pantry bundle discount with deterministic product IDs", status: "complete" },
+          ],
+        },
+      };
+    }
+  }
+
+  // 6. Comparison Intent
   if (lowerQuery.includes("compare") || lowerQuery.includes("vs") || lowerQuery.includes("difference")) {
     let compProducts: Product[] = [];
 

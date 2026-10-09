@@ -14,6 +14,7 @@ import { ImageAnalysisMessage } from "@/components/chat/ImageAnalysisMessage";
 import { ClarifyMessage } from "@/components/chat/ClarifyMessage";
 import { CompareMessage } from "@/components/chat/CompareMessage";
 import { EmptyStateMessage } from "@/components/chat/EmptyStateMessage";
+import { RecipeBundleMessage } from "@/components/chat/RecipeBundleMessage";
 import { ThinkingMessage } from "@/components/chat/ThinkingMessage";
 import { AgentTraceModal } from "@/components/chat/AgentTraceModal";
 import { SatelliteGpsModal } from "@/components/chat/SatelliteGpsModal";
@@ -1240,6 +1241,28 @@ function MainApp() {
                               reason={payload.reason}
                               suggestions={payload.suggestions}
                               onSelectSuggestion={handleSendMessage}
+                            />
+                          );
+
+                        case "recipe_bundle":
+                          return (
+                            <RecipeBundleMessage
+                              key={msg.id}
+                              recipeName={payload.recipeName}
+                              dishType={payload.dishType}
+                              servings={payload.servings}
+                              prepTime={payload.prepTime}
+                              caloriesPerServing={payload.caloriesPerServing}
+                              nutrition={payload.nutrition}
+                              dietaryTags={payload.dietaryTags}
+                              instructions={payload.instructions}
+                              ingredients={payload.ingredients}
+                              totalBundlePrice={payload.totalBundlePrice}
+                              originalBundlePrice={payload.originalBundlePrice}
+                              bundleDiscountPercent={payload.bundleDiscountPercent}
+                              text={payload.text}
+                              trace={payload.trace}
+                              onOpenTrace={(trace) => setSelectedTrace(trace)}
                             />
                           );
 

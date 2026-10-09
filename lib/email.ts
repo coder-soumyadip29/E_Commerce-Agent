@@ -97,6 +97,88 @@ export async function sendVerificationEmail(
   };
 }
 
+export async function sendPasswordResetEmail(
+  email: string,
+  code: string,
+  userName: string
+): Promise<SendVerificationResult> {
+  const isSmtpConfigured = Boolean(
+    process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
+  );
+
+  console.log(`\n==================================================`);
+  console.log(`🔑  CARTWISE PASSWORD RESET OTP CODE`);
+  console.log(`   To: ${userName} <${email}>`);
+  console.log(`   Password Reset OTP: [ ${code} ]`);
+  console.log(`   Valid for: 15 minutes`);
+  console.log(`   SMTP Active: ${isSmtpConfigured ? `Yes (${process.env.SMTP_HOST})` : "No (Dev Mode)"}`);
+  console.log(`==================================================\n`);
+
+  if (isSmtpConfigured) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT) || 587,
+        secure: Number(process.env.SMTP_PORT) === 465,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
+
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || `"CartWise Security" <${process.env.SMTP_USER}>`,
+        to: email,
+        subject: `${code} is your CartWise password reset code`,
+        html: `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; padding: 28px; border: 1px solid #1e293b; border-radius: 16px; background: #0f172a; color: #f8fafc;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <h1 style="color: #f59e0b; font-size: 24px; margin: 0; font-weight: 800; letter-spacing: -0.5px;">CartWise PLUS</h1>
+              <p style="color: #94a3b8; font-size: 12px; margin: 4px 0 0; text-transform: uppercase; letter-spacing: 1px;">Security & Password Recovery</p>
+            </div>
+            <div style="background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+              <p style="color: #e2e8f0; font-size: 15px; margin: 0 0 12px;">Hi <strong>${userName}</strong>,</p>
+              <p style="color: #94a3b8; font-size: 14px; margin: 0 0 16px; line-height: 1.5;">
+                We received a request to reset your password. Use the 6-digit one-time code below to verify your account and set a new password:
+              </p>
+              <div style="background: #090d16; border: 1px solid #f59e0b40; border-radius: 10px; padding: 18px; text-align: center; margin: 16px 0;">
+                <span style="font-family: monospace; font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #f59e0b;">${code}</span>
+              </div>
+              <p style="color: #64748b; font-size: 12px; margin: 12px 0 0; text-align: center;">
+                ⏱️ This code expires in 15 minutes.
+              </p>
+            </div>
+            <p style="color: #475569; font-size: 11px; text-align: center; margin: 0;">
+              If you did not request a password reset, please ignore this email or review your account security.
+            </p>
+          </div>
+        `,
+      });
+
+      console.log(`✅ Password reset email sent successfully via Brevo to ${email}`);
+
+      return {
+        success: true,
+        code,
+        devMode: false,
+        message: `Password reset email delivered to ${email}`,
+      };
+    } catch (e: any) {
+      console.warn("⚠️ SMTP delivery error in reset email, falling back to local OTP:", e.message);
+    }
+  }
+
+  return {
+    success: true,
+    code,
+    devMode: true,
+    message: `Password reset code generated: ${code}`,
+  };
+}
+
 // Password hashing and verification using Node.js crypto
 export function hashPassword(password: string): { hash: string; salt: string } {
   const salt = crypto.randomBytes(16).toString("hex");
