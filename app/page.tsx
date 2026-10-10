@@ -695,7 +695,7 @@ function MainApp() {
           />
         </div>
       ) : (
-        <main className="flex-1 max-w-[1680px] w-full mx-auto px-2.5 sm:px-4 lg:px-6 py-2 sm:py-3 lg:h-[calc(100vh-140px)] lg:overflow-hidden flex flex-col">
+        <main className="flex-1 max-w-[1680px] w-full mx-auto px-2.5 sm:px-4 lg:px-6 py-2.5 sm:py-4 pb-20 sm:pb-8">
           {/* Mobile View Toggle Switcher (< lg screens) */}
           <div className="lg:hidden flex items-center p-1 bg-white border border-slate-200 rounded-xl mb-2.5 shadow-xs shrink-0">
             <button
@@ -722,14 +722,14 @@ function MainApp() {
             </button>
           </div>
 
-          {/* Dual-Column Storefront + Fixed Chatbot Layout */}
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-5 min-h-0 h-full">
+          {/* Dual-Column Storefront + Always-On-Screen Fixed Copilot Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-5 items-start">
             {/* ======================================================== */}
             {/* LEFT / MAIN STOREFRONT COLUMN (7-8 cols on Desktop) - SCROLLABLE */}
             {/* ======================================================== */}
             <div
               ref={productSideRef}
-              className={`space-y-4 lg:col-span-7 xl:col-span-8 lg:h-full lg:overflow-y-auto lg:pr-2.5 scrollbar-thin ${
+              className={`space-y-4 lg:col-span-7 xl:col-span-8 ${
                 mobileView === "store" ? "block" : "hidden lg:block"
               }`}
             >
@@ -1101,10 +1101,10 @@ function MainApp() {
             </div>
 
             {/* ======================================================== */}
-            {/* RIGHT / AI SHOPPING ASSISTANT SIDEBAR - FIXED IN PLACE  */}
+            {/* RIGHT / AI SHOPPING ASSISTANT SIDEBAR - ALWAYS ON SCREEN */}
             {/* ======================================================== */}
             <div
-              className={`bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex flex-col lg:col-span-5 xl:col-span-4 lg:h-full min-h-0 ${
+              className={`bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex flex-col lg:sticky lg:top-[195px] lg:h-[calc(100vh-210px)] lg:min-h-[500px] lg:col-span-5 xl:col-span-4 ${
                 mobileView === "copilot" ? "flex h-[calc(100vh-210px)]" : "hidden lg:flex"
               }`}
             >
