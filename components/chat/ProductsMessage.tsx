@@ -134,8 +134,8 @@ export function ProductsMessage({
                           (e.target as HTMLImageElement).src = getFallbackImageUrl(product.category);
                         }}
                       />
-                      <span className="absolute top-1 left-1 px-1 py-0.2 rounded text-[8px] font-black uppercase bg-slate-900 text-amber-400 border border-amber-500/30">
-                        ⚡ 15 MINS
+                      <span className="absolute top-1 left-1 px-1 py-0.2 rounded text-[8px] font-black uppercase bg-slate-900 text-amber-400 border border-amber-500/30 flex items-center gap-0.5">
+                        <Zap className="w-2.5 h-2.5" /> 15 MINS
                       </span>
                     </div>
 

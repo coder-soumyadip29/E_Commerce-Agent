@@ -62,7 +62,7 @@ import {
 const CATEGORY_CHIP_PRESETS: Record<string, Array<{ id: string; label: string; isRating?: boolean }>> = {
   all: [
     { id: "all", label: "All Items" },
-    { id: "top-rated", label: "Top Rated (4.8★+)", isRating: true },
+    { id: "top-rated", label: "Top Rated (4.8+)", isRating: true },
     { id: "under-2k", label: "Under ₹2,000" },
     { id: "under-30k", label: "Under ₹30,000" },
     { id: "organic", label: "100% Organic" },
@@ -71,7 +71,7 @@ const CATEGORY_CHIP_PRESETS: Record<string, Array<{ id: string; label: string; i
     { id: "all", label: "All Mobiles" },
     { id: "smartphones", label: "Smartphones" },
     { id: "under-30k", label: "Under ₹30,000" },
-    { id: "top-rated", label: "Top Rated (4.8★+)", isRating: true },
+    { id: "top-rated", label: "Top Rated (4.8+)", isRating: true },
   ],
   electronics: [
     { id: "all", label: "All Electronics" },
@@ -98,7 +98,7 @@ const CATEGORY_CHIP_PRESETS: Record<string, Array<{ id: string; label: string; i
     { id: "all", label: "All Beauty" },
     { id: "skincare", label: "Skincare Serums" },
     { id: "makeup", label: "Makeup & Lipsticks" },
-    { id: "top-rated", label: "Top Rated (4.8★+)", isRating: true },
+    { id: "top-rated", label: "Top Rated (4.8+)", isRating: true },
   ],
   "food-health": [
     { id: "all", label: "All Food & Health" },
@@ -457,6 +457,11 @@ function MainApp() {
   const [selectedProductForModal, setSelectedProductForModal] = useState<Product | null>(null);
   const [activeFilterTag, setActiveFilterTag] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"featured" | "price-low" | "price-high" | "rating">("featured");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, activeFilterTag, sortBy, selectedCategory]);
 
   // Derived filtered & sorted products with real-time category & search filter
   const displayedProducts = React.useMemo(() => {
@@ -1051,8 +1056,9 @@ function MainApp() {
                     </button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-                    {displayedProducts.map((product) => {
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
+                    {displayedProducts.slice((currentPage - 1) * 16, currentPage * 16).map((product) => {
                       const isWishlisted = Boolean(wishlistActive[product.id]);
                       const originalPrice = (product.price * 1.25).toFixed(0);
                       const discountPercent = 20;
@@ -1104,8 +1110,8 @@ function MainApp() {
                                   (e.target as HTMLImageElement).src = getFallbackImageUrl(product.category);
                                 }}
                               />
-                              <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-900/90 text-amber-400 border border-amber-400/30">
-                                ⚡ 15 MINS
+                              <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-900/90 text-amber-400 border border-amber-400/30 flex items-center gap-0.5">
+                                <Zap className="w-2.5 h-2.5" /> 15 MINS
                               </span>
                             </div>
 
@@ -1202,6 +1208,68 @@ function MainApp() {
                       );
                     })}
                   </div>
+                  {displayedProducts.length > 16 && (
+                    <div className="mt-8 flex items-center justify-center gap-1.5 sm:gap-2">
+                      <button
+                        onClick={() => {
+                          setCurrentPage((prev) => Math.max(1, prev - 1));
+                          productSideRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        disabled={currentPage === 1}
+                        className="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-white border border-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors cursor-pointer"
+                      >
+                        Prev
+                      </button>
+                      <div className="flex items-center gap-1 overflow-x-auto scrollbar-none max-w-[200px] sm:max-w-none">
+                        {Array.from({ length: Math.ceil(displayedProducts.length / 16) }, (_, i) => i + 1).map((page) => {
+                          const totalPages = Math.ceil(displayedProducts.length / 16);
+                          if (
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= currentPage - 1 && page <= currentPage + 1)
+                          ) {
+                            return (
+                              <button
+                                key={page}
+                                onClick={() => {
+                                  setCurrentPage(page);
+                                  productSideRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                                  window.scrollTo({ top: 0, behavior: "smooth" });
+                                }}
+                                className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center transition-colors shrink-0 cursor-pointer ${
+                                  currentPage === page
+                                    ? "bg-slate-950 text-amber-400 shadow-xs"
+                                    : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            );
+                          } else if (
+                            page === currentPage - 2 ||
+                            page === currentPage + 2
+                          ) {
+                            return <span key={page} className="text-slate-400 px-0.5 sm:px-1 shrink-0 text-xs sm:text-sm">...</span>;
+                          }
+                          return null;
+                        })}
+                      </div>
+                      <button
+                        onClick={() => {
+                          const totalPages = Math.ceil(displayedProducts.length / 16);
+                          setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+                          productSideRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        disabled={currentPage === Math.ceil(displayedProducts.length / 16)}
+                        className="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-white border border-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors cursor-pointer"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
+                  </>
                 )}
               </div>
 
@@ -1457,8 +1525,8 @@ function MainApp() {
                       </button>
                     </div>
 
-                    <div className="text-[10px] text-slate-500 font-medium hidden sm:inline">
-                      ⚡ 15-Min Delivery
+                    <div className="text-[10px] text-slate-500 font-medium hidden sm:flex sm:items-center sm:gap-1">
+                      <Zap className="w-3 h-3 text-amber-500" /> 15-Min Delivery
                     </div>
                   </div>
 

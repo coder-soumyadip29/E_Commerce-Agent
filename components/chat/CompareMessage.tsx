@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Product } from "@/lib/types";
 import { getFallbackImageUrl } from "@/lib/storeData";
 import { useCart } from "@/context/CartContext";
-import { ShoppingCart, Check, Scale } from "lucide-react";
+import { ShoppingCart, Check, Scale, Star } from "lucide-react";
 
 interface CompareMessageProps {
   products: Product[];
@@ -85,8 +85,8 @@ export function CompareMessage({ products, comparisonPoints, onSelectProduct }: 
                           <span className="text-xs font-black text-slate-900">
                             ₹{product.price.toFixed(2)}
                           </span>
-                          <span className="text-[10px] font-bold text-emerald-700">
-                            ★ {product.average_rating || 4.8}
+                          <span className="text-[10px] font-bold text-emerald-700 flex items-center gap-0.5">
+                            <Star className="w-2.5 h-2.5 fill-emerald-700 text-emerald-700" /> {product.average_rating || 4.8}
                           </span>
                         </div>
 

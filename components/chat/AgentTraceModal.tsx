@@ -2,7 +2,7 @@
 
 import React from "react";
 import { AgentTrace } from "@/lib/types";
-import { X, Sparkles, Database, CheckCircle, ShieldCheck, Terminal } from "lucide-react";
+import { X, Sparkles, Database, CheckCircle, ShieldCheck, Terminal, Star } from "lucide-react";
 
 interface AgentTraceModalProps {
   trace: AgentTrace | null;
@@ -81,7 +81,7 @@ export function AgentTraceModal({ trace, onClose }: AgentTraceModalProps) {
                 <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
                   <span className="text-slate-500 block text-[10px]">Min Rating</span>
                   <span className="font-bold text-amber-700">
-                    {trace.filters.min_rating ? `${trace.filters.min_rating}★` : "Any"}
+                    {trace.filters.min_rating ? <span className="flex items-center gap-0.5">{trace.filters.min_rating} <Star className="w-3 h-3 fill-slate-700 text-slate-700" /></span> : "Any"}
                   </span>
                 </div>
               </div>

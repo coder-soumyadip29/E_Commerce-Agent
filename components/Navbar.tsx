@@ -175,8 +175,8 @@ export function Navbar({
               <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Cartwise Plus Exclusive
             </span>
             <span className="hidden sm:inline text-slate-600">•</span>
-            <span className="hidden md:inline font-medium text-slate-300 truncate">
-              ⚡ Lowest Price Guarantee Across Mobiles, Tech &amp; Daily Essentials
+            <span className="hidden md:flex md:items-center md:gap-1 font-medium text-slate-300 truncate">
+              <Zap className="w-3.5 h-3.5 text-amber-500" /> Lowest Price Guarantee Across Mobiles, Tech &amp; Daily Essentials
             </span>
           </div>
           <div className="flex items-center gap-3 sm:gap-4 text-[11px] shrink-0">

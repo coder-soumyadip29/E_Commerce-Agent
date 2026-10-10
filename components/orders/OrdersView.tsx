@@ -25,6 +25,7 @@ import {
   ChevronRight,
   Phone,
   Navigation,
+  Star,
 } from "lucide-react";
 
 // Inline Printer icon for clean bundle-safe rendering
@@ -125,8 +126,8 @@ function DeliveryPartnerCard({ order }: { order: Order }) {
         <div>
           <div className="flex items-center gap-2">
             <h4 className="font-bold text-xs sm:text-sm text-slate-900">{partner.name}</h4>
-            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-200">
-              ★ {partner.rating}
+            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-0.5">
+              <Star className="w-2.5 h-2.5 fill-amber-800 text-amber-800" /> {partner.rating}
             </span>
           </div>
           <p className="text-xs text-emerald-700 font-medium">{partner.badge}</p>

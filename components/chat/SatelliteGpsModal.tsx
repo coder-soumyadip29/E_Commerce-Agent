@@ -15,6 +15,7 @@ import {
   Check,
   Zap,
   RotateCcw,
+  Star,
 } from "lucide-react";
 import { OrderTrackingInfo } from "@/lib/types";
 
@@ -687,8 +688,8 @@ export function SatelliteGpsModal({
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-white text-sm">Ramesh Kumar</span>
-                  <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-500/40">
-                    ★ 4.9 (1,240 deliveries)
+                  <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-500/40 flex items-center gap-0.5">
+                    <Star className="w-2.5 h-2.5 fill-amber-300 text-amber-300" /> 4.9 (1,240 deliveries)
                   </span>
                 </div>
                 <div className="text-xs text-slate-400 font-mono">
