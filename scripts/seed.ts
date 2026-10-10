@@ -133,40 +133,40 @@ db.exec(`
 // [id, name, category, sub_category, price, original_price, description, is_organic, image_url, stock]
 const products: Array<[number, string, string, string, number, number, string, number, string, number]> = [
   // ==========================================
-  // 0. CORE MENTOR ORGANIC HARVEST (IDs 1 - 32)
+  // 0. CORE MENTOR ORGANIC HARVEST (IDs 1 - 32) - Formulated at 1 USD = 83 INR
   // ==========================================
-  [1, "Organic Raw Honey", "food-health", "grocery-staples", 14.99, 19.99, "Pure organic raw honey, unfiltered and cold-pressed", 1, "/images/honey.png", 20],
-  [2, "Wildflower Honey", "food-health", "grocery-staples", 12.99, 16.99, "Natural wildflower honey from local beekeepers", 0, "/images/wildflower_honey.png", 20],
-  [3, "Organic Manuka Honey", "food-health", "grocery-staples", 29.99, 39.99, "Premium organic Manuka honey from New Zealand", 1, "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=600&q=80", 20],
-  [4, "Clover Honey", "food-health", "grocery-staples", 8.99, 11.99, "Classic clover honey, smooth and sweet", 0, "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=600&q=80", 20],
-  [5, "Organic Buckwheat Honey", "food-health", "grocery-staples", 18.99, 24.99, "Dark and robust organic buckwheat honey, antioxidant-rich", 1, "https://images.unsplash.com/photo-1578849278619-e73505e9610f?auto=format&fit=crop&w=600&q=80", 20],
-  [6, "Orange Blossom Honey", "food-health", "grocery-staples", 15.99, 19.99, "Light and floral orange blossom honey", 0, "/images/orange_blossom_honey.png", 0],
-  [7, "Organic Acacia Honey", "food-health", "grocery-staples", 17.99, 22.99, "Light and mild organic acacia honey, low glycemic index", 1, "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80", 20],
-  [8, "Creamed Honey", "food-health", "grocery-staples", 11.99, 14.99, "Smooth creamed honey with spreadable texture", 0, "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80", 20],
-  [9, "Organic Extra Virgin Olive Oil", "food-health", "oils-ghee", 16.99, 21.99, "Cold-pressed organic EVOO from Mediterranean olives", 1, "/images/olive_oil.png", 20],
-  [10, "Coconut Oil", "food-health", "oils-ghee", 12.49, 15.99, "Refined coconut oil, great for high-heat cooking", 0, "https://images.unsplash.com/photo-1526947425960-945c6e72858f?auto=format&fit=crop&w=600&q=80", 20],
-  [11, "Organic Flaxseed Oil", "food-health", "oils-ghee", 14.99, 18.99, "Cold-pressed organic flaxseed oil, rich in omega-3", 1, "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=600&q=80", 20],
-  [12, "Avocado Oil", "food-health", "oils-ghee", 18.99, 23.99, "Cold-pressed avocado oil, high smoke point", 0, "/images/avocado_oil.png", 20],
-  [13, "Organic Almonds", "food-health", "dry-fruits", 11.99, 14.99, "Raw organic almonds, unsalted, non-GMO certified", 1, "https://images.unsplash.com/photo-1508061252445-b95013cb7c5b?auto=format&fit=crop&w=600&q=80", 20],
-  [14, "Roasted Cashews", "food-health", "dry-fruits", 9.99, 12.99, "Lightly salted dry-roasted cashews", 0, "https://images.unsplash.com/photo-1536591375315-19895696d506?auto=format&fit=crop&w=600&q=80", 20],
-  [15, "Organic Chia Seeds", "food-health", "grocery-staples", 8.49, 10.99, "Organic black chia seeds, high in fiber and omega-3", 1, "https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=600&q=80", 20],
-  [16, "Mixed Nuts", "food-health", "dry-fruits", 13.99, 17.99, "Premium mix of walnuts, pecans, almonds and Brazil nuts", 0, "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=600&q=80", 20],
-  [17, "Organic Quinoa", "food-health", "grocery-staples", 10.99, 13.99, "Organic white quinoa, complete protein, gluten-free", 1, "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80", 20],
-  [18, "Rolled Oats", "food-health", "grocery-staples", 5.49, 7.99, "Whole grain rolled oats, great for porridge and baking", 0, "/images/rolled_oats.png", 20],
-  [19, "Organic Brown Rice", "food-health", "grocery-staples", 7.99, 9.99, "Long-grain organic brown rice, naturally gluten-free", 1, "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=600&q=80", 20],
-  [20, "Steel-Cut Oats", "food-health", "grocery-staples", 6.99, 8.99, "Traditional steel-cut oats, low GI, hearty texture", 0, "/images/steel_cut_oats.png", 20],
-  [21, "Organic Green Tea", "food-health", "grocery-staples", 12.99, 15.99, "Japanese organic sencha green tea, 50 bags", 1, "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80", 20],
-  [22, "Chamomile Tea", "food-health", "grocery-staples", 8.99, 11.99, "Dried chamomile flowers, caffeine-free, soothing", 0, "https://images.unsplash.com/photo-1597481499750-3e6b22637e12?auto=format&fit=crop&w=600&q=80", 20],
-  [23, "Organic Ethiopian Coffee", "food-health", "grocery-staples", 16.99, 21.99, "Single-origin organic Arabica, medium roast whole bean", 1, "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80", 20],
-  [24, "Dark Roast Espresso Blend", "food-health", "grocery-staples", 14.49, 18.99, "Bold dark roast espresso blend, ground", 0, "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=600&q=80", 0],
-  [25, "Organic Granola", "food-health", "grocery-staples", 9.99, 12.99, "Organic oat granola with honey, almonds and dried cranberries", 1, "https://images.unsplash.com/photo-1517093707577-4402eb0ea685?auto=format&fit=crop&w=600&q=80", 20],
-  [26, "Rice Cakes", "food-health", "grocery-staples", 4.49, 5.99, "Lightly salted brown rice cakes, low calorie", 0, "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=600&q=80", 20],
-  [27, "Organic Dried Mango", "food-health", "dry-fruits", 7.99, 9.99, "Unsweetened organic dried mango slices, no preservatives", 1, "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80", 20],
-  [28, "Trail Mix", "food-health", "dry-fruits", 8.49, 10.99, "Classic trail mix with raisins, M&Ms, peanuts and sunflower seeds", 0, "https://images.unsplash.com/photo-1543168256-418811576931?auto=format&fit=crop&w=600&q=80", 20],
-  [29, "Organic Almond Milk", "food-health", "grocery-staples", 4.99, 6.49, "Unsweetened organic almond milk, fortified with calcium", 1, "https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=600&q=80", 20],
-  [30, "Oat Milk", "food-health", "grocery-staples", 4.49, 5.99, "Barista-style oat milk, great for coffee", 0, "https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=600&q=80", 20],
-  [31, "Organic Coconut Milk", "food-health", "grocery-staples", 3.99, 4.99, "Full-fat organic coconut milk, great for curries", 1, "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80", 20],
-  [32, "Soy Milk", "food-health", "grocery-staples", 3.49, 4.49, "Unsweetened soy milk, high protein", 0, "https://images.unsplash.com/photo-1528750997573-59b89d56f4f7?auto=format&fit=crop&w=600&q=80", 20],
+  [1, "Organic Raw Honey", "food-health", "grocery-staples", 1244.17, 1659.17, "Pure organic raw honey, unfiltered and cold-pressed", 1, "/images/honey.png", 20],
+  [2, "Wildflower Honey", "food-health", "grocery-staples", 1078.17, 1410.17, "Natural wildflower honey from local beekeepers", 0, "/images/wildflower_honey.png", 20],
+  [3, "Organic Manuka Honey", "food-health", "grocery-staples", 2489.17, 3319.17, "Premium organic Manuka honey from New Zealand", 1, "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=600&q=80", 20],
+  [4, "Clover Honey", "food-health", "grocery-staples", 746.17, 995.17, "Classic clover honey, smooth and sweet", 0, "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=600&q=80", 20],
+  [5, "Organic Buckwheat Honey", "food-health", "grocery-staples", 1576.17, 2074.17, "Dark and robust organic buckwheat honey, antioxidant-rich", 1, "https://images.unsplash.com/photo-1578849278619-e73505e9610f?auto=format&fit=crop&w=600&q=80", 20],
+  [6, "Orange Blossom Honey", "food-health", "grocery-staples", 1327.17, 1659.17, "Light and floral orange blossom honey", 0, "/images/orange_blossom_honey.png", 0],
+  [7, "Organic Acacia Honey", "food-health", "grocery-staples", 1493.17, 1908.17, "Light and mild organic acacia honey, low glycemic index", 1, "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80", 20],
+  [8, "Creamed Honey", "food-health", "grocery-staples", 995.17, 1244.17, "Smooth creamed honey with spreadable texture", 0, "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80", 20],
+  [9, "Organic Extra Virgin Olive Oil", "food-health", "oils-ghee", 1410.17, 1825.17, "Cold-pressed organic EVOO from Mediterranean olives", 1, "/images/olive_oil.png", 20],
+  [10, "Coconut Oil", "food-health", "oils-ghee", 1036.67, 1327.17, "Refined coconut oil, great for high-heat cooking", 0, "https://images.unsplash.com/photo-1526947425960-945c6e72858f?auto=format&fit=crop&w=600&q=80", 20],
+  [11, "Organic Flaxseed Oil", "food-health", "oils-ghee", 1244.17, 1576.17, "Cold-pressed organic flaxseed oil, rich in omega-3", 1, "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=600&q=80", 20],
+  [12, "Avocado Oil", "food-health", "oils-ghee", 1576.17, 1991.17, "Cold-pressed avocado oil, high smoke point", 0, "/images/avocado_oil.png", 20],
+  [13, "Organic Almonds", "food-health", "dry-fruits", 995.17, 1244.17, "Raw organic almonds, unsalted, non-GMO certified", 1, "https://images.unsplash.com/photo-1508061252445-b95013cb7c5b?auto=format&fit=crop&w=600&q=80", 20],
+  [14, "Roasted Cashews", "food-health", "dry-fruits", 829.17, 1078.17, "Lightly salted dry-roasted cashews", 0, "https://images.unsplash.com/photo-1536591375315-19895696d506?auto=format&fit=crop&w=600&q=80", 20],
+  [15, "Organic Chia Seeds", "food-health", "grocery-staples", 704.67, 912.17, "Organic black chia seeds, high in fiber and omega-3", 1, "https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=600&q=80", 20],
+  [16, "Mixed Nuts", "food-health", "dry-fruits", 1161.17, 1493.17, "Premium mix of walnuts, pecans, almonds and Brazil nuts", 0, "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=600&q=80", 20],
+  [17, "Organic Quinoa", "food-health", "grocery-staples", 912.17, 1161.17, "Organic white quinoa, complete protein, gluten-free", 1, "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80", 20],
+  [18, "Rolled Oats", "food-health", "grocery-staples", 455.67, 663.17, "Whole grain rolled oats, great for porridge and baking", 0, "/images/rolled_oats.png", 20],
+  [19, "Organic Brown Rice", "food-health", "grocery-staples", 663.17, 829.17, "Long-grain organic brown rice, naturally gluten-free", 1, "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=600&q=80", 20],
+  [20, "Steel-Cut Oats", "food-health", "grocery-staples", 580.17, 746.17, "Traditional steel-cut oats, low GI, hearty texture", 0, "/images/steel_cut_oats.png", 20],
+  [21, "Organic Green Tea", "food-health", "grocery-staples", 1078.17, 1327.17, "Japanese organic sencha green tea, 50 bags", 1, "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80", 20],
+  [22, "Chamomile Tea", "food-health", "grocery-staples", 746.17, 995.17, "Dried chamomile flowers, caffeine-free, soothing", 0, "https://images.unsplash.com/photo-1597481499750-3e6b22637e12?auto=format&fit=crop&w=600&q=80", 20],
+  [23, "Organic Ethiopian Coffee", "food-health", "grocery-staples", 1410.17, 1825.17, "Single-origin organic Arabica, medium roast whole bean", 1, "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80", 20],
+  [24, "Dark Roast Espresso Blend", "food-health", "grocery-staples", 1202.67, 1576.17, "Bold dark roast espresso blend, ground", 0, "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=600&q=80", 0],
+  [25, "Organic Granola", "food-health", "grocery-staples", 829.17, 1078.17, "Organic oat granola with honey, almonds and dried cranberries", 1, "https://images.unsplash.com/photo-1517093707577-4402eb0ea685?auto=format&fit=crop&w=600&q=80", 20],
+  [26, "Rice Cakes", "food-health", "grocery-staples", 372.67, 497.17, "Lightly salted brown rice cakes, low calorie", 0, "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=600&q=80", 20],
+  [27, "Organic Dried Mango", "food-health", "dry-fruits", 663.17, 829.17, "Unsweetened organic dried mango slices, no preservatives", 1, "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80", 20],
+  [28, "Trail Mix", "food-health", "dry-fruits", 704.67, 912.17, "Classic trail mix with raisins, M&Ms, peanuts and sunflower seeds", 0, "https://images.unsplash.com/photo-1543168256-418811576931?auto=format&fit=crop&w=600&q=80", 20],
+  [29, "Organic Almond Milk", "food-health", "grocery-staples", 414.17, 538.67, "Unsweetened organic almond milk, fortified with calcium", 1, "https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=600&q=80", 20],
+  [30, "Oat Milk", "food-health", "grocery-staples", 372.67, 497.17, "Barista-style oat milk, great for coffee", 0, "https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=600&q=80", 20],
+  [31, "Organic Coconut Milk", "food-health", "grocery-staples", 331.17, 414.17, "Full-fat organic coconut milk, great for curries", 1, "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80", 20],
+  [32, "Soy Milk", "food-health", "grocery-staples", 289.67, 372.67, "Unsweetened soy milk, high protein", 0, "https://images.unsplash.com/photo-1528750997573-59b89d56f4f7?auto=format&fit=crop&w=600&q=80", 20],
 
   // ==========================================
   // 1. MOBILES (mobiles)
@@ -397,7 +397,7 @@ insertOrderItem.run(1040, 601, "Organic Raw Forest Honey (Cold-Extracted, 500g J
 
 insertOrder.run(
   1039,
-  1499.00,
+  2155.51,
   "delivered",
   "2026-03-05 09:15:00",
   "pay_card_1039",
@@ -415,8 +415,8 @@ insertOrder.run(
   "Delivered"
 );
 
-insertOrderItem.run(1039, 1, "Organic Raw Honey", 14.99, 1);
-insertOrderItem.run(1039, 18, "Rolled Oats", 5.49, 2);
+insertOrderItem.run(1039, 1, "Organic Raw Honey", 1244.17, 1);
+insertOrderItem.run(1039, 18, "Rolled Oats", 455.67, 2);
 
 console.log(`Database seeded with ${products.length} products across 10 Cartwise Plus categories, ratings, reviews, and test orders.`);
 db.close();

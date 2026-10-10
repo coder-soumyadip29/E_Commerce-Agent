@@ -436,3 +436,19 @@
   - [x] Ensured broken or slow-loading images never turn products into honey jars
 - [x] Verified full Next.js production build (`npm run build`) passing with 0 errors across 94 routes
 
+## Step 24: Currency Formulation & USD to INR Conversion for Indian Market
+- [x] Formulated exchange rate according to Indian market benchmark:
+  - [x] Defined `USD_TO_INR_RATE = 83` (1 USD = ₹83.00) and `convertUsdToInr(usd)` conversion formula
+  - [x] Formulated product prices from USD into Indian Rupees: `Price (INR) = Price (USD) × 83`
+- [x] Synchronized catalog datasets and SQLite database:
+  - [x] Converted products 1 to 32 in `scripts/data_food_home.py` and `scripts/seed.ts`
+  - [x] Updated SQLite database `data/store.db` with computed Rupee prices and original prices
+  - [x] Updated in-memory and edge catalogs in `lib/storeData.ts` and `lib/catalogProducts.ts`
+  - [x] Converted historic test Order #1039 (Organic Raw Honey: ₹1,244.17, Rolled Oats: ₹455.67, Total: ₹2,155.51)
+- [x] Agent Natural Language Query & Filter Intelligence:
+  - [x] Upgraded query budget parser in `lib/agent/mock.ts` to detect dollar queries (e.g. `under $20`) and dynamically convert them to Indian Rupee limits (`$20 × 83 = ₹1,660`)
+  - [x] Updated clarify options in `lib/agent/real.ts` with formulated Rupee values
+- [x] Verification:
+  - [x] All 11 unit test suites and 74 tests passing without regressions
+
+

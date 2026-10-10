@@ -906,10 +906,10 @@ function formatDirectTextResponse(userText: string, directText: string): Assista
         type: "clarify",
         question: directText || "Which type of honey are you looking for?",
         options: [
-          "Organic Raw Honey (₹14.99)",
-          "Manuka Honey (₹29.99)",
-          "Wildflower Honey (₹12.99)",
-          "Under ₹50 Options",
+          "Organic Raw Honey (₹1,244)",
+          "Manuka Honey (₹2,489)",
+          "Wildflower Honey (₹1,078)",
+          "Under ₹1,500 Options",
         ],
       };
     }

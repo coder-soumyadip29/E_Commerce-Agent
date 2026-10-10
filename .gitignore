@@ -44,3 +44,8 @@ public/uploads/
 # IDE
 .vscode/
 .idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class

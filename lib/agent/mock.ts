@@ -339,9 +339,17 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
 
   // 6. Natural Language Filters Extraction (Price, Rating, Category, Organic)
   let maxPrice: number | undefined = undefined;
-  const priceMatch = lowerQuery.match(/(?:under|below|less than|within|budget)\s*(?:rs\.?|inr|₹)?\s*(\d+[\d,]*)/i);
-  if (priceMatch) {
-    maxPrice = Number(priceMatch[1].replace(/,/g, ""));
+  const dollarMatch =
+    lowerQuery.match(/(?:under|below|less than|within|budget)\s*\$\s*(\d+[\d,]*)/i) ||
+    lowerQuery.match(/(?:under|below|less than|within|budget)\s*(\d+[\d,]*)\s*(?:dollars?|usd)/i);
+  if (dollarMatch) {
+    // Formulate price according to Indian market: 1 USD = 83 INR
+    maxPrice = Number(dollarMatch[1].replace(/,/g, "")) * 83;
+  } else {
+    const priceMatch = lowerQuery.match(/(?:under|below|less than|within|budget)\s*(?:rs\.?|inr|₹)?\s*(\d+[\d,]*)/i);
+    if (priceMatch) {
+      maxPrice = Number(priceMatch[1].replace(/,/g, ""));
+    }
   }
 
   let minRating: number | undefined = undefined;
@@ -380,7 +388,7 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
   // Clean Search Term
   let searchTerm = rawQuery
     .replace(/(?:find|show|search|give|get|i want|looking for|best|top|cheap|cheaper|deals on|items|products|please|me|some|any|can you|what are|available|recommend|suggest|do you have|tell me about)\s+/gi, "")
-    .replace(/(?:under|below|less than|within|budget)\s*(?:rs\.?|inr|₹)?\s*\d+[\d,]*/gi, "")
+    .replace(/(?:under|below|less than|within|budget)\s*(?:rs\.?|inr|₹|\$)?\s*\d+[\d,]*(?:\s*(?:dollars?|usd))?/gi, "")
     .replace(/(?:top rated|best rated|4\.8\+|4\.5\+|5 star|organic)/gi, "")
     .trim();
 

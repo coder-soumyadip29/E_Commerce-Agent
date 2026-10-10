@@ -67,7 +67,7 @@ describe("Edge Rate Limiter & Caching Layer", () => {
   describe("Edge Caching Layer", () => {
     it("stores and retrieves typed values from the edge cache", async () => {
       const cacheKey = "popular_products_sample";
-      const sampleData = { id: 1, name: "Organic Wild Honey", price: 14.99 };
+      const sampleData = { id: 1, name: "Organic Wild Honey", price: 1244.17 };
 
       await setEdgeCache(cacheKey, sampleData, 60);
       const retrieved = await getEdgeCache<typeof sampleData>(cacheKey);

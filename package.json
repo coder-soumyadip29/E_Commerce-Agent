@@ -10,6 +10,7 @@
     "lint": "eslint",
     "db:seed": "tsx scripts/seed.ts",
     "db:reset": "rm -f data/store.db* && npm run db:seed",
+    "db:test-mongo": "tsx scripts/test_mongo.ts",
     "test": "vitest run --fileParallelism=false"
   },
   "dependencies": {
