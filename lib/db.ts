@@ -335,19 +335,49 @@ export function searchProducts(options: SearchProductsOptions = {}): {
   let results = [...memoryProducts];
 
   if (options.query) {
-    const words = options.query
+    const stopWords = new Set(["some", "any", "the", "a", "an", "for", "in", "of", "to", "and", "or", "with", "show", "me", "find", "get", "give", "items", "item"]);
+    const rawWords = options.query
       .toLowerCase()
       .trim()
       .split(/\s+/)
       .map((w) => w.replace(/[^a-zA-Z0-9]/g, ""))
       .filter((w) => w.length > 0);
 
+    const words = rawWords.filter((w) => !stopWords.has(w)).length > 0
+      ? rawWords.filter((w) => !stopWords.has(w))
+      : rawWords;
+
     if (words.length > 0) {
       sql += ` AND (multi-word match: ${words.join(", ")})`;
-      results = results.filter((p) => {
+      const strictResults = results.filter((p) => {
         const text = `${p.name} ${p.description} ${p.category} ${p.sub_category || ""}`.toLowerCase();
-        return words.every((w) => text.includes(w));
+        return words.every((w) => text.includes(w) || (w.endsWith("s") && text.includes(w.slice(0, -1))));
       });
+
+      if (strictResults.length > 0) {
+        results = strictResults;
+      } else {
+        // Scored OR relevance fallback
+        const scored = results
+          .map((p) => {
+            const nameLower = p.name.toLowerCase();
+            const descLower = p.description.toLowerCase();
+            let score = 0;
+            for (const w of words) {
+              const stem = w.endsWith("s") && w.length > 3 ? w.slice(0, -1) : w;
+              if (nameLower.includes(w) || nameLower.includes(stem)) score += 3;
+              if (descLower.includes(w) || descLower.includes(stem)) score += 1;
+            }
+            return { product: p, score };
+          })
+          .filter((item) => item.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .map((item) => item.product);
+
+        if (scored.length > 0) {
+          results = scored;
+        }
+      }
     }
   }
 

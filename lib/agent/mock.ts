@@ -355,31 +355,31 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
 
   // Category Detection
   let detectedCategory: string | undefined = undefined;
-  if (/\b(mobile|phone|smartphone|5g|iphone|motorola|samsung|oneplus|realme|poco)\b/i.test(lowerQuery)) {
+  if (/\b(mobile|mobiles|phone|phones|smartphone|smartphones|5g|iphone|motorola|samsung|oneplus|realme|poco)\b/i.test(lowerQuery)) {
     detectedCategory = "mobiles";
-  } else if (/\b(laptop|electronic|tv|television|headphone|earphone|neckband|tablet|ipad|smartwatch)\b/i.test(lowerQuery)) {
+  } else if (/\b(laptop|laptops|electronic|electronics|tv|tvs|television|televisions|headphone|headphones|earphone|earphones|neckband|neckbands|tablet|tablets|ipad|ipads|smartwatch|smartwatches)\b/i.test(lowerQuery)) {
     detectedCategory = "electronics";
-  } else if (/\b(appliance|fridge|refrigerator|ac|air conditioner|air fryer|induction|cooktop)\b/i.test(lowerQuery)) {
+  } else if (/\b(appliance|appliances|fridge|fridges|refrigerator|refrigerators|ac|air conditioner|air conditioners|air fryer|air fryers|induction|cooktop)\b/i.test(lowerQuery)) {
     detectedCategory = "appliances";
-  } else if (/\b(serum|skincare|cleanser|facewash|lipstick|makeup|beauty)\b/i.test(lowerQuery)) {
+  } else if (/\b(serum|serums|skincare|cleanser|cleansers|facewash|lipstick|lipsticks|makeup|beauty)\b/i.test(lowerQuery)) {
     detectedCategory = "beauty";
-  } else if (/\b(honey|ghee|oil|olive|oat|oats|almond|nut|atta|dal|wheat|flour|whey|protein|grocery|food)\b/i.test(lowerQuery)) {
+  } else if (/\b(honey|ghee|oil|oils|olive|oat|oats|almond|almonds|nut|nuts|atta|dal|wheat|flour|whey|protein|grocery|food|foods)\b/i.test(lowerQuery)) {
     detectedCategory = "food-health";
-  } else if (/\b(fashion|jeans|jean|denim|shoes|shoe|sneaker|sneakers|shirt|t-shirt|polo|clothing)\b/i.test(lowerQuery)) {
+  } else if (/\b(fashion|jeans|jean|denim|shoes|shoe|sneaker|sneakers|shirt|shirts|t-shirt|polo|clothing)\b/i.test(lowerQuery)) {
     detectedCategory = "fashion";
-  } else if (/\b(flask|bottle|milton|mattress|bedding|comforter|blanket|furniture|home)\b/i.test(lowerQuery)) {
+  } else if (/\b(flask|flasks|bottle|bottles|milton|mattress|bedding|comforter|blanket|furniture|home)\b/i.test(lowerQuery)) {
     detectedCategory = "home";
-  } else if (/\b(toy|lego|diaper|diapers|pampers|baby)\b/i.test(lowerQuery)) {
+  } else if (/\b(toy|toys|lego|diaper|diapers|pampers|baby)\b/i.test(lowerQuery)) {
     detectedCategory = "toys-baby";
-  } else if (/\b(helmet|dash cam|dashcam|auto|car)\b/i.test(lowerQuery)) {
+  } else if (/\b(helmet|helmets|dash cam|dashcam|auto|car)\b/i.test(lowerQuery)) {
     detectedCategory = "auto-accessories";
-  } else if (/\b(badminton|racquet|yoga|mat|fitness|sport|sports)\b/i.test(lowerQuery)) {
+  } else if (/\b(badminton|racquet|racquets|yoga|mat|fitness|sport|sports)\b/i.test(lowerQuery)) {
     detectedCategory = "sports-fitness";
   }
 
   // Clean Search Term
   let searchTerm = rawQuery
-    .replace(/(?:find|show|search|give|get|i want|looking for|best|top|cheap|cheaper|deals on|items|products|please|me)\s+/gi, "")
+    .replace(/(?:find|show|search|give|get|i want|looking for|best|top|cheap|cheaper|deals on|items|products|please|me|some|any|can you|what are|available|recommend|suggest|do you have|tell me about)\s+/gi, "")
     .replace(/(?:under|below|less than|within|budget)\s*(?:rs\.?|inr|₹)?\s*\d+[\d,]*/gi, "")
     .replace(/(?:top rated|best rated|4\.8\+|4\.5\+|5 star|organic)/gi, "")
     .trim();
@@ -392,9 +392,13 @@ export async function handleMockChat(messages: ChatMessage[]): Promise<Assistant
   if (lowerQuery.includes("ল্যাপটপ") || lowerQuery.includes("लैपटॉप")) searchTerm = "laptop";
   if (lowerQuery.includes("জুতো") || lowerQuery.includes("जूते")) searchTerm = "shoes";
 
+  // If query is just the generic category name itself (e.g. "phones", "laptops", "shoes"), search by category filter instead of strict word match
+  const isGenericCategoryWord = /^(phones?|mobiles?|smartphones?|laptops?|electronics?|tvs?|televisions?|appliances?|grocer(y|ies)|foods?|fashion|clothes|shoes?|sneakers?|beauty|makeup|toys?|cars?|sports?)$/i.test(searchTerm);
+  const effectiveQuery = isGenericCategoryWord ? undefined : (searchTerm.length > 1 ? searchTerm : undefined);
+
   // Execute Dynamic Search against SQLite Catalog
   const { products, sql } = searchProducts({
-    query: searchTerm.length > 1 ? searchTerm : undefined,
+    query: effectiveQuery,
     category: detectedCategory,
     maxPrice,
     minRating,

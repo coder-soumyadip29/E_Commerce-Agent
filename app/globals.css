@@ -108,6 +108,7 @@ body {
 .admin-gold-text {
   background: linear-gradient(135deg, #fef08a 0%, #facc15 40%, #eab308 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 

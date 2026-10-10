@@ -1,31 +1,31 @@
 # CartWise Tasks Checklist
 
-## Step 0: Project Setup & Preparation
+## Step Project Setup & Preparation
 - [x] Create project directory structure (`cartwise/design`, `cartwise/reference`, `cartwise/test-images`)
 - [x] Create `AGENTS.md` with system constraints and architectural rules
 - [x] Add Stitch exports (HTML + screenshots) into `cartwise/design/Desktop` and `cartwise/design/Mobile`
 - [x] Add mentor reference files (`setup_db.py`, `shopping_agent.py`, `reviews_api.py`, `app.py`, `store.db`) to `cartwise/reference/`
 - [x] Extract and rename test images (`honey.png`, `oats.png`, `elephant.png`, `avocado_oil.png`, `rolled_oats.png`, etc.)
 
-## Step 1: Database & Data Ingestion
+## Step Database & Data Ingestion
 - [x] Set up SQLite with `better-sqlite3` at `cartwise/data/store.db`
 - [x] Seed and verify 32 products and 102 reviews matching mentor's database schema
 - [x] Build data access layer in `cartwise/lib/db.ts` (`searchProducts`, `getProductById`, `createOrder`, `getOrders`)
 - [x] Guarantee zero-hallucination querying strictly from SQLite records
 
-## Step 2: Next.js Foundation & Design System
+## Step Next.js Foundation & Design System
 - [x] Initialize Next.js (App Router) + TypeScript + Tailwind CSS
 - [x] Configure Organic Intelligence design tokens (`#1B4D3E` pine, `#2D7A54` green, `#FBF9F5` cream, Plus Jakarta Sans)
 - [x] Apply iOS zoom-on-refresh fixes (exact viewport meta tag and html/body overflow CSS)
 - [x] Build responsive layout supporting Desktop first then Mobile views
 
-## Step 3: Agent Abstraction (`/lib/agent/`)
+## Step Agent Abstraction (`/lib/agent/`)
 - [x] Define TypeScript contracts in `cartwise/lib/types.ts`: `text`, `products`, `image_analysis`, `clarify`, `compare`, `empty_state`
 - [x] Implement `handleChat(messages)` with `AGENT_MODE=mock|real` switch (default: `mock`) in `cartwise/lib/agent/`
 - [x] Implement `handleImage(file)` with `AGENT_MODE=mock|real` switch (default: `mock`) in `cartwise/lib/agent/`
 - [x] Ground all candidate matches in SQLite queries with zero invented data
 
-## Step 4: UI Components & Chat Interface
+## Step UI Components & Chat Interface
 - [x] Implement dedicated React component for each structured message type:
   - [x] `TextMessage`
   - [x] `ProductsMessage` (grid/list with organic badges, star ratings, non-truncated titles, deterministic Add to Cart / Buy Now buttons)
@@ -39,14 +39,14 @@
 - [x] Implement `EmptyChatPrompt` with 4 1-click suggestion cards and camera tips
 - [x] Implement fixed `ChatInput` with photo upload and 1-click sample test images (`honey.png`, `oats.png`, `elephant.png`)
 
-## Step 5: Shopping Cart & Order API
+## Step Shopping Cart & Order API
 - [x] Implement deterministic `/api/orders` route saving to SQLite `orders` table
 - [x] Implement `/api/chat` and `/api/image-search` routes
 - [x] Implement `CartDrawer` with 3-step checkout flow (Cart -> Review Order -> Order Confirmed)
 - [x] Implement `OrdersView` tab listing past orders recorded in SQLite
 - [x] Verify production build passes with 0 errors (`npm run build`)
 
-## Step 6: Aura PLUS Cyber UI Redesign (Preserving Products & Schema)
+## Step Aura PLUS Cyber UI Redesign (Preserving Products & Schema)
 - [x] Deep futuristic dark mode design tokens & glassmorphism in `app/globals.css`
 - [x] Top header with CartWise PLUS branding, pill search, Maya Sterling profile, wishlist, and live grid indicator
 - [x] Horizontal Category Navigation bar with icon pills
@@ -57,7 +57,7 @@
 - [x] Verify full compilation (`npm run build`) with 0 errors
 - [x] Verify all 5 API vitest tests pass (`npx vitest run`) with 100% success
 
-## Step 7: MongoDB Integration, Authentication, Addresses & Personalised Recommendations
+## Step MongoDB Integration, Authentication, Addresses & Personalised Recommendations
 - [x] Connect MongoDB with connection caching in `lib/mongodb.ts` (`mongodb://127.0.0.1:27017/cartwise`)
 - [x] Define Mongoose User model with addresses, preferences, and verification schema in `lib/models/User.ts`
 - [x] Implement database adapter `lib/userDb.ts` with password hashing (crypto PBKDF2), address persistence, and preference recommendations
@@ -71,7 +71,7 @@
 - [x] Create comprehensive integration test suite `tests/auth_mongo.test.ts` (13/13 vitest tests passing)
 - [x] Verify production build passes with 0 errors (`npm run build`)
 
-## Step 8: Payment Gateway Integration (Razorpay / Stripe / Mock UPI Sandbox)
+## Step Payment Gateway Integration (Razorpay / Stripe / Mock UPI Sandbox)
 - [x] Configure payment gateway environment variables in `.env.local` and `.env.example` (`PAYMENT_GATEWAY_MODE=sandbox`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`)
 - [x] Create MongoDB payment audit collection & Mongoose schema in `lib/models/Payment.ts`
 - [x] Implement payment security utilities in `lib/payment.ts`:
@@ -97,7 +97,7 @@
 - [x] Verify complete test suite (20/20 vitest tests passing across entire repo)
 - [x] Verify Next.js production build (`npm run build`) with 0 errors
 
-## Step 9: Dynamic Address & Delivery Slot Logistics
+## Step Dynamic Address & Delivery Slot Logistics
 - [x] Create `user_addresses` SQLite table in `lib/db.ts` & `scripts/seed.ts` with fields: `id`, `user_id`, `name`, `phone`, `street_address`, `landmark`, `city`, `pincode`, `type` (`Home` | `Work` | `Other`), `is_default`
 - [x] Seed initial addresses for Maya Sterling in SQLite (`Penthouse 4B, 742 Evergreen Terrace` and `BioTech Innovation Hub`)
 - [x] Implement database operations in `lib/db.ts`: `getUserAddresses`, `addUserAddressDb`, `setDefaultAddressDb`, `deleteUserAddressDb`, `getUserAddressById`
@@ -118,7 +118,7 @@
 - [x] Create comprehensive integration test suite `tests/address_logistics.test.ts` (6/6 tests passing)
 - [x] Verify complete test suite (26/26 vitest tests passing across all suites)
 - [x] Verify production build passes with 0 errors (`npm run build`)
-## Step 10: Invoice & Receipt Generation (Tax Compliance & Brevo Email Dispatch)
+## Step Invoice & Receipt Generation (Tax Compliance & Brevo Email Dispatch)
 - [x] Define Tax Invoice Data Architecture in `lib/types.ts`: `InvoiceData`, `InvoiceItem`, `GstBreakdown`
 - [x] Implement Tax & HSN Calculation Engine in `lib/invoice.ts`:
   - [x] Grocery & organic standard 5% GST computation (2.5% CGST + 2.5% SGST split)
@@ -150,7 +150,7 @@
 - [x] Verify complete test suite (30/30 vitest tests passing across all 5 suites)
 - [x] Verify full TypeScript and Next.js compilation (`npx tsc --noEmit`) with 0 errors
 
-## Step 11: AI Shopping Agent Order & Payment Tools (`lib/agent/real.ts`)
+## Step AI Shopping Agent Order & Payment Tools (`lib/agent/real.ts`)
 - [x] Implement `track_specific_order({ order_id })` tool:
   - [x] Defined in `TOOLS_DECLARATION` with input parameter `{ order_id: INTEGER }`
   - [x] Fetches order record from SQLite database via `getOrderById(orderId)`
@@ -176,7 +176,7 @@
 - [x] Verify complete test suite (40/40 vitest tests passing across all 6 suites)
 - [x] Full TypeScript type-checking (`npx tsc --noEmit`) verified with 0 errors
 
-## Step 12: Real-Time Order Tracking & Lifecycle Engine
+## Step Real-Time Order Tracking & Lifecycle Engine
 - [x] Schema Extension in `lib/db.ts`:
   - [x] Extended `orders` table with columns: `payment_id`, `payment_method`, `delivery_address_json`, `delivery_slot`, `tracking_status`, `estimated_delivery_time`, `cancellation_reason`
   - [x] Dynamic non-destructive schema migration in `getDb()` via `ALTER TABLE orders ADD COLUMN ...`
@@ -205,7 +205,7 @@
   - [x] All 7 test suites (45/45 vitest tests) passing 100%
   - [x] Full TypeScript type-checking (`npx tsc --noEmit`) verified with 0 errors
 
-## Step 13: Complete Multi-Vendor Marketplace Admin System
+## Step Complete Multi-Vendor Marketplace Admin System
 - [x] Multi-Vendor Architectural Foundations & Data Abstraction (`lib/adminDb.ts`, `lib/types.ts`):
   - [x] Seller entity schema (`ACTIVE`, `PENDING`, `SUSPENDED`, `REJECTED`, bank accounts, custom commission rates)
   - [x] Multi-tier Commission Engine (Global platform baseline, category rates, vendor contracts)
@@ -242,7 +242,7 @@
   - [x] Admin Staff & RBAC Management (`app/admin/admin-users/page.tsx`): Admin team management and role permission matrix
   - [x] Compliance Audit Logs (`app/admin/audit-logs/page.tsx`): Immutable administrative activity ledger with actor and resource metadata
   - [x] Global Marketplace Settings (`app/admin/settings/page.tsx`): Commission baselines, payout schedules, tax rules, and currency
-## Step 14: Complete Production-Grade Seller / Vendor Portal
+## Step Complete Production-Grade Seller / Vendor Portal
 - [x] Multi-Vendor Seller Architecture & Database Isolation (`lib/sellerDb.ts`, `lib/sellerAuth.ts`, `lib/types.ts`):
   - [x] Zero-IDOR backend query filters strictly derived from `cartwise_seller_token` session cookie
   - [x] Extended data models: store slug, branding, policies, bank credentials, support tickets, product variants, and seller replies
@@ -281,7 +281,7 @@
   - [x] Full TypeScript compiler check (`npx tsc --noEmit`) passing with 0 errors
   - [x] Zero regression across existing customer storefront and Admin control center
 
-## Step 15: Recipe & Meal-to-Cart AI Bundler
+## Step Recipe & Meal-to-Cart AI Bundler
 - [x] Data Architecture & Schema Extension (`lib/types.ts`):
   - [x] Defined `RecipeIngredient` (`product: Product`, `requiredQty`, `unit`, `purpose`)
   - [x] Defined `RecipeBundleMessagePayload` (`recipeName`, `dishType`, `servings`, `prepTime`, `caloriesPerServing`, `nutrition`, `dietaryTags`, `instructions`, `ingredients`, `totalBundlePrice`, `originalBundlePrice`, `bundleDiscountPercent`, `trace`)
@@ -302,7 +302,7 @@
   - [x] Dedicated unit test suite (`tests/recipe_bundler.test.ts`) with 3 tests passing verifying structured bundle outputs, SQLite grounding, price calculations, and tool execution
   - [x] Full Next.js production compilation (`npm run build`) passing with 0 errors across all 91 routes
 
-## Step 16: Live Mapbox Rider Telemetry & Interactive GPS Tracker Modal
+## Step Live Mapbox Rider Telemetry & Interactive GPS Tracker Modal
 - [x] Environment & Tile Configuration:
   - [x] Added `NEXT_PUBLIC_MAPBOX_TOKEN` to `.env.example`
   - [x] Built seamless fallback to high-DPI vector Dark Matter & OSM tiles for zero-token local/offline execution
@@ -323,7 +323,7 @@
   - [x] Dedicated telemetry integration test suite (`tests/mapbox_telemetry.test.ts`) with 2/2 tests passing
   - [x] Full Next.js production build (`npm run build`) verified with 0 errors across all 91 routes
 
-## Step 17: Facebook-Style Account Search & Password Reset Flow
+## Step Facebook-Style Account Search & Password Reset Flow
 - [x] Backend & Data Security Layer:
   - [x] Extended `IUser` and `UserSchema` in `lib/models/User.ts` with `resetPasswordOtp?: string` and `resetPasswordOtpExpires?: Date`
   - [x] Created `sendPasswordResetEmail(email, code, userName)` in `lib/email.ts` with Brevo SMTP transport and dev auto-print fallback
@@ -343,7 +343,7 @@
   - [x] Verified zero regressions across all existing test suites (`auth_mongo`, `recipe_bundler`, `mapbox_telemetry`)
   - [x] Full production build verified (`npm run build`) with 0 errors across all 91 routes
 
-## Step 18: Edge Caching & Multi-Tier Rate Limiting
+## Step Edge Caching & Multi-Tier Rate Limiting
 - [x] Edge Rate Limiter Architecture (`lib/edgeRateLimit.ts`):
   - [x] Dual-mode rate limiter supporting Upstash Redis REST API (zero serverless cold-start) with automatic sliding-window in-memory fallback
   - [x] Multi-tier route protection:
@@ -364,7 +364,7 @@
   - [x] Dedicated unit test suite (`tests/edge_rate_limit.test.ts`) with 9/9 tests passing (100%)
   - [x] Full Next.js production build (`npm run build`) verified with 0 errors across all 91 routes + Edge proxy
 
-## Step 19: Cloudinary Media Storage & Transformation Pipeline
+## Step Cloudinary Media Storage & Transformation Pipeline
 - [x] Core Cloudinary Utility (`lib/cloudinary.ts`):
   - [x] Installed and configured `cloudinary` v2 SDK
   - [x] Implemented `uploadImage(fileInput, options)` supporting Buffers, base64 data URIs, and remote URLs
@@ -381,7 +381,7 @@
   - [x] Full test suite (43/43 tests passing across 6 test suites)
   - [x] Full Next.js production build (`npm run build`) verified with 0 errors across all 92 routes
 
-## Step 20: Enterprise Load Balancer Subsystem
+## Step Enterprise Load Balancer Subsystem
 - [x] Core Load Balancer Engine (`lib/loadBalancer.ts`):
   - [x] Implemented multiple distribution algorithms: Round-Robin, Weighted Round-Robin, Least-Connections, and IP Hash (Sticky Sessions)
   - [x] Built Circuit Breaker with passive failure tracking (trips after 3 consecutive failures)
@@ -395,11 +395,11 @@
   - [x] Integrated `X-LoadBalancer-Node` header in `middleware.ts` for per-request worker observability
 - [x] Test Suite & Verification:
   - [x] Dedicated unit test suite (`tests/load_balancer.test.ts`) with 9/9 tests passing (100%)
-  - [x] Full test suite passing (52/52 tests across 7 test suites)
-  - [x] Full Next.js production compilation (`npm run build`) passing with 0 errors across all 94 routes
-
-
-
-
-
-
+- [x] Full test suite passing (52/52 tests across 7 test suites)
+- [x] Full Next.js production compilation (`npm run build`) passing with 0 errors across all 94 routes
+## Step 21: Multi-LLM Provider Enhancement & Deployment Reliability
+- [x] Integrated Google Gemini (`gemini-flash-latest`) using `GOOGLE_API_KEY` with verified function calling
+- [x] Integrated Groq (`openai/gpt-oss-120b`) using `GROQ_API_KEY` for ultra-fast, zero-quota-exhaustion AI responses
+- [x] Configured seamless fallback cascade (OpenAI -> Groq -> Gemini -> Deterministic Engine)
+- [x] Fixed conversational query parsing & plural category matching in `mock.ts` and `db.ts`
+- [x] Secured `/api/chat` route against unhandled errors with graceful fallback

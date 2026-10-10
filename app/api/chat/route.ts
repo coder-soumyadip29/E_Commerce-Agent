@@ -14,8 +14,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const assistantResponse = await handleChat(messages);
-    return NextResponse.json({ success: true, message: assistantResponse });
+    try {
+      const assistantResponse = await handleChat(messages);
+      return NextResponse.json({ success: true, message: assistantResponse });
+    } catch (chatError) {
+      console.error("Chat agent execution error, falling back to deterministic catalog engine:", chatError);
+      const { handleMockChat } = await import("@/lib/agent/mock");
+      const fallbackResponse = await handleMockChat(messages);
+      return NextResponse.json({ success: true, message: fallbackResponse });
+    }
   } catch (error) {
     console.error("Chat API error:", error);
     return NextResponse.json(

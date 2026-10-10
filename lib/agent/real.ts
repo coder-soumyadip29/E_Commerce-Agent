@@ -15,14 +15,21 @@ import { handleMockChat, handleMockImage } from "./mock";
 import fs from "fs";
 import path from "path";
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta";
 
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
-const OPENAI_API_BASE = "https://api.openai.com/v1";
+const OPENAI_API_BASE = process.env.OPENAI_API_BASE || "https://api.openai.com/v1";
+
+const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+const GROQ_API_BASE = "https://api.groq.com/openai/v1";
 
 export function getOpenAIApiKey(): string {
   return (process.env.OPENAI_API_KEY || "").trim();
+}
+
+export function getGroqApiKey(): string {
+  return (process.env.GROQ_API_KEY || "").trim();
 }
 
 export function getGeminiApiKey(): string {
@@ -34,7 +41,7 @@ export function getGeminiApiKey(): string {
 }
 
 function getApiKey(): string {
-  return getGeminiApiKey();
+  return getOpenAIApiKey() || getGeminiApiKey();
 }
 
 // ---------------------------------------------------------------------------
@@ -100,7 +107,12 @@ const TOOLS_DECLARATION = [
     description: "Retrieve all past orders placed by the user, including order IDs, line items, totals in INR, dates, and live delivery statuses.",
     parameters: {
       type: "OBJECT",
-      properties: {},
+      properties: {
+        limit: {
+          type: "INTEGER",
+          description: "Optional maximum number of recent orders to retrieve (default is 5)",
+        },
+      },
     },
   },
   {
@@ -720,19 +732,27 @@ function getOpenAITools() {
 
     for (const [key, prop] of Object.entries(rawProps)) {
       const typeStr = (prop.type || "string").toLowerCase();
-      const openAiType =
-        typeStr === "integer"
-          ? "integer"
-          : typeStr === "number"
-          ? "number"
-          : typeStr === "boolean"
-          ? "boolean"
-          : "string";
+      if (typeStr === "array") {
+        properties[key] = {
+          type: "array",
+          items: { type: "string" },
+          description: prop.description,
+        };
+      } else {
+        const openAiType =
+          typeStr === "integer"
+            ? "integer"
+            : typeStr === "number"
+            ? "number"
+            : typeStr === "boolean"
+            ? "boolean"
+            : "string";
 
-      properties[key] = {
-        type: openAiType,
-        description: prop.description,
-      };
+        properties[key] = {
+          type: openAiType,
+          description: prop.description,
+        };
+      }
     }
 
     return {
@@ -1250,6 +1270,145 @@ async function callGeminiChat(messages: ChatMessage[], apiKey: string): Promise<
 }
 
 // ---------------------------------------------------------------------------
+// Groq Provider Implementation (Ultra-Fast OpenAI-Compatible Llama 3.3)
+// ---------------------------------------------------------------------------
+async function callGroqChat(messages: ChatMessage[], apiKey: string): Promise<AssistantMessage> {
+  const latestUserMsg = [...messages].reverse().find((m) => m.role === "user");
+  const userText = latestUserMsg?.content || "";
+
+  const groqMessages: any[] = [{ role: "system", content: SYSTEM_INSTRUCTION }];
+
+  for (const m of messages.slice(-10)) {
+    if (m.role === "user") {
+      groqMessages.push({ role: "user", content: m.content });
+    } else if (m.role === "assistant") {
+      let assistantText = "";
+      if (m.payload.type === "text") assistantText = m.payload.text;
+      else if (m.payload.type === "products")
+        assistantText = `${m.payload.text || "Here are matching products:"} ${m.payload.products.map((p) => p.name).join(", ")}`;
+      else if (m.payload.type === "compare")
+        assistantText = `Compared: ${m.payload.products.map((p) => p.name).join(" vs ")}`;
+      else if (m.payload.type === "clarify") assistantText = m.payload.question;
+      else if (m.payload.type === "empty_state") assistantText = m.payload.reason;
+
+      if (assistantText) {
+        groqMessages.push({ role: "assistant", content: assistantText });
+      }
+    }
+  }
+
+  const reqBody = {
+    model: GROQ_MODEL,
+    messages: groqMessages,
+    tools: getOpenAITools(),
+    tool_choice: "auto",
+    temperature: 0.2,
+  };
+
+  const res = await fetch(`${GROQ_API_BASE}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify(reqBody),
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    const errMessage = errData?.error?.message || `Groq returned status ${res.status}`;
+    throw new Error(`Groq API error: ${errMessage}`);
+  }
+
+  const data = await res.json();
+  const choice = data.choices?.[0];
+  const message = choice?.message;
+
+  const traceSteps: AgentTrace["steps"] = [
+    {
+      title: "Query Understanding (Groq Llama 3.3)",
+      detail: `Parsed input: "${userText}"`,
+      status: "complete",
+    },
+  ];
+
+  let collectedProducts: Product[] = [];
+  let executedSql = "";
+  let lastFilter: any = {};
+
+  if (message?.tool_calls && message.tool_calls.length > 0) {
+    const toolResponses: any[] = [];
+    let lastToolName = "";
+    let lastToolExec: ToolExecutionResult | null = null;
+
+    for (const toolCall of message.tool_calls) {
+      const toolName = toolCall.function.name;
+      let toolArgs: any = {};
+      try {
+        toolArgs = JSON.parse(toolCall.function.arguments || "{}");
+      } catch {
+        toolArgs = {};
+      }
+
+      const execResult = await executeTool(toolName, toolArgs);
+      traceSteps.push(execResult.traceStep);
+      lastToolName = toolName;
+      lastToolExec = execResult;
+
+      if (toolName === "search_catalog" && execResult.result.products) {
+        collectedProducts = execResult.result.products;
+        executedSql = execResult.result.sql || "";
+        lastFilter = toolArgs;
+      }
+
+      toolResponses.push({
+        role: "tool",
+        tool_call_id: toolCall.id,
+        content: JSON.stringify(execResult.result),
+      });
+    }
+
+    let finalNarrative = "";
+    try {
+      const secondTurnMessages = [...groqMessages, message, ...toolResponses];
+      const secondRes = await fetch(`${GROQ_API_BASE}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: GROQ_MODEL,
+          messages: secondTurnMessages,
+          temperature: 0.2,
+        }),
+      });
+
+      if (secondRes.ok) {
+        const secondData = await secondRes.json();
+        finalNarrative = secondData.choices?.[0]?.message?.content?.trim() || "";
+      }
+    } catch (e) {
+      console.warn("[Groq second turn error]:", e);
+    }
+
+    return formatAssistantPayloadFromToolResult({
+      userText,
+      toolName: lastToolName,
+      toolExec: lastToolExec!,
+      collectedProducts,
+      executedSql,
+      lastFilter,
+      finalNarrative,
+      traceSteps,
+    });
+  }
+
+  const directText = message?.content || "";
+  return formatDirectTextResponse(userText, directText);
+}
+
+// ---------------------------------------------------------------------------
 // Resilient Deterministic Engine (Zero-Downtime Offline / Quota Fallback)
 // ---------------------------------------------------------------------------
 async function executeDeterministicAgent(messages: ChatMessage[]): Promise<AssistantMessage> {
@@ -1260,20 +1419,34 @@ async function executeDeterministicAgent(messages: ChatMessage[]): Promise<Assis
 // Unified Chat Entry Point (Multi-Provider Fallback Cascade)
 // ---------------------------------------------------------------------------
 export async function handleRealChat(messages: ChatMessage[]): Promise<AssistantMessage> {
+  const provider = (process.env.LLM_PROVIDER || "auto").toLowerCase();
   const openAiKey = getOpenAIApiKey();
+  const groqKey = getGroqApiKey();
   const geminiKey = getGeminiApiKey();
 
-  // Try 1: OpenAI (if key provided)
-  if (openAiKey) {
+  let openAiError: string | null = null;
+
+  // Try 1: OpenAI (Prioritized as requested)
+  if (openAiKey && (provider === "auto" || provider === "openai")) {
     try {
       return await callOpenAIChat(messages, openAiKey);
     } catch (err: any) {
-      console.warn(`[CartWise Agent] OpenAI request bypassed/failed (${err?.message || err}). Cascading to secondary provider...`);
+      openAiError = err?.message || String(err);
+      console.warn(`[CartWise Agent] OpenAI request failed (${openAiError}). Cascading to secondary provider...`);
     }
   }
 
-  // Try 2: Gemini (if key provided)
-  if (geminiKey) {
+  // Try 2: Groq (if key provided)
+  if (groqKey && (provider === "auto" || provider === "groq")) {
+    try {
+      return await callGroqChat(messages, groqKey);
+    } catch (err: any) {
+      console.warn(`[CartWise Agent] Groq request failed (${err?.message || err}). Cascading to secondary provider...`);
+    }
+  }
+
+  // Try 3: Gemini / Google (if key provided)
+  if (geminiKey && (provider === "auto" || provider === "gemini" || provider === "google")) {
     try {
       return await callGeminiChat(messages, geminiKey);
     } catch (err: any) {
@@ -1281,8 +1454,24 @@ export async function handleRealChat(messages: ChatMessage[]): Promise<Assistant
     }
   }
 
-  // Try 3: Zero-downtime Deterministic SQLite Engine (Grounded, truthful, never crashes)
-  return executeDeterministicAgent(messages);
+  // Try 4: Zero-downtime Deterministic SQLite Engine (Grounded, truthful, never crashes)
+  const result = await executeDeterministicAgent(messages);
+
+  // If OpenAI failed due to quota/credit balance exhaustion, enrich the trace so the developer/user immediately knows why!
+  if (openAiError) {
+    const isQuotaExhausted = openAiError.includes("credit_balance_exhausted") || openAiError.includes("insufficient_quota");
+    if (result && "trace" in result && result.trace) {
+      result.trace.steps.unshift({
+        title: isQuotaExhausted ? "OpenAI Quota Notice" : "OpenAI Connection Status",
+        detail: isQuotaExhausted
+          ? "OpenAI API returned credit_balance_exhausted (insufficient quota). Grounded catalog engine served this request."
+          : `OpenAI attempt bypassed: ${openAiError.slice(0, 120)}. Grounded catalog engine active.`,
+        status: "complete",
+      });
+    }
+  }
+
+  return result;
 }
 
 // ---------------------------------------------------------------------------
