@@ -92,16 +92,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     loadUser();
   }, []);
 
-  // Save session when user changes
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (user?.id) {
-        localStorage.setItem(LOCAL_STORAGE_USER_KEY, String(user.id));
-      } else {
-        localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
-      }
-    }
-  }, [user]);
+
 
   // Load personalized products whenever user changes or updates preferences
   const refreshPersonalized = async () => {
@@ -147,6 +138,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
       if (data.success && data.user) {
         setUser(data.user);
+        if (typeof window !== "undefined") {
+          localStorage.setItem(LOCAL_STORAGE_USER_KEY, String(data.user.id));
+        }
         setIsAuthModalOpen(false);
         return { success: true };
       }
@@ -191,6 +185,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
       if (data.success && data.user) {
         setUser(data.user);
+        if (typeof window !== "undefined") {
+          localStorage.setItem(LOCAL_STORAGE_USER_KEY, String(data.user.id));
+        }
         setIsAuthModalOpen(false);
         setLastGeneratedCode(null);
         setPendingVerificationEmail("");
