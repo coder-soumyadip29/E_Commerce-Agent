@@ -18,6 +18,7 @@ import { RecipeBundleMessage } from "@/components/chat/RecipeBundleMessage";
 import { ThinkingMessage } from "@/components/chat/ThinkingMessage";
 import { AgentTraceModal } from "@/components/chat/AgentTraceModal";
 import { SatelliteGpsModal } from "@/components/chat/SatelliteGpsModal";
+import { ChatHistoryModal } from "@/components/chat/ChatHistoryModal";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { OrdersView } from "@/components/orders/OrdersView";
 import { Footer } from "@/components/Footer";
@@ -25,7 +26,7 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { AddressModal } from "@/components/auth/AddressModal";
 import { PersonalisationModal } from "@/components/auth/PersonalisationModal";
 import { ProductDetailModal } from "@/components/product/ProductDetailModal";
-import { ChatMessage, AssistantMessage, Product, OrderTrackingInfo } from "@/lib/types";
+import { ChatMessage, AssistantMessage, Product, OrderTrackingInfo, ChatSession } from "@/lib/types";
 import {
   Sparkles,
   Bot,
@@ -52,6 +53,8 @@ import {
   ArrowRight,
   Filter,
   Eye,
+  Lock,
+  Trash2,
 } from "lucide-react";
 
 // Dynamic Subcategory & Filter Presets for Each Category (Flipkart / Amazon style)
@@ -294,7 +297,7 @@ const CARTWISE_TOP_TECH_DEALS = [
 function MainApp() {
   const { activeTab, setActiveTab, selectedTrace, setSelectedTrace, addToCart, setIsCartOpen, cart, updateQuantity } = useCart();
   const { speak, isAutoSpeakEnabled } = useVoice();
-  const { user, personalizedProducts, setIsPersonalisationModalOpen } = useUser();
+  const { user, personalizedProducts, setIsPersonalisationModalOpen, setIsAuthModalOpen, setAuthModalTab } = useUser();
   const [mobileView, setMobileView] = useState<"store" | "copilot">("store");
 
   const initialUserMessage: ChatMessage = {
@@ -367,47 +370,81 @@ function MainApp() {
     },
   };
 
-  const getChatStorageKey = (userId?: number | null) =>
-    userId ? `cartwise_chat_user_${userId}` : "cartwise_chat_guest";
-
+  // Chat State & Multi-Session History Support
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const hasLoadedChatRef = useRef(false);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [chatHistory, setChatHistory] = useState<ChatSession[]>([]);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
-  // Sync messages when user changes (e.g. login, logout, new account creation)
+  // Sync / initialize chat on login or re-login
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const storageKey = getChatStorageKey(user?.id);
-    const saved = localStorage.getItem(storageKey);
 
-    if (saved) {
+    if (!user?.id) {
+      // Guest: clear chat messages and history
+      setMessages([]);
+      setActiveSessionId(null);
+      setChatHistory([]);
+      return;
+    }
+
+    // Authenticated user: Load saved history sessions
+    const historyKey = `cartwise_history_${user.id}`;
+    const savedHistory = localStorage.getItem(historyKey);
+    let loadedSessions: ChatSession[] = [];
+    if (savedHistory) {
       try {
-        const parsed = JSON.parse(saved);
+        const parsed = JSON.parse(savedHistory);
         if (Array.isArray(parsed)) {
-          setMessages(parsed);
-          hasLoadedChatRef.current = true;
-          return;
+          loadedSessions = parsed;
         }
       } catch (err) {
-        // Fallback
+        console.error("Failed to parse chat history", err);
       }
     }
+    setChatHistory(loadedSessions);
 
-    // Default messages for VIP user Maya (id 1) if nothing saved yet;
-    // brand new users (id > 1) or guest start with a clean empty chat!
-    if (user?.id === 1) {
-      setMessages([initialUserMessage, initialAssistantMessage]);
-    } else {
-      setMessages([]);
-    }
-    hasLoadedChatRef.current = true;
+    // Requirement: When user logs in or re-logs in, CartWise ALWAYS starts with a fresh page!
+    setMessages([]);
+    setActiveSessionId(null);
   }, [user?.id]);
 
-  // Persist messages per user
-  useEffect(() => {
-    if (typeof window === "undefined" || !hasLoadedChatRef.current) return;
-    const storageKey = getChatStorageKey(user?.id);
-    localStorage.setItem(storageKey, JSON.stringify(messages));
-  }, [messages, user?.id]);
+  const saveSessionToHistory = (msgs: ChatMessage[], sessionId?: string | null) => {
+    if (!user?.id || msgs.length === 0) return;
+    const sid = sessionId || activeSessionId || `session-${Date.now()}`;
+    if (!activeSessionId) {
+      setActiveSessionId(sid);
+    }
+
+    const firstUserMsg = msgs.find((m) => m.role === "user");
+    const rawTitle = firstUserMsg ? firstUserMsg.content : "Shopping Query";
+    const title = rawTitle.slice(0, 45) + (rawTitle.length > 45 ? "…" : "");
+
+    setChatHistory((prev) => {
+      const idx = prev.findIndex((s) => s.id === sid);
+      const updatedSession: ChatSession = {
+        id: sid,
+        title: idx >= 0 ? prev[idx].title : title,
+        createdAt: idx >= 0 ? prev[idx].createdAt : Date.now(),
+        messages: msgs,
+      };
+
+      let next: ChatSession[];
+      if (idx >= 0) {
+        next = [...prev];
+        next[idx] = updatedSession;
+      } else {
+        next = [updatedSession, ...prev];
+      }
+
+      try {
+        localStorage.setItem(`cartwise_history_${user.id}`, JSON.stringify(next));
+      } catch (e) {
+        console.error("Failed to save history", e);
+      }
+      return next;
+    });
+  };
   const [isLoading, setIsLoading] = useState(false);
   const [thinkingLabel, setThinkingLabel] = useState("Searching Cartwise Plus product catalog…");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -500,6 +537,17 @@ function MainApp() {
   }, [messages, isLoading]);
 
   const handleSendMessage = async (text: string) => {
+    if (!user) {
+      setAuthModalTab("signin");
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    const currentSid = activeSessionId || `session-${Date.now()}`;
+    if (!activeSessionId) {
+      setActiveSessionId(currentSid);
+    }
+
     const userMsg: ChatMessage = {
       id: `usr-${Date.now()}`,
       role: "user",
@@ -509,6 +557,7 @@ function MainApp() {
 
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
+    saveSessionToHistory(newMessages, currentSid);
     setIsLoading(true);
 
     if (text.toLowerCase().includes("phone") || text.toLowerCase().includes("edge") || text.toLowerCase().includes("iphone")) {
@@ -537,7 +586,9 @@ function MainApp() {
           payload: data.message as AssistantMessage,
           timestamp: Date.now(),
         };
-        setMessages((prev) => [...prev, assistantMsg]);
+        const finalMessages = [...newMessages, assistantMsg];
+        setMessages(finalMessages);
+        saveSessionToHistory(finalMessages, currentSid);
 
         if (isAutoSpeakEnabled) {
           const payload = data.message as AssistantMessage;
@@ -568,13 +619,26 @@ function MainApp() {
         },
         timestamp: Date.now(),
       };
-      setMessages((prev) => [...prev, fallbackErrorMsg]);
+      const finalErrorMessages = [...newMessages, fallbackErrorMsg];
+      setMessages(finalErrorMessages);
+      saveSessionToHistory(finalErrorMessages, currentSid);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleSendImage = async (imagePathOrFile: string | File) => {
+    if (!user) {
+      setAuthModalTab("signin");
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    const currentSid = activeSessionId || `session-${Date.now()}`;
+    if (!activeSessionId) {
+      setActiveSessionId(currentSid);
+    }
+
     let imageUrl = "/images/honey.png";
     let imageName = "honey.png";
 
@@ -594,7 +658,9 @@ function MainApp() {
       timestamp: Date.now(),
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    saveSessionToHistory(newMessages, currentSid);
     setIsLoading(true);
     setThinkingLabel("Analyzing visual attributes & product features…");
 
@@ -614,7 +680,9 @@ function MainApp() {
           payload: data.message as AssistantMessage,
           timestamp: Date.now(),
         };
-        setMessages((prev) => [...prev, assistantMsg]);
+        const finalMessages = [...newMessages, assistantMsg];
+        setMessages(finalMessages);
+        saveSessionToHistory(finalMessages, currentSid);
 
         if (isAutoSpeakEnabled && (data.message as any).description) {
           speak((data.message as any).description);
@@ -629,9 +697,57 @@ function MainApp() {
 
   const handleNewChat = () => {
     setMessages([]);
-    if (typeof window !== "undefined") {
-      const storageKey = getChatStorageKey(user?.id);
-      localStorage.removeItem(storageKey);
+    setActiveSessionId(null);
+  };
+
+  const handleDeleteCurrentChat = () => {
+    if (activeSessionId && user?.id) {
+      setChatHistory((prev) => {
+        const next = prev.filter((s) => s.id !== activeSessionId);
+        try {
+          localStorage.setItem(`cartwise_history_${user.id}`, JSON.stringify(next));
+        } catch (e) {
+          console.error("Failed to update history", e);
+        }
+        return next;
+      });
+    }
+    setMessages([]);
+    setActiveSessionId(null);
+  };
+
+  const handleSelectSession = (session: ChatSession) => {
+    setActiveSessionId(session.id);
+    setMessages(session.messages);
+  };
+
+  const handleDeleteSession = (sessionId: string) => {
+    if (!user?.id) return;
+    setChatHistory((prev) => {
+      const next = prev.filter((s) => s.id !== sessionId);
+      try {
+        localStorage.setItem(`cartwise_history_${user.id}`, JSON.stringify(next));
+      } catch (e) {
+        console.error("Failed to update history", e);
+      }
+      return next;
+    });
+
+    if (activeSessionId === sessionId) {
+      setMessages([]);
+      setActiveSessionId(null);
+    }
+  };
+
+  const handleClearAllHistory = () => {
+    if (!user?.id) return;
+    setChatHistory([]);
+    setMessages([]);
+    setActiveSessionId(null);
+    try {
+      localStorage.removeItem(`cartwise_history_${user.id}`);
+    } catch (e) {
+      console.error("Failed to clear history", e);
     }
   };
 
@@ -1035,7 +1151,14 @@ function MainApp() {
                             {quantityInCart > 0 ? (
                               <div className="flex items-center justify-between bg-slate-950 border border-amber-500/30 rounded-lg p-1">
                                 <button
-                                  onClick={() => updateQuantity(product.id, quantityInCart - 1)}
+                                  onClick={() => {
+                                    if (!user) {
+                                      setAuthModalTab("signin");
+                                      setIsAuthModalOpen(true);
+                                      return;
+                                    }
+                                    updateQuantity(product.id, quantityInCart - 1);
+                                  }}
                                   className="w-7 h-7 rounded bg-slate-900 text-amber-400 font-bold flex items-center justify-center shadow-xs cursor-pointer hover:bg-slate-800"
                                 >
                                   -
@@ -1044,7 +1167,14 @@ function MainApp() {
                                   {quantityInCart} in cart
                                 </span>
                                 <button
-                                  onClick={() => addToCart(product, 1)}
+                                  onClick={() => {
+                                    if (!user) {
+                                      setAuthModalTab("signin");
+                                      setIsAuthModalOpen(true);
+                                      return;
+                                    }
+                                    addToCart(product, 1);
+                                  }}
                                   className="w-7 h-7 rounded bg-amber-500 text-slate-950 font-black flex items-center justify-center shadow-xs cursor-pointer hover:bg-amber-400"
                                 >
                                   +
@@ -1052,7 +1182,14 @@ function MainApp() {
                               </div>
                             ) : (
                               <button
-                                onClick={() => addToCart(product, 1)}
+                                onClick={() => {
+                                  if (!user) {
+                                    setAuthModalTab("signin");
+                                    setIsAuthModalOpen(true);
+                                    return;
+                                  }
+                                  addToCart(product, 1);
+                                }}
                                 className="w-full py-1.5 px-3 rounded-lg text-xs font-bold text-amber-400 bg-slate-950 hover:bg-slate-900 border border-amber-500/40 hover:border-amber-400 transition-colors flex items-center justify-center gap-1.5 active:scale-98 cursor-pointer shadow-xs"
                               >
                                 <ShoppingCart className="w-3.5 h-3.5 text-amber-400" />
@@ -1117,220 +1254,358 @@ function MainApp() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="font-bold text-xs sm:text-sm text-white">Cartwise AI Assistant</h3>
-                      <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 shadow-xs">
-                        LIVE
-                      </span>
+                      {user ? (
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 shadow-xs">
+                          LIVE
+                        </span>
+                      ) : (
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-900 text-amber-400 border border-amber-500/30 flex items-center gap-1">
+                          <Lock className="w-2.5 h-2.5" /> MEMBERS ONLY
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-1 text-[10px] text-amber-200/80">
-                      <span>Instant comparison &amp; price arbitrage</span>
+                      <span>{user ? "Instant comparison & price arbitrage" : "Sign in or register to unlock AI co-pilot"}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() =>
-                      setSelectedTrace(
-                        selectedTrace || {
-                          query: "Recent Product Catalog Scan",
-                          parsed_intent: "Verified catalog retrieval with SQLite",
-                          filters: { keyword: "mobiles" },
-                          sql_query: "SELECT * FROM products WHERE category = 'mobiles'",
-                          steps: [
-                            { title: "Query Parsing", detail: "Parsed user search filters and intent", status: "complete" },
-                            { title: "Database Query", detail: "Scanned SQLite products with index lookups", status: "complete" },
-                            { title: "Review Aggregation", detail: "Aggregated customer ratings and star counts", status: "complete" },
-                          ],
-                        }
-                      )
-                    }
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-white/10 transition-colors cursor-pointer"
-                    title="Agent Trace Inspector"
-                  >
-                    <Sliders className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={handleNewChat}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-white/10 transition-colors cursor-pointer"
-                    title="Clear Chat / New Thread"
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+                {user ? (
+                  <div className="flex items-center gap-1 sm:gap-1.5">
+                    <button
+                      onClick={() =>
+                        setSelectedTrace(
+                          selectedTrace || {
+                            query: "Recent Product Catalog Scan",
+                            parsed_intent: "Verified catalog retrieval with SQLite",
+                            filters: { keyword: "mobiles" },
+                            sql_query: "SELECT * FROM products WHERE category = 'mobiles'",
+                            steps: [
+                              { title: "Query Parsing", detail: "Parsed user search filters and intent", status: "complete" },
+                              { title: "Database Query", detail: "Scanned SQLite products with index lookups", status: "complete" },
+                              { title: "Review Aggregation", detail: "Aggregated customer ratings and star counts", status: "complete" },
+                            ],
+                          }
+                        )
+                      }
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-white/10 transition-colors cursor-pointer"
+                      title="Agent Trace Inspector"
+                    >
+                      <Sliders className="w-4 h-4" />
+                    </button>
 
-              {/* Mode Tabs: [Chat & Search] [Snap Search] [Voice] */}
-              <div className="px-3 pt-2 pb-1.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => setActiveCopilotTab("chat")}
-                    className={`flex items-center gap-1 px-3 py-1 rounded-full font-bold transition-all cursor-pointer ${
-                      activeCopilotTab === "chat"
-                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    <MessageSquare className="w-3 h-3" />
-                    <span>Chat &amp; Find</span>
-                  </button>
+                    <button
+                      onClick={() => setIsHistoryModalOpen(true)}
+                      className="relative p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-white/10 transition-colors cursor-pointer"
+                      title="Previous Chat History"
+                    >
+                      <Clock className="w-4 h-4" />
+                      {chatHistory.length > 0 && (
+                        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-amber-400 text-slate-950 font-black text-[8px] flex items-center justify-center shadow-xs">
+                          {chatHistory.length}
+                        </span>
+                      )}
+                    </button>
 
+                    <button
+                      onClick={handleNewChat}
+                      className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 transition-colors cursor-pointer shadow-xs"
+                      title="Start fresh new chat"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span className="hidden xs:inline">New Chat</span>
+                    </button>
+
+                    {messages.length > 0 && (
+                      <button
+                        onClick={handleDeleteCurrentChat}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-white/10 transition-colors cursor-pointer"
+                        title="Delete Current Chat"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ) : (
                   <button
                     onClick={() => {
-                      setActiveCopilotTab("snap");
-                      handleSendImage("honey.png");
+                      setAuthModalTab("signin");
+                      setIsAuthModalOpen(true);
                     }}
-                    className={`flex items-center gap-1 px-3 py-1 rounded-full font-semibold transition-all cursor-pointer ${
-                      activeCopilotTab === "snap"
-                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 transition-colors cursor-pointer shadow-xs"
                   >
-                    <Camera className="w-3 h-3" />
-                    <span>Photo Search</span>
+                    <Lock className="w-3 h-3" />
+                    <span>Sign In</span>
                   </button>
-
-                  <button
-                    onClick={() => setActiveCopilotTab("voice")}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-semibold transition-all cursor-pointer ${
-                      activeCopilotTab === "voice"
-                        ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    <Mic className="w-3 h-3" />
-                  </button>
-                </div>
-
-                <div className="text-[10px] text-slate-500 font-medium hidden sm:inline">
-                  ⚡ 15-Min Delivery
-                </div>
-              </div>
-
-              {/* Chat Stream (Scrollable message area) */}
-              <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3.5 scrollbar-thin bg-slate-50/50 min-h-0">
-                {messages.length === 0 ? (
-                  <EmptyChatPrompt onSelectPrompt={handleSendMessage} />
-                ) : (
-                  <>
-                    <div className="text-center text-[10px] text-slate-400 font-medium py-1">
-                      Real-time retail assistant • Grounded in store inventory
-                    </div>
-
-                    {messages.map((msg) => {
-                      if (msg.role === "user") {
-                        return <UserBubble key={msg.id} message={msg} />;
-                      }
-
-                      const { payload } = msg;
-                      switch (payload.type) {
-                        case "text":
-                          return <TextMessage key={msg.id} text={payload.text} />;
-
-                        case "products":
-                          return (
-                            <ProductsMessage
-                              key={msg.id}
-                              products={payload.products}
-                              text={payload.text}
-                              trace={payload.trace}
-                              orderTracking={payload.orderTracking}
-                              promoArbitrage={payload.promoArbitrage}
-                              onOpenTrace={(trace) => setSelectedTrace(trace)}
-                              onOpenGpsFeed={(tracking) => setActiveTrackingModal(tracking)}
-                              onInstantPay={(amount, product) => {
-                                addToCart(product, 1);
-                                setIsCartOpen(true);
-                              }}
-                            />
-                          );
-
-                        case "image_analysis":
-                          return (
-                            <ImageAnalysisMessage
-                              key={msg.id}
-                              tags={payload.tags}
-                              description={payload.description}
-                              matchedProducts={payload.matchedProducts}
-                              uploadedImage={payload.uploadedImage}
-                              onOpenTrace={(trace) => setSelectedTrace(trace)}
-                            />
-                          );
-
-                        case "clarify":
-                          return (
-                            <ClarifyMessage
-                              key={msg.id}
-                              question={payload.question}
-                              options={payload.options}
-                              onSelectOption={handleSendMessage}
-                            />
-                          );
-
-                        case "compare":
-                          return (
-                            <CompareMessage
-                              key={msg.id}
-                              products={payload.products}
-                              comparisonPoints={payload.comparisonPoints}
-                            />
-                          );
-
-                        case "empty_state":
-                          return (
-                            <EmptyStateMessage
-                              key={msg.id}
-                              reason={payload.reason}
-                              suggestions={payload.suggestions}
-                              onSelectSuggestion={handleSendMessage}
-                            />
-                          );
-
-                        case "recipe_bundle":
-                          return (
-                            <RecipeBundleMessage
-                              key={msg.id}
-                              recipeName={payload.recipeName}
-                              dishType={payload.dishType}
-                              servings={payload.servings}
-                              prepTime={payload.prepTime}
-                              caloriesPerServing={payload.caloriesPerServing}
-                              nutrition={payload.nutrition}
-                              dietaryTags={payload.dietaryTags}
-                              instructions={payload.instructions}
-                              ingredients={payload.ingredients}
-                              totalBundlePrice={payload.totalBundlePrice}
-                              originalBundlePrice={payload.originalBundlePrice}
-                              bundleDiscountPercent={payload.bundleDiscountPercent}
-                              text={payload.text}
-                              trace={payload.trace}
-                              onOpenTrace={(trace) => setSelectedTrace(trace)}
-                            />
-                          );
-
-                        default:
-                          return null;
-                      }
-                    })}
-
-                    {isLoading && <ThinkingMessage label={thinkingLabel} />}
-                    <div ref={messagesEndRef} />
-                  </>
                 )}
               </div>
 
-              {/* Chat Input Bar */}
-              <ChatInput
-                onSendMessage={handleSendMessage}
-                onSendImage={handleSendImage}
-                disabled={isLoading}
-                onSelectSuggestion={handleSendMessage}
-              />
+              {!user ? (
+                /* Member-Locked Gate Screen for Unauthenticated Visitors */
+                <div className="flex-1 flex flex-col justify-between p-4 sm:p-6 bg-gradient-to-b from-slate-50 via-white to-amber-50/20 overflow-y-auto">
+                  <div className="flex flex-col items-center justify-center text-center space-y-4 my-auto py-4">
+                    <div className="relative">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-slate-950 via-slate-900 to-zinc-950 border border-amber-500/50 flex items-center justify-center text-amber-400 shadow-xl">
+                        <Bot className="w-8 h-8" />
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-md">
+                        <Lock className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-400/20 text-amber-700 border border-amber-500/30">
+                        Members Only
+                      </span>
+                      <h3 className="text-base sm:text-lg font-black text-slate-950 mt-2">
+                        CartWise AI Shopping Co-Pilot
+                      </h3>
+                      <p className="text-xs text-slate-600 mt-1 max-w-xs leading-relaxed">
+                        Sign in or create an account to unlock your personal shopping assistant, deep specifications comparison, photo search, and instant deal discovery.
+                      </p>
+                    </div>
+
+                    {/* Features Preview */}
+                    <div className="w-full max-w-xs space-y-2 text-left bg-white border border-slate-200 rounded-xl p-3 shadow-2xs">
+                      <div className="flex items-center gap-2 text-xs text-slate-700">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                        <span>Real-time price drop arbitrage &amp; coupons</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-slate-700">
+                        <Camera className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                        <span>Snap &amp; visual photo recognition</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-slate-700">
+                        <Sliders className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                        <span>Side-by-side specs &amp; smartphone comparison</span>
+                      </div>
+                    </div>
+
+                    {/* Auth Action Buttons */}
+                    <div className="w-full max-w-xs space-y-2 pt-2">
+                      <button
+                        onClick={() => {
+                          setAuthModalTab("signin");
+                          setIsAuthModalOpen(true);
+                        }}
+                        className="w-full py-2.5 px-4 rounded-xl text-xs font-black text-slate-950 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 shadow-md active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <Lock className="w-3.5 h-3.5" />
+                        <span>SIGN IN TO ACCESS CO-PILOT</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setAuthModalTab("signup");
+                          setIsAuthModalOpen(true);
+                        }}
+                        className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <span>CREATE FREE ACCOUNT</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Bottom Guest Bar */}
+                  <div className="pt-3 border-t border-slate-200 text-center text-[11px] text-slate-500">
+                    Guests can freely browse, filter, and inspect product details in the storefront.
+                  </div>
+                </div>
+              ) : (
+                /* Authenticated User Interactive Chat Interface */
+                <>
+                  {/* Mode Tabs: [Chat & Search] [Snap Search] [Voice] */}
+                  <div className="px-3 pt-2 pb-1.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setActiveCopilotTab("chat")}
+                        className={`flex items-center gap-1 px-3 py-1 rounded-full font-bold transition-all cursor-pointer ${
+                          activeCopilotTab === "chat"
+                            ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
+                            : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        <MessageSquare className="w-3 h-3" />
+                        <span>Chat &amp; Find</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setActiveCopilotTab("snap");
+                          handleSendImage("honey.png");
+                        }}
+                        className={`flex items-center gap-1 px-3 py-1 rounded-full font-semibold transition-all cursor-pointer ${
+                          activeCopilotTab === "snap"
+                            ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
+                            : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        <Camera className="w-3 h-3" />
+                        <span>Photo Search</span>
+                      </button>
+
+                      <button
+                        onClick={() => setActiveCopilotTab("voice")}
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-semibold transition-all cursor-pointer ${
+                          activeCopilotTab === "voice"
+                            ? "bg-slate-950 text-amber-400 border border-amber-500/40 shadow-xs"
+                            : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        <Mic className="w-3 h-3" />
+                      </button>
+                    </div>
+
+                    <div className="text-[10px] text-slate-500 font-medium hidden sm:inline">
+                      ⚡ 15-Min Delivery
+                    </div>
+                  </div>
+
+                  {/* Chat Stream (Scrollable message area) */}
+                  <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3.5 scrollbar-thin bg-slate-50/50 min-h-0">
+                    {messages.length === 0 ? (
+                      <EmptyChatPrompt onSelectPrompt={handleSendMessage} />
+                    ) : (
+                      <>
+                        <div className="text-center text-[10px] text-slate-400 font-medium py-1">
+                          Real-time retail assistant • Grounded in store inventory
+                        </div>
+
+                        {messages.map((msg) => {
+                          if (msg.role === "user") {
+                            return <UserBubble key={msg.id} message={msg} />;
+                          }
+
+                          const { payload } = msg;
+                          switch (payload.type) {
+                            case "text":
+                              return <TextMessage key={msg.id} text={payload.text} />;
+
+                            case "products":
+                              return (
+                                <ProductsMessage
+                                  key={msg.id}
+                                  products={payload.products}
+                                  text={payload.text}
+                                  trace={payload.trace}
+                                  orderTracking={payload.orderTracking}
+                                  promoArbitrage={payload.promoArbitrage}
+                                  onOpenTrace={(trace) => setSelectedTrace(trace)}
+                                  onOpenGpsFeed={(tracking) => setActiveTrackingModal(tracking)}
+                                  onInstantPay={(amount, product) => {
+                                    if (!user) {
+                                      setAuthModalTab("signin");
+                                      setIsAuthModalOpen(true);
+                                      return;
+                                    }
+                                    addToCart(product, 1);
+                                    setIsCartOpen(true);
+                                  }}
+                                  onSelectProduct={(product) => setSelectedProductForModal(product)}
+                                />
+                              );
+
+                            case "image_analysis":
+                              return (
+                                <ImageAnalysisMessage
+                                  key={msg.id}
+                                  tags={payload.tags}
+                                  description={payload.description}
+                                  matchedProducts={payload.matchedProducts}
+                                  uploadedImage={payload.uploadedImage}
+                                  onOpenTrace={(trace) => setSelectedTrace(trace)}
+                                  onSelectProduct={(product) => setSelectedProductForModal(product)}
+                                />
+                              );
+
+                            case "clarify":
+                              return (
+                                <ClarifyMessage
+                                  key={msg.id}
+                                  question={payload.question}
+                                  options={payload.options}
+                                  onSelectOption={handleSendMessage}
+                                />
+                              );
+
+                            case "compare":
+                              return (
+                                <CompareMessage
+                                  key={msg.id}
+                                  products={payload.products}
+                                  comparisonPoints={payload.comparisonPoints}
+                                  onSelectProduct={(product) => setSelectedProductForModal(product)}
+                                />
+                              );
+
+                            case "empty_state":
+                              return (
+                                <EmptyStateMessage
+                                  key={msg.id}
+                                  reason={payload.reason}
+                                  suggestions={payload.suggestions}
+                                  onSelectSuggestion={handleSendMessage}
+                                />
+                              );
+
+                            case "recipe_bundle":
+                              return (
+                                <RecipeBundleMessage
+                                  key={msg.id}
+                                  recipeName={payload.recipeName}
+                                  dishType={payload.dishType}
+                                  servings={payload.servings}
+                                  prepTime={payload.prepTime}
+                                  caloriesPerServing={payload.caloriesPerServing}
+                                  nutrition={payload.nutrition}
+                                  dietaryTags={payload.dietaryTags}
+                                  instructions={payload.instructions}
+                                  ingredients={payload.ingredients}
+                                  totalBundlePrice={payload.totalBundlePrice}
+                                  originalBundlePrice={payload.originalBundlePrice}
+                                  bundleDiscountPercent={payload.bundleDiscountPercent}
+                                  text={payload.text}
+                                  trace={payload.trace}
+                                  onOpenTrace={(trace) => setSelectedTrace(trace)}
+                                />
+                              );
+
+                            default:
+                              return null;
+                          }
+                        })}
+
+                        {isLoading && <ThinkingMessage label={thinkingLabel} />}
+                        <div ref={messagesEndRef} />
+                      </>
+                    )}
+                  </div>
+
+                  {/* Chat Input Bar */}
+                  <ChatInput
+                    onSendMessage={handleSendMessage}
+                    onSendImage={handleSendImage}
+                    disabled={isLoading}
+                    onSelectSuggestion={handleSendMessage}
+                  />
+                </>
+              )}
             </div>
           </div>
         </main>
       )}
 
       {/* Global Modals */}
+      <ChatHistoryModal
+        isOpen={isHistoryModalOpen}
+        onClose={() => setIsHistoryModalOpen(false)}
+        sessions={chatHistory}
+        activeSessionId={activeSessionId}
+        onSelectSession={handleSelectSession}
+        onDeleteSession={handleDeleteSession}
+        onClearAll={handleClearAllHistory}
+        onNewChat={handleNewChat}
+      />
       <CartDrawer />
       <AuthModal />
       <AddressModal />

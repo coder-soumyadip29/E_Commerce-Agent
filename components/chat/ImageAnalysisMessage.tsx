@@ -11,6 +11,7 @@ interface ImageAnalysisMessageProps {
   matchedProducts?: Product[];
   uploadedImage?: string;
   onOpenTrace?: (trace: any) => void;
+  onSelectProduct?: (product: Product) => void;
 }
 
 export function ImageAnalysisMessage({
@@ -19,6 +20,7 @@ export function ImageAnalysisMessage({
   matchedProducts = [],
   uploadedImage,
   onOpenTrace,
+  onSelectProduct,
 }: ImageAnalysisMessageProps) {
   const isNonProduct = matchedProducts.length === 0;
 
@@ -85,6 +87,7 @@ export function ImageAnalysisMessage({
             <ProductsMessage
               products={matchedProducts}
               onOpenTrace={onOpenTrace}
+              onSelectProduct={onSelectProduct}
             />
           </div>
         )}

@@ -37,7 +37,7 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_USER_KEY = "cartwise_current_user_id";
+const LOCAL_STORAGE_USER_KEY = "cartwise_auth_user_id";
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -49,25 +49,44 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [isPersonalisationModalOpen, setIsPersonalisationModalOpen] = useState(false);
   const [personalizedProducts, setPersonalizedProducts] = useState<Product[]>([]);
 
-  // Load saved session or default VIP user (Maya Sterling) on mount
+  // Load saved session or prompt login / create account on app start
   useEffect(() => {
     async function loadUser() {
       try {
-        let storedId = 1;
+        let storedId: number | null = null;
         if (typeof window !== "undefined") {
+          // Clear any legacy auto-seeded demo user session
+          localStorage.removeItem("cartwise_current_user_id");
+
           const saved = localStorage.getItem(LOCAL_STORAGE_USER_KEY);
           if (saved) {
-            storedId = Number(saved) || 1;
+            const parsed = Number(saved);
+            if (!isNaN(parsed) && parsed > 0) {
+              storedId = parsed;
+            }
           }
         }
 
-        const res = await fetch(`/api/auth?userId=${storedId}`);
-        const data = await res.json();
-        if (data.success && data.user) {
-          setUser(data.user);
+        // Only auto-restore if the user previously logged into their own verified account
+        if (storedId) {
+          const res = await fetch(`/api/auth?userId=${storedId}`);
+          const data = await res.json();
+          if (data.success && data.user) {
+            setUser(data.user);
+            return;
+          }
         }
+
+        // When starting the web app without an active logged-in session,
+        // ALWAYS start logged out and prompt for login or registration!
+        setUser(null);
+        setAuthModalTab("signin");
+        setIsAuthModalOpen(true);
       } catch (err) {
         console.error("Failed to load user profile", err);
+        setUser(null);
+        setAuthModalTab("signin");
+        setIsAuthModalOpen(true);
       }
     }
     loadUser();
@@ -271,7 +290,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     if (typeof window !== "undefined") {
       localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
+      localStorage.removeItem("cartwise_current_user_id");
     }
+    setAuthModalTab("signin");
+    setIsAuthModalOpen(true);
   };
 
   const addAddress = async (addressData: Omit<UserAddress, "id" | "user_id">) => {

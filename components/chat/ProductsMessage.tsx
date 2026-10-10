@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Truck,
   Star,
+  Eye,
 } from "lucide-react";
 import { useVoice } from "@/context/VoiceContext";
 
@@ -31,6 +32,7 @@ interface ProductsMessageProps {
   onOpenTrace?: (trace: AgentTrace) => void;
   onOpenGpsFeed?: (tracking: OrderTrackingInfo) => void;
   onInstantPay?: (amount: number, product: Product) => void;
+  onSelectProduct?: (product: Product) => void;
 }
 
 export function ProductsMessage({
@@ -42,6 +44,7 @@ export function ProductsMessage({
   onOpenTrace,
   onOpenGpsFeed,
   onInstantPay,
+  onSelectProduct,
 }: ProductsMessageProps) {
   const { addToCart, buyDirectly, setIsCartOpen } = useCart();
   const { speak, stopSpeaking } = useVoice();
@@ -117,10 +120,11 @@ export function ProductsMessage({
               return (
                 <div
                   key={product.id}
-                  className="bg-white border border-slate-200 rounded-2xl p-3.5 sm:p-4 space-y-3 hover:border-emerald-400 transition-all shadow-xs"
+                  onClick={() => onSelectProduct?.(product)}
+                  className="bg-white border border-slate-200 rounded-2xl p-3.5 sm:p-4 space-y-3 hover:border-amber-400/80 transition-all shadow-xs cursor-pointer group"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden shrink-0 flex items-center justify-center p-1.5">
+                    <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden shrink-0 flex items-center justify-center p-1.5 group-hover:scale-105 transition-transform">
                       <img
                         src={product.image_url || "/images/honey.png"}
                         alt={product.name}
@@ -129,15 +133,15 @@ export function ProductsMessage({
                           (e.target as HTMLImageElement).src = "/images/honey.png";
                         }}
                       />
-                      <span className="absolute top-1 left-1 px-1 py-0.2 rounded text-[8px] font-black uppercase bg-emerald-100 text-emerald-800">
+                      <span className="absolute top-1 left-1 px-1 py-0.2 rounded text-[8px] font-black uppercase bg-slate-900 text-amber-400 border border-amber-500/30">
                         ⚡ 15 MINS
                       </span>
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 mb-1">
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          {product.is_organic ? "🌿 100% Organic" : "Farm Fresh"}
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-slate-100 text-slate-800 border border-slate-200">
+                          {product.category || "Item"}
                         </span>
                         <div className="flex items-center gap-0.5 text-[11px] text-amber-600 font-bold">
                           <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
@@ -145,48 +149,60 @@ export function ProductsMessage({
                         </div>
                       </div>
 
-                      <h4 className="font-bold text-xs sm:text-sm text-slate-900 break-words leading-tight">
+                      <h4 className="font-bold text-xs sm:text-sm text-slate-900 break-words leading-tight group-hover:text-amber-600 transition-colors">
                         {product.name}
                       </h4>
 
                       <div className="flex items-baseline gap-2 mt-1.5">
-                        <span className="font-black text-sm sm:text-base text-slate-900">
-                          ₹{product.price.toFixed(2)}
+                        <span className="font-black text-sm sm:text-base text-slate-950">
+                          ₹{Number(product.price).toLocaleString("en-IN")}
                         </span>
                         <span className="text-xs text-slate-400 line-through">
-                          ₹{originalPrice}
+                          ₹{Number(originalPrice).toLocaleString("en-IN")}
                         </span>
-                        <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-1 rounded">
+                        <span className="text-[10px] font-extrabold text-amber-900 bg-amber-100 border border-amber-200 px-1 rounded">
                           20% OFF
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Actions: Add to Cart (emerald green) & Compare */}
-                  <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+                  {/* Actions: Add to Cart, View Details & Compare */}
+                  <div
+                    className="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-100"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <button
                       onClick={() => handleAdd(product)}
-                      className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition-all cursor-pointer shadow-sm shadow-emerald-600/20"
+                      className="col-span-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[11px] font-bold text-amber-400 bg-slate-950 hover:bg-slate-900 border border-amber-500/40 active:scale-95 transition-all cursor-pointer shadow-xs"
                     >
                       {addedIds[product.id] ? (
                         <>
-                          <Check className="w-3.5 h-3.5 text-white" />
+                          <Check className="w-3 h-3 text-amber-400" />
                           <span>Added!</span>
                         </>
                       ) : (
                         <>
-                          <ShoppingCart className="w-3.5 h-3.5" />
-                          <span>Add to Cart</span>
+                          <ShoppingCart className="w-3 h-3 text-amber-400" />
+                          <span>Add</span>
                         </>
                       )}
                     </button>
 
                     <button
-                      onClick={() => handleCompare(product)}
-                      className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 active:scale-95 transition-all cursor-pointer"
+                      onClick={() => onSelectProduct?.(product)}
+                      className="col-span-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[11px] font-bold text-slate-800 bg-amber-50 hover:bg-amber-100 border border-amber-300/80 active:scale-95 transition-all cursor-pointer shadow-xs"
+                      title="View full specs, details & images"
                     >
-                      <Scale className="w-3.5 h-3.5 text-slate-500" />
+                      <Eye className="w-3 h-3 text-amber-600" />
+                      <span>Details</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleCompare(product)}
+                      className="col-span-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[11px] font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Scale className="w-3 h-3 text-slate-500" />
                       <span>Compare</span>
                     </button>
                   </div>

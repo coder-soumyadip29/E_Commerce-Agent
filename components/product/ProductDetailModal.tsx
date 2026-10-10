@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Product } from "@/lib/types";
 import { useCart } from "@/context/CartContext";
+import { useUser } from "@/context/UserContext";
 import {
   X,
   Star,
@@ -30,6 +31,7 @@ interface ProductDetailModalProps {
 
 export function ProductDetailModal({ product, onClose, onAskAI }: ProductDetailModalProps) {
   const { addToCart, updateQuantity, cart, setIsCartOpen } = useCart();
+  const { user, setIsAuthModalOpen, setAuthModalTab } = useUser();
   const [selectedTab, setSelectedTab] = useState<"highlights" | "specs" | "offers">("highlights");
   const [copied, setCopied] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -49,7 +51,21 @@ export function ProductDetailModal({ product, onClose, onAskAI }: ProductDetailM
     }
   };
 
+  const handleAddToCart = () => {
+    if (!user) {
+      setAuthModalTab("signin");
+      setIsAuthModalOpen(true);
+      return;
+    }
+    addToCart(product, 1);
+  };
+
   const handleBuyNow = () => {
+    if (!user) {
+      setAuthModalTab("signin");
+      setIsAuthModalOpen(true);
+      return;
+    }
     if (quantityInCart === 0) {
       addToCart(product, 1);
     }
@@ -143,7 +159,7 @@ export function ProductDetailModal({ product, onClose, onAskAI }: ProductDetailM
                 </div>
               ) : (
                 <button
-                  onClick={() => addToCart(product, 1)}
+                  onClick={handleAddToCart}
                   className="w-full py-3 px-3 rounded-xl text-xs font-bold text-amber-400 bg-slate-950 hover:bg-slate-900 border border-amber-500/40 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <ShoppingCart className="w-4 h-4 text-amber-400" />
@@ -164,6 +180,11 @@ export function ProductDetailModal({ product, onClose, onAskAI }: ProductDetailM
             {onAskAI && (
               <button
                 onClick={() => {
+                  if (!user) {
+                    setAuthModalTab("signin");
+                    setIsAuthModalOpen(true);
+                    return;
+                  }
                   onClose();
                   onAskAI(`Tell me all about ${product.name}, its specifications, and best offers.`);
                 }}

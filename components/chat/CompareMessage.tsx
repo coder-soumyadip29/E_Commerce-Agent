@@ -8,9 +8,10 @@ import { ShoppingCart, Check, Scale } from "lucide-react";
 interface CompareMessageProps {
   products: Product[];
   comparisonPoints: Record<string, string[]>;
+  onSelectProduct?: (product: Product) => void;
 }
 
-export function CompareMessage({ products, comparisonPoints }: CompareMessageProps) {
+export function CompareMessage({ products, comparisonPoints, onSelectProduct }: CompareMessageProps) {
   const { addToCart } = useCart();
   const [addedIds, setAddedIds] = useState<Record<number, boolean>>({});
 
@@ -56,18 +57,26 @@ export function CompareMessage({ products, comparisonPoints }: CompareMessagePro
                   return (
                     <th key={product.id} className="p-2.5 align-top bg-slate-50/70 border-l border-slate-100">
                       <div className="space-y-1.5">
-                        <div className="w-full h-20 rounded-lg bg-white overflow-hidden flex items-center justify-center p-1 border border-slate-200">
+                        <div
+                          onClick={() => onSelectProduct?.(product)}
+                          className="w-full h-20 rounded-lg bg-white overflow-hidden flex items-center justify-center p-1 border border-slate-200 cursor-pointer hover:border-amber-400 transition-colors group"
+                          title="Click to view full details"
+                        >
                           <img
                             src={product.image_url || "/images/honey.png"}
                             alt={product.name}
-                            className="max-h-full max-w-full object-contain"
+                            className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src = "/images/honey.png";
                             }}
                           />
                         </div>
 
-                        <span className="font-bold text-xs text-slate-900 block truncate">
+                        <span
+                          onClick={() => onSelectProduct?.(product)}
+                          className="font-bold text-xs text-slate-900 block truncate cursor-pointer hover:text-amber-600 transition-colors"
+                          title={product.name}
+                        >
                           {product.name}
                         </span>
 

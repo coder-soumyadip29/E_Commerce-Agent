@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { Product, CartItem, Order } from "@/lib/types";
+import { useUser } from "@/context/UserContext";
 
 interface CartContextType {
   cart: CartItem[];
@@ -30,6 +31,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { user, setIsAuthModalOpen, setAuthModalTab } = useUser();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
@@ -55,6 +57,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [fetchCart]);
 
   const addToCart = async (product: Product, quantity = 1) => {
+    if (!user) {
+      setAuthModalTab("signin");
+      setIsAuthModalOpen(true);
+      return { success: false, error: "Please sign in or create an account to add items to your cart." };
+    }
+
     try {
       const res = await fetch("/api/cart", {
         method: "POST",
@@ -122,6 +130,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const total = subtotal;
 
   const buyDirectly = async (orderId: number) => {
+    if (!user) {
+      setAuthModalTab("signin");
+      setIsAuthModalOpen(true);
+      return { success: false, error: "Please sign in or create an account to proceed." };
+    }
+
     try {
       const res = await fetch(`/api/orders/${orderId}/reorder`, {
         method: "POST"
@@ -138,6 +152,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const handleSetIsCartOpen = (open: boolean) => {
+    if (open && !user) {
+      setAuthModalTab("signin");
+      setIsAuthModalOpen(true);
+      return;
+    }
+    setIsCartOpen(open);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -150,7 +173,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         subtotal,
         total,
         isCartOpen,
-        setIsCartOpen,
+        setIsCartOpen: handleSetIsCartOpen,
         isReviewOpen,
         setIsReviewOpen,
         isConfirmedOpen,

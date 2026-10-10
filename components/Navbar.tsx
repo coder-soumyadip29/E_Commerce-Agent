@@ -361,7 +361,14 @@ export function Navbar({
 
           {/* Orders Quick Tab */}
           <button
-            onClick={() => setActiveTab(activeTab === "orders" ? "chat" : "orders")}
+            onClick={() => {
+              if (!user) {
+                setAuthModalTab("signin");
+                setIsAuthModalOpen(true);
+                return;
+              }
+              setActiveTab(activeTab === "orders" ? "chat" : "orders");
+            }}
             className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === "orders"
                 ? "bg-slate-900 text-amber-400 border border-amber-500/40"
@@ -374,7 +381,14 @@ export function Navbar({
 
           {/* Cart Pill with Badge */}
           <button
-            onClick={() => setIsCartOpen(true)}
+            onClick={() => {
+              if (!user) {
+                setAuthModalTab("signin");
+                setIsAuthModalOpen(true);
+                return;
+              }
+              setIsCartOpen(true);
+            }}
             className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-900 border border-amber-500/40 active:scale-95 text-white font-bold text-xs transition-all cursor-pointer shadow-xs shrink-0"
           >
             <div className="relative">

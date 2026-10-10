@@ -282,7 +282,7 @@ export function AuthModal() {
   };
 
   const fillDemoAccount = () => {
-    setEmail("maya.sterling@example.com");
+    setEmail("rahul.sharma@example.com");
     setPassword("password123");
   };
 
@@ -576,7 +576,7 @@ export function AuthModal() {
                 onClick={fillDemoAccount}
                 className="text-emerald-700 hover:underline font-bold cursor-pointer"
               >
-                Maya Sterling (VIP)
+                Rahul Sharma (Demo)
               </button>
             </div>
           </form>
