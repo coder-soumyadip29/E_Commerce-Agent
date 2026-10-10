@@ -20,6 +20,7 @@ import { AgentTraceModal } from "@/components/chat/AgentTraceModal";
 import { SatelliteGpsModal } from "@/components/chat/SatelliteGpsModal";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { OrdersView } from "@/components/orders/OrdersView";
+import { Footer } from "@/components/Footer";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { AddressModal } from "@/components/auth/AddressModal";
 import { PersonalisationModal } from "@/components/auth/PersonalisationModal";
@@ -291,7 +292,7 @@ const CARTWISE_TOP_TECH_DEALS = [
 ];
 
 function MainApp() {
-  const { activeTab, selectedTrace, setSelectedTrace, addToCart, setIsCartOpen, cart, updateQuantity } = useCart();
+  const { activeTab, setActiveTab, selectedTrace, setSelectedTrace, addToCart, setIsCartOpen, cart, updateQuantity } = useCart();
   const { speak, isAutoSpeakEnabled } = useVoice();
   const { user, personalizedProducts, setIsPersonalisationModalOpen } = useUser();
   const [mobileView, setMobileView] = useState<"store" | "copilot">("store");
@@ -462,6 +463,7 @@ function MainApp() {
 
   // Carousel scroll ref
   const dealsScrollRef = useRef<HTMLDivElement>(null);
+  const productSideRef = useRef<HTMLDivElement>(null);
 
   const scrollDeals = (direction: "left" | "right") => {
     if (dealsScrollRef.current) {
@@ -676,11 +678,26 @@ function MainApp() {
 
       {/* Main Content Layout */}
       {activeTab === "orders" ? (
-        <OrdersView />
+        <div className="flex-1 max-w-[1680px] w-full mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-5 flex flex-col justify-between">
+          <OrdersView />
+          <Footer
+            onSelectCategory={(cat) => {
+              setActiveTab("chat");
+              setSelectedCategory(cat);
+              setActiveFilterTag("all");
+            }}
+            onAskAI={(q) => {
+              setActiveTab("chat");
+              handleSendMessage(q);
+            }}
+            onOpenOrders={() => setActiveTab("orders")}
+            onScrollToTop={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          />
+        </div>
       ) : (
-        <main className="flex-1 max-w-[1600px] w-full mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-5 pb-24 sm:pb-8">
+        <main className="flex-1 max-w-[1680px] w-full mx-auto px-2.5 sm:px-4 lg:px-6 py-2 sm:py-3 lg:h-[calc(100vh-140px)] lg:overflow-hidden flex flex-col">
           {/* Mobile View Toggle Switcher (< lg screens) */}
-          <div className="lg:hidden flex items-center p-1 bg-white border border-slate-200 rounded-xl mb-3 shadow-xs">
+          <div className="lg:hidden flex items-center p-1 bg-white border border-slate-200 rounded-xl mb-2.5 shadow-xs shrink-0">
             <button
               onClick={() => setMobileView("store")}
               className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
@@ -690,7 +707,7 @@ function MainApp() {
               }`}
             >
               <ShoppingBag className="w-4 h-4" />
-              <span>Explore Products</span>
+              <span>Explore Products ({displayedProducts.length})</span>
             </button>
             <button
               onClick={() => setMobileView("copilot")}
@@ -705,10 +722,21 @@ function MainApp() {
             </button>
           </div>
 
-          {/* ======================================================== */}
-          {/* 1. TOP TECH DEALS BANNER (Sleek Onyx Black & Gold)        */}
-          {/* ======================================================== */}
-          <section className="mb-4 rounded-2xl overflow-hidden bg-gradient-to-r from-slate-950 via-slate-900 to-zinc-950 border border-amber-500/30 p-3 sm:p-5 text-white shadow-md relative">
+          {/* Dual-Column Storefront + Fixed Chatbot Layout */}
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-5 min-h-0 h-full">
+            {/* ======================================================== */}
+            {/* LEFT / MAIN STOREFRONT COLUMN (7-8 cols on Desktop) - SCROLLABLE */}
+            {/* ======================================================== */}
+            <div
+              ref={productSideRef}
+              className={`space-y-4 lg:col-span-7 xl:col-span-8 lg:h-full lg:overflow-y-auto lg:pr-2.5 scrollbar-thin ${
+                mobileView === "store" ? "block" : "hidden lg:block"
+              }`}
+            >
+              {/* ======================================================== */}
+              {/* 1. TOP TECH DEALS BANNER (Sleek Onyx Black & Gold)        */}
+              {/* ======================================================== */}
+              <section className="rounded-2xl overflow-hidden bg-gradient-to-r from-slate-950 via-slate-900 to-zinc-950 border border-amber-500/30 p-3 sm:p-5 text-white shadow-md relative">
             <div className="flex items-center justify-between mb-3 px-1">
               <div className="flex items-center gap-2">
                 <h2 className="text-base sm:text-xl font-black text-white tracking-tight">
@@ -777,14 +805,8 @@ function MainApp() {
             </div>
           </section>
 
-          {/* Dual-Column Storefront + Copilot Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start">
-            {/* ======================================================== */}
-            {/* LEFT / MAIN STOREFRONT COLUMN (7-8 cols on Desktop)       */}
-            {/* ======================================================== */}
-            <div className={`space-y-4 lg:col-span-7 xl:col-span-8 ${mobileView === "store" ? "block" : "hidden lg:block"}`}>
-              {/* 4 Value Pillars */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          {/* 4 Value Pillars */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div className="p-2.5 bg-white border border-slate-200 rounded-xl flex items-center gap-2.5 shadow-xs">
                   <div className="w-8 h-8 rounded-lg bg-slate-950 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
                     <Truck className="w-4 h-4" />
@@ -1057,14 +1079,33 @@ function MainApp() {
                   Cartwise Plus Verified
                 </span>
               </div>
+
+              {/* Professional E-Commerce Footer */}
+              <Footer
+                onSelectCategory={(cat) => {
+                  setSelectedCategory(cat);
+                  setActiveFilterTag("all");
+                  setSearchQuery("");
+                  productSideRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                onAskAI={(q) => {
+                  if (mobileView !== "copilot") setMobileView("copilot");
+                  handleSendMessage(q);
+                }}
+                onOpenOrders={() => setActiveTab("orders")}
+                onScrollToTop={() => {
+                  productSideRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              />
             </div>
 
             {/* ======================================================== */}
-            {/* RIGHT / AI SHOPPING ASSISTANT SIDEBAR (4-5 cols on Desktop) */}
+            {/* RIGHT / AI SHOPPING ASSISTANT SIDEBAR - FIXED IN PLACE  */}
             {/* ======================================================== */}
             <div
-              className={`bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex flex-col h-[740px] lg:h-[calc(100vh-130px)] lg:min-h-[640px] lg:max-h-[920px] lg:sticky top-28 lg:col-span-5 xl:col-span-4 ${
-                mobileView === "copilot" ? "flex" : "hidden lg:flex"
+              className={`bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex flex-col lg:col-span-5 xl:col-span-4 lg:h-full min-h-0 ${
+                mobileView === "copilot" ? "flex h-[calc(100vh-210px)]" : "hidden lg:flex"
               }`}
             >
               {/* Copilot Header */}
@@ -1166,7 +1207,7 @@ function MainApp() {
               </div>
 
               {/* Chat Stream (Scrollable message area) */}
-              <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3.5 scrollbar-thin bg-slate-50/50">
+              <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3.5 scrollbar-thin bg-slate-50/50 min-h-0">
                 {messages.length === 0 ? (
                   <EmptyChatPrompt onSelectPrompt={handleSendMessage} />
                 ) : (
