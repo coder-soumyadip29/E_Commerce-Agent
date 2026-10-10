@@ -209,7 +209,7 @@ export function searchProducts(options: SearchProductsOptions = {}): {
 } {
   const db = getDb();
   let sql = `
-    SELECT p.id, p.name, p.category, p.sub_category, p.price, p.description, p.is_organic, p.stock,
+    SELECT p.id, p.name, p.category, p.sub_category, p.price, p.description, p.is_organic, p.stock, p.image_url,
            rs.average_rating,
            rs.review_count
     FROM products p
@@ -275,7 +275,7 @@ export function searchProducts(options: SearchProductsOptions = {}): {
 
         if (words.length > 1) {
           let orSql = `
-            SELECT p.id, p.name, p.category, p.sub_category, p.price, p.description, p.is_organic, p.stock,
+            SELECT p.id, p.name, p.category, p.sub_category, p.price, p.description, p.is_organic, p.stock, p.image_url,
                    rs.average_rating, rs.review_count
             FROM products p
             LEFT JOIN ratings_summary rs ON p.id = rs.product_id
@@ -323,7 +323,7 @@ export function searchProducts(options: SearchProductsOptions = {}): {
         stock: r.stock,
         average_rating: r.average_rating ? Number(r.average_rating) : 0,
         review_count: r.review_count || 0,
-        image_url: getProductImageUrl(r.name, r.category, r.sub_category || undefined),
+        image_url: r.image_url || getProductImageUrl(r.id, r.name, r.category, r.sub_category || undefined),
       }));
       return { products, sql };
     } catch (e) {
@@ -421,7 +421,7 @@ export function getProductById(id: number): Product | null {
   if (db) {
     try {
       const sql = `
-        SELECT p.id, p.name, p.category, p.sub_category, p.price, p.description, p.is_organic, p.stock,
+        SELECT p.id, p.name, p.category, p.sub_category, p.price, p.description, p.is_organic, p.stock, p.image_url,
                rs.average_rating,
                rs.review_count
         FROM products p
@@ -441,7 +441,7 @@ export function getProductById(id: number): Product | null {
           stock: row.stock,
           average_rating: row.average_rating ? Number(row.average_rating) : 0,
           review_count: row.review_count || 0,
-          image_url: getProductImageUrl(row.name, row.category, row.sub_category || undefined),
+          image_url: row.image_url || getProductImageUrl(row.id, row.name, row.category, row.sub_category || undefined),
         };
       }
     } catch (e) {

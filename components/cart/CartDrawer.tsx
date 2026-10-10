@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
 import { Product, Order, UserAddressRecord, DeliverySlotId, InvoiceData } from "@/lib/types";
+import { getFallbackImageUrl } from "@/lib/storeData";
 import { DELIVERY_SLOTS } from "@/lib/deliverySlots";
 import {
   X,
@@ -443,11 +444,11 @@ export function CartDrawer() {
                       >
                         <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-lg bg-slate-50 p-1 flex items-center justify-center flex-shrink-0 border border-slate-100">
                           <img
-                            src={product.image_url || "/images/honey.png"}
+                            src={product.image_url || getFallbackImageUrl(product.category)}
                             alt={product.name}
                             className="max-h-full max-w-full object-contain"
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = "/images/honey.png";
+                              (e.target as HTMLImageElement).src = getFallbackImageUrl(product.category);
                             }}
                           />
                         </div>

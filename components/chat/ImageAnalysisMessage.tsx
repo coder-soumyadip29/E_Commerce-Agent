@@ -41,7 +41,7 @@ export function ImageAnalysisMessage({
                   alt="Uploaded search item"
                   className="max-h-full max-w-full object-contain"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/images/honey.png";
+                    (e.target as HTMLImageElement).src = "/images/placeholder_low_bandwidth.svg";
                   }}
                 />
                 <span className="absolute bottom-1 right-1 bg-emerald-700 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-xs flex items-center gap-1">

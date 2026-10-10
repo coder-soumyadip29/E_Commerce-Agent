@@ -27,6 +27,7 @@ import { AddressModal } from "@/components/auth/AddressModal";
 import { PersonalisationModal } from "@/components/auth/PersonalisationModal";
 import { ProductDetailModal } from "@/components/product/ProductDetailModal";
 import { ChatMessage, AssistantMessage, Product, OrderTrackingInfo, ChatSession } from "@/lib/types";
+import { getFallbackImageUrl } from "@/lib/storeData";
 import {
   Sparkles,
   Bot,
@@ -902,7 +903,7 @@ function MainApp() {
                       alt={deal.title}
                       className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-200"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = "/images/honey.png";
+                        (e.target as HTMLImageElement).src = getFallbackImageUrl(deal.category);
                       }}
                     />
                   </div>
@@ -1096,11 +1097,11 @@ function MainApp() {
                               className="relative w-full h-36 rounded-lg bg-slate-50 overflow-hidden flex items-center justify-center p-2 mb-2 cursor-pointer"
                             >
                               <img
-                                src={product.image_url || "/images/honey.png"}
+                                src={product.image_url || getFallbackImageUrl(product.category)}
                                 alt={product.name}
                                 className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-200"
                                 onError={(e) => {
-                                  (e.target as HTMLImageElement).src = "/images/honey.png";
+                                  (e.target as HTMLImageElement).src = getFallbackImageUrl(product.category);
                                 }}
                               />
                               <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-900/90 text-amber-400 border border-amber-400/30">

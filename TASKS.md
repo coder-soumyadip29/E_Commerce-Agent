@@ -420,3 +420,19 @@
   - [x] Legal & compliance bar with registered office address and copyright
   - [x] Embedded in both main store view and `OrdersView`
 - [x] Verified full Next.js production build (`npx next build`) with 0 errors across 94 routes
+
+## Step 23: Complete Unique Product Images & Category-Aware Fallbacks
+- [x] Comprehensive Unique Product Image Catalog:
+  - [x] Created `PRODUCT_UNIQUE_IMAGES: Record<number, string>` in `lib/storeData.ts` mapping all 108 products across all 10 categories to individual, distinct, high-res photos
+  - [x] Upgraded `getProductImageUrl(idOrName, ...)` to perform deterministic product ID lookups before name/category matching
+  - [x] Populated `SEED_PRODUCTS_RAW` and `INITIAL_PRODUCTS` with complete 108 items so serverless and local environments load all products with their distinct images
+  - [x] Updated `scripts/seed.ts` items 1-32 to eliminate duplicate `/images/honey.png`, `/images/avocado_oil.png`, and `/images/oats.png`
+- [x] Database Query Fidelity:
+  - [x] Updated `searchProducts` and `getProductById` in `lib/db.ts` to include `p.image_url` in SQL SELECT queries
+  - [x] Ensured row mapping retains `p.image_url` or falls back to ID-based `getProductImageUrl(r.id, ...)`
+- [x] Intelligent Category-Specific Fallbacks:
+  - [x] Created `getFallbackImageUrl(category)` returning dedicated SVG vector fallbacks for mobiles, electronics, appliances, fashion, beauty, food-health, home, toys-baby, auto, and sports
+  - [x] Replaced hardcoded `/images/honey.png` `onError` fallbacks across `app/page.tsx`, `ProductDetailModal.tsx`, `ProductsMessage.tsx`, `CompareMessage.tsx`, and `CartDrawer.tsx`
+  - [x] Ensured broken or slow-loading images never turn products into honey jars
+- [x] Verified full Next.js production build (`npm run build`) passing with 0 errors across 94 routes
+

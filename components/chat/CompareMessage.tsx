@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Product } from "@/lib/types";
+import { getFallbackImageUrl } from "@/lib/storeData";
 import { useCart } from "@/context/CartContext";
 import { ShoppingCart, Check, Scale } from "lucide-react";
 
@@ -63,11 +64,11 @@ export function CompareMessage({ products, comparisonPoints, onSelectProduct }: 
                           title="Click to view full details"
                         >
                           <img
-                            src={product.image_url || "/images/honey.png"}
+                            src={product.image_url || getFallbackImageUrl(product.category)}
                             alt={product.name}
                             className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform"
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = "/images/honey.png";
+                              (e.target as HTMLImageElement).src = getFallbackImageUrl(product.category);
                             }}
                           />
                         </div>

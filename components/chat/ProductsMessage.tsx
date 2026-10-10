@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Product, AgentTrace, OrderTrackingInfo, PromoArbitrageInfo } from "@/lib/types";
+import { getFallbackImageUrl } from "@/lib/storeData";
 import { useCart } from "@/context/CartContext";
 import {
   Sparkles,
@@ -126,11 +127,11 @@ export function ProductsMessage({
                   <div className="flex items-center gap-3">
                     <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden shrink-0 flex items-center justify-center p-1.5 group-hover:scale-105 transition-transform">
                       <img
-                        src={product.image_url || "/images/honey.png"}
+                        src={product.image_url || getFallbackImageUrl(product.category)}
                         alt={product.name}
                         className="max-h-full max-w-full object-contain rounded-lg"
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = "/images/honey.png";
+                          (e.target as HTMLImageElement).src = getFallbackImageUrl(product.category);
                         }}
                       />
                       <span className="absolute top-1 left-1 px-1 py-0.2 rounded text-[8px] font-black uppercase bg-slate-900 text-amber-400 border border-amber-500/30">

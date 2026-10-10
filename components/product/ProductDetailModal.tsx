@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Product } from "@/lib/types";
+import { getFallbackImageUrl } from "@/lib/storeData";
 import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
 import {
@@ -113,11 +114,11 @@ export function ProductDetailModal({ product, onClose, onAskAI }: ProductDetailM
           <div className="md:col-span-5 flex flex-col justify-between space-y-4">
             <div className="relative w-full aspect-square bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-center p-4 overflow-hidden group">
               <img
-                src={product.image_url || "/images/honey.png"}
+                src={product.image_url || getFallbackImageUrl(product.category)}
                 alt={product.name}
                 className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/images/honey.png";
+                  (e.target as HTMLImageElement).src = getFallbackImageUrl(product.category);
                 }}
               />
               <button
